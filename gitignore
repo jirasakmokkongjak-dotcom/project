@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.streamlit/secrets.toml
+.DS_Store
+
+# ข้อมูลจริงที่เก็บจากผู้ตอบแบบสอบถาม ไม่ควร commit ขึ้น GitHub (ความเป็นส่วนตัว)
+data/assessments.csv
