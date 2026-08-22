@@ -1,14 +1,21 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
+import joblib
 from datetime import datetime
 import warnings
 warnings.filterwarnings('ignore')
+
+# ==================== ตั้งค่าฟอนต์ภาษาไทยสำหรับ Matplotlib ====================
+plt.rcParams['font.sans-serif'] = ['Tahoma', 'DejaVu Sans', 'Arial Unicode MS', 'Angsana New', 'TH Sarabun New']
+plt.rcParams['axes.unicode_minus'] = False
 
 # ==================== ตั้งค่าหน้าเว็บ ====================
 st.set_page_config(
@@ -36,6 +43,7 @@ st.markdown("""
         padding: 20px;
         border-radius: 15px;
         text-align: center;
+        animation: pulse 2s;
     }
     .risk-medium {
         background: linear-gradient(135deg, #FFA500, #FF8C00);
@@ -58,12 +66,17 @@ st.markdown("""
         text-align: center;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # ==================== ข้อมูลทางการแพทย์ ====================
 SYMPTOMS_DATA = {
-    " อาการฉุกเฉิน (ต้องไปโรงพยาบาลทันที)": {
+    "🚨 อาการฉุกเฉิน (ต้องไปโรงพยาบาลทันที)": {
         "เจ็บหน้าอก/แน่นหน้าอก": 35,
         "หายใจไม่ออก/หายใจลำบาก": 35,
         "หมดสติ/วูบ/เป็นลม": 40,
@@ -123,16 +136,16 @@ with st.sidebar:
     st.title("📋 เมนูหลัก")
     menu = st.radio(
         "เลือกหัวข้อ",
-        ["🏠 หน้าหลัก", " ประเมินอาการ", "📊 ประวัติการประเมิน", "📈 สถิติและกราฟ", " AI ทำนายผล", "ℹ️ เกี่ยวกับระบบ"],
+        ["🏠 หน้าหลัก", "🩺 ประเมินอาการ", " ประวัติการประเมิน", "📈 สถิติและกราฟ", "🤖 AI ทำนายผล", "ℹ️ เกี่ยวกับระบบ"],
         index=1
     )
     st.markdown("---")
-    st.caption(f" {datetime.now().strftime('%d/%m/%Y %H:%M')}")
-    st.caption(" โปรเจกต์ปี 4 - Senior Project")
+    st.caption(f"📅 {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+    st.caption("🎓 โปรเจกต์ปี 4 - Senior Project")
 
 # ==================== หน้าที่ 1: หน้าหลัก ====================
 if menu == "🏠 หน้าหลัก":
-    st.markdown('<div class="main-header"><h1>🏥 ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ</h1><h3>Elderly Medical Decision Support System</h3></div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header"><h1> ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ</h1><h3>Elderly Medical Decision Support System</h3></div>', unsafe_allow_html=True)
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -156,7 +169,7 @@ if menu == "🏠 หน้าหลัก":
         """)
     with col_b:
         st.markdown("""
-        - ✅ แสดงสถิติแบบกราฟ (Plotly)
+        - ✅ แสดงสถิติแบบกราฟ (Plotly/Seaborn/Matplotlib)
         - ✅ ระบบ AI ทำนายผล (Scikit-Learn)
         - ✅ คำแนะนำเฉพาะบุคคล
         - ✅ UI ใช้งานง่าย เหมาะกับผู้สูงอายุ
@@ -178,7 +191,7 @@ elif menu == "🩺 ประเมินอาการ":
     st.markdown('<div class="main-header"><h1>🩺 แบบประเมินอาการ</h1></div>', unsafe_allow_html=True)
 
     with st.form("assessment_form"):
-        st.subheader(" ข้อมูลทั่วไป")
+        st.subheader("👤 ข้อมูลทั่วไป")
         col1, col2, col3 = st.columns(3)
         with col1:
             name = st.text_input("ชื่อ-นามสกุล *", placeholder="กรอกชื่อ-นามสกุล")
@@ -226,11 +239,12 @@ elif menu == "🩺 ประเมินอาการ":
         if not name:
             st.error("⚠️ กรุณากรอกชื่อ-นามสกุล")
         elif not selected_symptoms:
-            st.warning("️ กรุณาเลือกอาการอย่างน้อย 1 รายการ")
+            st.warning("⚠️ กรุณาเลือกอาการอย่างน้อย 1 รายการ")
         else:
             # คำนวณคะแนน
             risk_multiplier = 1.0
 
+            # ปรับตามอายุ
             if age >= 75:
                 risk_multiplier += 0.3
             elif age >= 70:
@@ -238,6 +252,7 @@ elif menu == "🩺 ประเมินอาการ":
             elif age >= 65:
                 risk_multiplier += 0.1
 
+            # ปรับตามโรคประจำตัว
             if "โรคหัวใจ" in chronic or "โรคหลอดเลือดสมอง" in chronic:
                 risk_multiplier += 0.3
             if "เบาหวาน" in chronic and (bs < 70 or bs > 250):
@@ -245,11 +260,13 @@ elif menu == "🩺 ประเมินอาการ":
             if "ความดันโลหิตสูง" in chronic:
                 risk_multiplier += 0.1
 
+            # ปรับตามยา
             if "ยาละลายลิ่มเลือด" in medications:
                 risk_multiplier += 0.2
 
             final_score = int(total_score * risk_multiplier)
 
+            # ตัดสินผล
             has_emergency = len(emergency_symptoms) > 0
 
             if final_score >= 50 or has_emergency:
@@ -289,6 +306,7 @@ elif menu == "🩺 ประเมินอาการ":
                     "วัดความดัน/น้ำตาลเป็นประจำ"
                 ]
 
+            # แสดงผล
             st.markdown("---")
             st.markdown(f'<div class="{risk_class}"><h2>🎯 ผลการประเมิน: ระดับความเสี่ยง {risk_level}</h2><h3>{recommendation}</h3></div>', unsafe_allow_html=True)
 
@@ -330,6 +348,7 @@ elif menu == "🩺 ประเมินอาการ":
                         emoji = "✅"
                     st.markdown(f"{emoji} {symptom} (+{score} คะแนน)")
 
+            # บันทึกประวัติ
             st.session_state.history.append({
                 "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
                 "name": name,
@@ -352,13 +371,13 @@ elif menu == "🩺 ประเมินอาการ":
                 st.error("📞 **กรุณาโทร 1669 ทันที** หากมีอาการฉุกเฉิน")
 
 # ==================== หน้าที่ 3: ประวัติการประเมิน ====================
-elif menu == " ประวัติการประเมิน":
+elif menu == "📊 ประวัติการประเมิน":
     st.markdown('<div class="main-header"><h1>📊 ประวัติการประเมิน</h1></div>', unsafe_allow_html=True)
 
     if not st.session_state.history:
         st.info("📭 ยังไม่มีประวัติการประเมิน")
     else:
-        filter_name = st.text_input("🔍 ค้นหาตามชื่อ")
+        filter_name = st.text_input(" ค้นหาตามชื่อ")
 
         filtered_history = st.session_state.history
         if filter_name:
@@ -391,10 +410,11 @@ elif menu == " ประวัติการประเมิน":
             st.session_state.history = []
             st.rerun()
 
-# ==================== หน้าที่ 4: สถิติและกราฟ (ใช้ Plotly ทั้งหมด) ====================
+# ==================== หน้าที่ 4: สถิติและกราฟ ====================
 elif menu == "📈 สถิติและกราฟ":
-    st.markdown('<div class="main-header"><h1>📊 สถิติและกราฟ (Data Visualization)</h1></div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header"><h1> สถิติและกราฟ (Data Visualization)</h1></div>', unsafe_allow_html=True)
 
+    # ถ้าไม่มีประวัติ ให้ใช้ข้อมูลจำลอง
     if len(st.session_state.history) < 3:
         dummy_data = [
             {"date": "22/08/2026", "name": "สมชาย", "age": 70, "score": 15, "risk": "ต่ำ"},
@@ -407,7 +427,7 @@ elif menu == "📈 สถิติและกราฟ":
             {"date": "22/08/2026", "name": "สมศักดิ์", "age": 88, "score": 70, "risk": "สูง"}
         ]
         df = pd.DataFrame(dummy_data)
-        st.warning("️ ใช้ข้อมูลจำลอง (Dummy Data) เนื่องจากประวัติการประเมินยังน้อยเกินไป")
+        st.warning("⚠️ ใช้ข้อมูลจำลอง (Dummy Data) เนื่องจากประวัติการประเมินยังน้อยเกินไป")
     else:
         df = pd.DataFrame(st.session_state.history)
 
@@ -419,91 +439,75 @@ elif menu == "📈 สถิติและกราฟ":
         st.metric("🚨 ความเสี่ยงสูง", high_risk)
     with col3:
         avg_score = df['score'].mean()
-        st.metric(" คะแนนเฉลี่ย", f"{avg_score:.1f}")
+        st.metric("📈 คะแนนเฉลี่ย", f"{avg_score:.1f}")
 
     st.markdown("---")
 
-    st.subheader("📊 สัดส่วนระดับความเสี่ยง (Pie Chart)")
-    risk_counts = df['risk'].value_counts().reset_index()
-    risk_counts.columns = ['ระดับความเสี่ยง', 'จำนวน']
-    fig_pie = px.pie(
-        risk_counts,
-        values='จำนวน',
-        names='ระดับความเสี่ยง',
-        color='ระดับความเสี่ยง',
-        color_discrete_map={'ต่ำ': '#4CAF50', 'กลาง': '#FFA500', 'สูง': '#FF4B4B'},
-        hole=0.4
-    )
-    fig_pie.update_layout(title_text="สัดส่วนระดับความเสี่ยง")
-    st.plotly_chart(fig_pie, use_container_width=True)
+    col_a, col_b = st.columns(2)
 
-    st.markdown("---")
+    with col_a:
+        st.subheader("📊 สัดส่วนระดับความเสี่ยง (Plotly Pie Chart)")
+        risk_counts = df['risk'].value_counts().reset_index()
+        risk_counts.columns = ['ระดับความเสี่ยง', 'จำนวน']
+        fig_pie = px.pie(
+            risk_counts,
+            values='จำนวน',
+            names='ระดับความเสี่ยง',
+            color='ระดับความเสี่ยง',
+            color_discrete_map={'ต่ำ': '#4CAF50', 'กลาง': '#FFA500', 'สูง': '#FF4B4B'},
+            hole=0.4
+        )
+        fig_pie.update_layout(title_text="สัดส่วนระดับความเสี่ยง")
+        st.plotly_chart(fig_pie, use_container_width=True)
 
-    st.subheader("📈 ความสัมพันธ์ อายุ vs คะแนน (Scatter Plot)")
-    fig_scatter = px.scatter(
-        df,
-        x='age',
-        y='score',
-        color='risk',
-        color_discrete_map={'ต่ำ': '#4CAF50', 'กลาง': '#FFA500', 'สูง': '#FF4B4B'},
-        size='score',
-        hover_data=['name', 'date'],
-        title="Scatter Plot: อายุ vs คะแนนความเสี่ยง",
-        labels={'age': 'อายุ (ปี)', 'score': 'คะแนนความเสี่ยง', 'risk': 'ระดับความเสี่ยง'}
-    )
-    st.plotly_chart(fig_scatter, use_container_width=True)
+    with col_b:
+        st.subheader("📈 ความสัมพันธ์ อายุ vs คะแนน (Seaborn)")
+        fig_scatter, ax = plt.subplots(figsize=(8, 5))
+        palette = {'ต่ำ': 'green', 'กลาง': 'orange', 'สูง': 'red'}
+        sns.scatterplot(
+            data=df,
+            x='age',
+            y='score',
+            hue='risk',
+            palette=palette,
+            s=100,
+            ax=ax
+        )
+        ax.set_title("Scatter Plot: Age vs Risk Score", fontsize=14, fontfamily='Tahoma')
+        ax.set_xlabel("อายุ (ปี)", fontsize=12, fontfamily='Tahoma')
+        ax.set_ylabel("คะแนนความเสี่ยง", fontsize=12, fontfamily='Tahoma')
+        st.pyplot(fig_scatter)
 
-    st.markdown("---")
+    st.subheader(" คะแนนความเสี่ยงในแต่ละครั้ง (Matplotlib Bar Chart)")
+    fig_bar, ax2 = plt.subplots(figsize=(10, 5))
+    colors = ['#4CAF50' if r == 'ต่ำ' else ('#FFA500' if r == 'กลาง' else '#FF4B4B') for r in df['risk']]
+    ax2.bar(df['name'], df['score'], color=colors, edgecolor='black')
+    ax2.set_ylabel("คะแนนความเสี่ยง", fontsize=12, fontfamily='Tahoma')
+    ax2.set_title("Bar Chart: Risk Score by Name", fontsize=14, fontfamily='Tahoma')
+    ax2.set_xlabel("ชื่อผู้ประเมิน", fontsize=12, fontfamily='Tahoma')
+    ax2.set_ylim(0, max(df['score']) + 10)
+    plt.xticks(fontproperties='Tahoma')
+    st.pyplot(fig_bar)
 
-    st.subheader("📊 คะแนนความเสี่ยงในแต่ละครั้ง (Bar Chart)")
-    fig_bar = px.bar(
-        df,
-        x='name',
-        y='score',
-        color='risk',
-        color_discrete_map={'ต่ำ': '#4CAF50', 'กลาง': '#FFA500', 'สูง': '#FF4B4B'},
-        title="Bar Chart: คะแนนความเสี่ยงตามชื่อ",
-        labels={'name': 'ชื่อผู้ประเมิน', 'score': 'คะแนนความเสี่ยง', 'risk': 'ระดับความเสี่ยง'},
-        text='score'
-    )
-    fig_bar.update_traces(textposition='outside')
-    st.plotly_chart(fig_bar, use_container_width=True)
-
-    st.markdown("---")
-
-    st.subheader("📊 การกระจายตัวของคะแนน (Histogram)")
+    st.subheader("📊 การกระจายตัวของคะแนน (Plotly Histogram)")
     fig_hist = px.histogram(
         df,
         x='score',
         color='risk',
         color_discrete_map={'ต่ำ': '#4CAF50', 'กลาง': '#FFA500', 'สูง': '#FF4B4B'},
         nbins=10,
-        title="การกระจายตัวของคะแนนความเสี่ยง",
-        labels={'score': 'คะแนนความเสี่ยง', 'risk': 'ระดับความเสี่ยง'}
+        title="การกระจายตัวของคะแนนความเสี่ยง"
     )
     st.plotly_chart(fig_hist, use_container_width=True)
-
-    st.markdown("---")
-
-    st.subheader("📦 การกระจายตัวของคะแนนตามระดับความเสี่ยง (Box Plot)")
-    fig_box = px.box(
-        df,
-        x='risk',
-        y='score',
-        color='risk',
-        color_discrete_map={'ต่ำ': '#4CAF50', 'กลาง': '#FFA500', 'สูง': '#FF4B4B'},
-        title="Box Plot: การกระจายตัวของคะแนน",
-        labels={'risk': 'ระดับความเสี่ยง', 'score': 'คะแนนความเสี่ยง'}
-    )
-    st.plotly_chart(fig_box, use_container_width=True)
 
 # ==================== หน้าที่ 5: AI ทำนายผล ====================
 elif menu == "🤖 AI ทำนายผล":
     st.markdown('<div class="main-header"><h1>🤖 ระบบ Machine Learning (Scikit-Learn)</h1></div>', unsafe_allow_html=True)
 
-    st.subheader(" โมเดล Random Forest Classifier")
+    st.subheader("🧠 โมเดล Random Forest Classifier")
     st.write("ระบบจะฝึก AI จากข้อมูลเพื่อทำนายระดับความเสี่ยงจาก **อายุ** และ **คะแนนอาการ**")
 
+    # ข้อมูลสำหรับฝึก AI
     X_data = [
         [65, 10], [70, 15], [68, 12], [72, 18], [66, 8],
         [75, 45], [78, 50], [73, 40], [76, 48], [74, 42],
@@ -520,11 +524,14 @@ elif menu == "🤖 AI ทำนายผล":
     X = np.array(X_data)
     y = np.array(y_data)
 
+    # แบ่งข้อมูล train/test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    # ฝึกโมเดล
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
+    # ทดสอบโมเดล
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
 
@@ -542,7 +549,7 @@ elif menu == "🤖 AI ทำนายผล":
         prediction = model.predict([[age_input, score_input]])
         proba = model.predict_proba([[age_input, score_input]])[0]
 
-        result_map = {0: "✅ ความเสี่ยงต่ำ", 1: "️ ความเสี่ยงกลาง", 2: " ความเสี่ยงสูง"}
+        result_map = {0: "✅ ความเสี่ยงต่ำ", 1: "⚠️ ความเสี่ยงกลาง", 2: "🚨 ความเสี่ยงสูง"}
         color_map = {0: "green", 1: "orange", 2: "red"}
 
         st.markdown(f'<div style="background-color: {color_map[prediction[0]]}; color: white; padding: 20px; border-radius: 10px; text-align: center;"><h2>AI ทำนายผล: {result_map[prediction[0]]}</h2></div>', unsafe_allow_html=True)
@@ -554,6 +561,7 @@ elif menu == "🤖 AI ทำนายผล":
         })
         st.dataframe(proba_df, use_container_width=True)
 
+        # แสดงกราฟความน่าจะเป็น
         fig_proba = go.Figure(data=[
             go.Bar(
                 x=['ต่ำ', 'กลาง', 'สูง'],
@@ -595,7 +603,7 @@ elif menu == "️ เกี่ยวกับระบบ":
     ### 🎓 ข้อมูลโปรเจกต์
     - **ชื่อโปรเจกต์:** ระบบประเมินการตัดสินใจไปพบแพทย์ของผู้สูงอายุ
     - **ประเภท:** โปรเจกต์ปี 4 (Senior Project)
-    - **เทคโนโลยี:** Python, Streamlit, Pandas, Scikit-learn, Plotly
+    - **เทคโนโลยี:** Python, Streamlit, Pandas, Scikit-learn, Plotly, Matplotlib, Seaborn
     - **กลุ่มเป้าหมาย:** ผู้สูงอายุ 60 ปีขึ้นไป และผู้ดูแล
 
     ### 🎯 วัตถุประสงค์
