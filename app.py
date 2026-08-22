@@ -13,10 +13,14 @@ from datetime import datetime
 import warnings
 warnings.filterwarnings('ignore')
 
+# ==================== ตั้งค่าฟอนต์ภาษาไทยสำหรับ Matplotlib ====================
+plt.rcParams['font.sans-serif'] = ['Tahoma', 'DejaVu Sans', 'Arial Unicode MS', 'Angsana New', 'TH Sarabun New']
+plt.rcParams['axes.unicode_minus'] = False
+
 # ==================== ตั้งค่าหน้าเว็บ ====================
 st.set_page_config(
     page_title="ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ",
-    page_icon="",
+    page_icon="🏥",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -84,7 +88,7 @@ SYMPTOMS_DATA = {
         "อาเจียนเป็นเลือด": 35,
         "ถ่ายอุจจาระเป็นเลือด": 30
     },
-    "️ อาการที่ต้องเฝ้าระวัง (พบแพทย์ภายใน 24 ชม.)": {
+    "⚠️ อาการที่ต้องเฝ้าระวัง (พบแพทย์ภายใน 24 ชม.)": {
         "ไข้สูงกว่า 38.5°C": 18,
         "เวียนศีรษะรุนแรง": 15,
         "คลื่นไส้/อาเจียนต่อเนื่อง": 15,
@@ -154,7 +158,7 @@ if menu == "🏠 หน้าหลัก":
     with col4:
         st.metric("⏱️ เวลาประเมิน", "< 5 นาที")
 
-    st.markdown("### 🌟 คุณสมบัติของระบบ")
+    st.markdown("###  คุณสมบัติของระบบ")
     col_a, col_b = st.columns(2)
     with col_a:
         st.markdown("""
@@ -171,14 +175,14 @@ if menu == "🏠 หน้าหลัก":
         - ✅ UI ใช้งานง่าย เหมาะกับผู้สูงอายุ
         """)
 
-    st.info(" **หมายเหตุ**: ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้")
+    st.info("💡 **หมายเหตุ**: ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้")
 
     st.markdown("### 📞 เบอร์โทรศัพท์ฉุกเฉิน")
     col_e1, col_e2, col_e3 = st.columns(3)
     with col_e1:
         st.markdown("<div class='metric-card'><h3>🚑 1669</h3><p>เจ็บป่วยฉุกเฉิน</p></div>", unsafe_allow_html=True)
     with col_e2:
-        st.markdown("<div class='metric-card'><h3> 1556</h3><p>สายด่วนผู้สูงอายุ</p></div>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-card'><h3>👴 1556</h3><p>สายด่วนผู้สูงอายุ</p></div>", unsafe_allow_html=True)
     with col_e3:
         st.markdown("<div class='metric-card'><h3>🧠 1323</h3><p>สุขภาพจิต</p></div>", unsafe_allow_html=True)
 
@@ -196,7 +200,7 @@ elif menu == "🩺 ประเมินอาการ":
         with col3:
             gender = st.selectbox("เพศ *", ["ชาย", "หญิง", "ไม่ระบุ"])
 
-        st.subheader(" โรคประจำตัว")
+        st.subheader("🏥 โรคประจำตัว")
         chronic = st.multiselect("เลือกโรคประจำตัว (เลือกได้มากกว่า 1)", CHRONIC_DISEASES)
 
         st.subheader("💊 ยาที่รับประทานเป็นประจำ")
@@ -334,12 +338,12 @@ elif menu == "🩺 ประเมินอาการ":
                 st.markdown(f"{i}. {adv}")
 
             if selected_symptoms:
-                st.markdown("###  อาการที่เลือก")
+                st.markdown("### 📋 อาการที่เลือก")
                 for symptom, score, category in selected_symptoms:
                     if "ฉุกเฉิน" in category:
                         emoji = "🚨"
                     elif "เฝ้าระวัง" in category:
-                        emoji = "️"
+                        emoji = "⚠️"
                     else:
                         emoji = "✅"
                     st.markdown(f"{emoji} {symptom} (+{score} คะแนน)")
@@ -373,7 +377,7 @@ elif menu == "📊 ประวัติการประเมิน":
     if not st.session_state.history:
         st.info("📭 ยังไม่มีประวัติการประเมิน")
     else:
-        filter_name = st.text_input("🔍 ค้นหาตามชื่อ")
+        filter_name = st.text_input(" ค้นหาตามชื่อ")
 
         filtered_history = st.session_state.history
         if filter_name:
@@ -429,13 +433,13 @@ elif menu == "📈 สถิติและกราฟ":
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric(" จำนวนครั้งทั้งหมด", len(df))
+        st.metric("📊 จำนวนครั้งทั้งหมด", len(df))
     with col2:
         high_risk = len(df[df['risk'] == 'สูง'])
         st.metric("🚨 ความเสี่ยงสูง", high_risk)
     with col3:
         avg_score = df['score'].mean()
-        st.metric(" คะแนนเฉลี่ย", f"{avg_score:.1f}")
+        st.metric("📈 คะแนนเฉลี่ย", f"{avg_score:.1f}")
 
     st.markdown("---")
 
@@ -469,21 +473,23 @@ elif menu == "📈 สถิติและกราฟ":
             s=100,
             ax=ax
         )
-        ax.set_title("Scatter Plot: Age vs Risk Score", fontsize=14)
-        ax.set_xlabel("อายุ (ปี)")
-        ax.set_ylabel("คะแนนความเสี่ยง")
+        ax.set_title("Scatter Plot: Age vs Risk Score", fontsize=14, fontfamily='Tahoma')
+        ax.set_xlabel("อายุ (ปี)", fontsize=12, fontfamily='Tahoma')
+        ax.set_ylabel("คะแนนความเสี่ยง", fontsize=12, fontfamily='Tahoma')
         st.pyplot(fig_scatter)
 
     st.subheader(" คะแนนความเสี่ยงในแต่ละครั้ง (Matplotlib Bar Chart)")
     fig_bar, ax2 = plt.subplots(figsize=(10, 5))
     colors = ['#4CAF50' if r == 'ต่ำ' else ('#FFA500' if r == 'กลาง' else '#FF4B4B') for r in df['risk']]
     ax2.bar(df['name'], df['score'], color=colors, edgecolor='black')
-    ax2.set_ylabel("คะแนนความเสี่ยง", fontsize=12)
-    ax2.set_title("Bar Chart: Risk Score by Name", fontsize=14)
+    ax2.set_ylabel("คะแนนความเสี่ยง", fontsize=12, fontfamily='Tahoma')
+    ax2.set_title("Bar Chart: Risk Score by Name", fontsize=14, fontfamily='Tahoma')
+    ax2.set_xlabel("ชื่อผู้ประเมิน", fontsize=12, fontfamily='Tahoma')
     ax2.set_ylim(0, max(df['score']) + 10)
+    plt.xticks(fontproperties='Tahoma')
     st.pyplot(fig_bar)
 
-    st.subheader(" การกระจายตัวของคะแนน (Plotly Histogram)")
+    st.subheader("📊 การกระจายตัวของคะแนน (Plotly Histogram)")
     fig_hist = px.histogram(
         df,
         x='score',
@@ -532,7 +538,7 @@ elif menu == "🤖 AI ทำนายผล":
     st.success(f"✅ ฝึกโมเดลเสร็จสิ้น! (Accuracy: {accuracy*100:.1f}%)")
 
     st.markdown("---")
-    st.subheader(" ทดสอบทำนายผล")
+    st.subheader("🔮 ทดสอบทำนายผล")
     col1, col2 = st.columns(2)
     with col1:
         age_input = st.number_input("ใส่อายุ (ปี)", 60, 100, 70)
@@ -590,7 +596,7 @@ elif menu == "🤖 AI ทำนายผล":
     st.plotly_chart(fig_imp, use_container_width=True)
 
 # ==================== หน้าที่ 6: เกี่ยวกับระบบ ====================
-elif menu == "ℹ️ เกี่ยวกับระบบ":
+elif menu == "️ เกี่ยวกับระบบ":
     st.markdown('<div class="main-header"><h1>ℹ️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
 
     st.markdown("""
@@ -633,7 +639,7 @@ elif menu == "ℹ️ เกี่ยวกับระบบ":
     - เป็นเพียงเครื่องมือช่วยตัดสินใจเบื้องต้น
     - ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์เสมอ
 
-    ###  ติดต่อฉุกเฉิน
+    ### 📞 ติดต่อฉุกเฉิน
     - **1669** - เจ็บป่วยฉุกเฉิน
     - **1556** - ผู้สูงอายุ
     - **1323** - สุขภาพจิต
