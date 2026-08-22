@@ -57,300 +57,83 @@ st.set_page_config(
 # ==================== CSS ตกแต่งแบบ Modern ====================
 st.markdown("""
 <style>
-    /* Global Styles */
-    .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        background-attachment: fixed;
-    }
-    
-    /* Hero Section */
-    .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 60px 40px;
-        border-radius: 20px;
-        color: white;
-        text-align: center;
-        margin-bottom: 40px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .hero-section::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: rotate 20s linear infinite;
-    }
-    
-    @keyframes rotate {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    .hero-section h1 {
-        font-size: 3rem;
-        font-weight: 800;
-        margin-bottom: 15px;
-        position: relative;
-        z-index: 1;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .hero-section h3 {
-        font-size: 1.5rem;
-        font-weight: 400;
-        opacity: 0.95;
-        position: relative;
-        z-index: 1;
-    }
-    
-    /* Page Header */
-    .page-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 30px;
-        border-radius: 15px;
-        color: white;
-        text-align: center;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    
-    .page-header h1 {
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin: 0;
-    }
-    
-    /* Metric Cards */
-    .metric-card {
-        background: white;
-        padding: 25px;
-        border-radius: 15px;
-        text-align: center;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-    }
-    
-    .metric-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        border-color: #667eea;
-    }
-    
-    .metric-card h3 {
-        color: #667eea;
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin: 10px 0;
-    }
-    
-    .metric-card p {
-        color: #666;
-        font-size: 1rem;
-        margin: 0;
-    }
-    
-    /* Risk Cards */
-    .risk-high {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-        color: white;
-        padding: 30px;
-        border-radius: 20px;
-        text-align: center;
-        box-shadow: 0 15px 40px rgba(238,90,111,0.4);
-        animation: pulse 2s infinite;
-    }
-    
-    .risk-medium {
-        background: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%);
-        color: white;
-        padding: 30px;
-        border-radius: 20px;
-        text-align: center;
-        box-shadow: 0 15px 40px rgba(255,165,2,0.4);
-    }
-    
-    .risk-low {
-        background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
-        color: white;
-        padding: 30px;
-        border-radius: 20px;
-        text-align: center;
-        box-shadow: 0 15px 40px rgba(46,213,115,0.4);
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.02); }
-    }
-    
-    /* Info Box */
-    .info-box {
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        padding: 25px;
-        border-radius: 15px;
-        border-left: 6px solid #667eea;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        margin: 20px 0;
-    }
-    
-    .info-box b {
-        color: #667eea;
-        font-size: 1.1rem;
-    }
-    
-    /* Feature Cards */
-    .feature-card {
-        background: white;
-        padding: 25px;
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-    }
-    
-    .feature-card h4 {
-        color: #667eea;
-        font-size: 1.3rem;
-        font-weight: 700;
-        margin-bottom: 15px;
-    }
-    
-    .feature-card ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .feature-card li {
-        padding: 8px 0;
-        color: #555;
-        font-size: 1rem;
-    }
-    
-    .feature-card li:before {
-        content: "✨ ";
-        margin-right: 8px;
-    }
-    
-    /* Emergency Contact Cards */
-    .emergency-card {
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        text-align: center;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        border-top: 4px solid #ff6b6b;
-    }
-    
-    .emergency-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-    }
-    
-    .emergency-card h3 {
-        color: #ff6b6b;
-        font-size: 2rem;
-        font-weight: 800;
-        margin: 10px 0;
-    }
-    
-    .emergency-card p {
-        color: #666;
-        font-size: 1rem;
-        margin: 0;
-    }
-    
-    /* Section Headers */
-    .section-title {
-        color: #667eea;
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin: 30px 0 20px 0;
-        padding-bottom: 10px;
-        border-bottom: 3px solid #667eea;
-        display: inline-block;
-    }
-    
-    /* Buttons */
-    .stButton>button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        border-radius: 25px;
-        font-size: 1rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(102,126,234,0.4);
-    }
-    
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102,126,234,0.6);
-    }
-    
-    /* Footer */
-    .footer {
-        text-align: center;
-        color: white;
-        padding: 30px;
-        margin-top: 50px;
-        background: rgba(0,0,0,0.2);
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
-    }
-    
-    /* Sidebar Enhancement */
-    .css-1d391kg {
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    /* Form Enhancement */
-    .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>select {
-        border-radius: 10px;
-        border: 2px solid #e0e0e0;
-        padding: 12px;
-        transition: all 0.3s ease;
-    }
-    
-    .stTextInput>div>div>input:focus, .stNumberInput>div>div>input:focus, .stSelectbox>div>div>select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
-    }
+    .stApp { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-attachment: fixed; }
+    .hero-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 40px; border-radius: 20px; color: white; text-align: center; margin-bottom: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+    .hero-section::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); animation: rotate 20s linear infinite; }
+    @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .hero-section h1 { font-size: 3rem; font-weight: 800; margin-bottom: 15px; position: relative; z-index: 1; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+    .hero-section h3 { font-size: 1.5rem; font-weight: 400; opacity: 0.95; position: relative; z-index: 1; }
+    .page-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; color: white; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .page-header h1 { font-size: 2.2rem; font-weight: 700; margin: 0; }
+    .metric-card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 2px solid transparent; }
+    .metric-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); border-color: #667eea; }
+    .metric-card h3 { color: #667eea; font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
+    .metric-card p { color: #666; font-size: 1rem; margin: 0; }
+    .risk-high { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 15px 40px rgba(238,90,111,0.4); animation: pulse 2s infinite; }
+    .risk-medium { background: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 15px 40px rgba(255,165,2,0.4); }
+    .risk-low { background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 15px 40px rgba(46,213,115,0.4); }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+    .info-box { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #667eea; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 20px 0; }
+    .info-box b { color: #667eea; font-size: 1.1rem; }
+    .feature-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: all 0.3s ease; height: 100%; }
+    .feature-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+    .feature-card h4 { color: #667eea; font-size: 1.3rem; font-weight: 700; margin-bottom: 15px; }
+    .feature-card ul { list-style: none; padding: 0; margin: 0; }
+    .feature-card li { padding: 8px 0; color: #555; font-size: 1rem; }
+    .feature-card li:before { content: "✨ "; margin-right: 8px; }
+    .emergency-card { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b; }
+    .emergency-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+    .emergency-card h3 { color: #ff6b6b; font-size: 2rem; font-weight: 800; margin: 10px 0; }
+    .emergency-card p { color: #666; font-size: 1rem; margin: 0; }
+    .section-title { color: #667eea; font-size: 1.8rem; font-weight: 700; margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 3px solid #667eea; display: inline-block; }
+    .stButton>button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
+    .stButton>button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.6); }
+    .footer { text-align: center; color: white; padding: 30px; margin-top: 50px; background: rgba(0,0,0,0.2); border-radius: 15px; backdrop-filter: blur(10px); }
+    .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>select { border-radius: 10px; border: 2px solid #e0e0e0; padding: 12px; transition: all 0.3s ease; }
+    .stTextInput>div>div>input:focus, .stNumberInput>div>div>input:focus, .stSelectbox>div>div>select:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.2); }
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== ข้อมูลทางการแพทย์ ====================
+# ==================== ข้อมูลทางการแพทย์ (NCDs Focus) ====================
 SYMPTOMS_DATA = {
-    "🚨 อาการฉุกเฉิน (ต้องไปโรงพยาบาลทันที)": {
-        "เจ็บหน้าอก/แน่นหน้าอก": 35, "หายใจไม่ออก/หายใจลำบาก": 35, "หมดสติ/วูบ/เป็นลม": 40,
-        "แขนขาอ่อนแรงครึ่งซีก": 35, "พูดไม่ชัด/ปากเบี้ยว": 35, "เลือดออกไม่หยุด": 30,
-        "ชัก/เกร็ง": 35, "ปวดศีรษะรุนแรงที่สุดในชีวิต": 30
+    "🚨 อาการฉุกเฉิน (ต้องไปโรงพยาบาลทันที / Red Flags)": {
+        "เจ็บหน้าอกร้าวลงแขนซ้าย/กราม": 40,
+        "แขนขาอ่อนแรงครึ่งซีก/ปากเบี้ยว": 40,
+        "พูดไม่ชัด/สับสนฉับพลัน": 35,
+        "หายใจไม่ออก/หอบเหนื่อยขณะพัก": 35,
+        "หมดสติ/วูบ/เป็นลม": 40,
+        "ปวดศีรษะรุนแรงที่สุดในชีวิต (ฉับพลัน)": 35,
+        "อาเจียนเป็นเลือด/ถ่ายอุจจาระดำ": 35,
+        "ปวดท้องรุนแรงเฉียบพลัน": 30
     },
-    "⚠️ อาการที่ต้องเฝ้าระวัง (พบแพทย์ภายใน 24 ชม.)": {
-        "ไข้สูงกว่า 38.5°C": 18, "เวียนศีรษะรุนแรง": 15, "ความดันโลหิตสูงเกิน 180/110": 25,
-        "ระดับน้ำตาลผิดปกติ": 20, "ใจสั่น/หัวใจเต้นเร็ว": 18, "ปวดท้องรุนแรง": 18
+    "️ อาการที่ต้องเฝ้าระวัง (พบแพทย์ภายใน 24-48 ชม.)": {
+        "ความดันโลหิตตัวบน ≥ 180 หรือตัวล่าง ≥ 110": 25,
+        "ระดับน้ำตาลในเลือด < 70 หรือ > 250 mg/dL": 25,
+        "น้ำหนักลดลงผิดปกติ (>5% ใน 6 เดือน)": 20,
+        "ใจสั่น/หัวใจเต้นผิดจังหวะ": 18,
+        "เวียนศีรษะรุนแรง/ทรงตัวไม่ได้": 18,
+        "บวมที่ขา/ข้อเท้าทั้งสองข้าง": 18,
+        "ไข้สูง > 38.5°C ติดต่อกันเกิน 3 วัน": 15,
+        "ปัสสาวะแสบขัด/มีเลือดปน": 15,
+        "เปลี่ยนแปลงระบบขับถ่ายเรื้อรัง": 15
     },
-    "✅ อาการทั่วไป (ดูแลตัวเองได้)": {
-        "ปวดเมื่อยตามตัว": 3, "ปวดข้อ": 5, "นอนไม่หลับ": 4, "เบื่ออาหาร": 5,
-        "ท้องผูก": 3, "อ่อนเพลียเล็กน้อย": 4, "ไอ/เจ็บคอ": 6, "ปวดหลัง": 5
+    "✅ อาการทั่วไป (ดูแลตัวเองได้ / นัดพบแพทย์ตามปกติ)": {
+        "ปวดเมื่อยตามตัว/ปวดหลัง": 4,
+        "ปวดข้อเข่า/ข้อเสื่อม": 5,
+        "นอนไม่หลับ/หลับไม่สนิท": 4,
+        "อ่อนเพลียเล็กน้อย": 4,
+        "ไอ/เจ็บคอ/มีน้ำมูก": 5,
+        "อาหารไม่ย่อย/แสบร้อนกลางอก": 5,
+        "ท้องผูกเล็กน้อย": 3,
+        "ปวดศีรษะตึงๆ เป็นบางครั้ง": 5
     }
 }
 
-CHRONIC_DISEASES = ["เบาหวาน", "ความดันโลหิตสูง", "โรคหัวใจ", "โรคไต", "โรคปอด", "โรคหลอดเลือดสมอง", "ไขมันในเลือดสูง", "ไม่มี"]
+CHRONIC_DISEASES = [
+    "เบาหวาน", "ความดันโลหิตสูง", "โรคหัวใจและหลอดเลือด",
+    "ไขมันในเลือดสูง", "โรคไตเรื้อรัง", "โรคอ้วน (BMI ≥ 30)",
+    "โรคปอดอุดกั้นเรื้อรัง (COPD)", "ไม่มี"
+]
 
 # ==================== Sidebar ====================
 with st.sidebar:
@@ -370,7 +153,7 @@ with st.sidebar:
     
     menu = st.radio(
         "เมนูหลัก",
-        ["🏠 หน้าหลัก", "🩺 ประเมินอาการ", "📊 ประวัติ", "📈 สถิติ", " AI", "ℹ️ เกี่ยวกับ"],
+        [" หน้าหลัก", "🩺 ประเมินอาการ", "📊 ประวัติ", "📈 สถิติ", "🤖 AI", "ℹ️ เกี่ยวกับ"],
         index=1
     )
     
@@ -388,7 +171,7 @@ with st.sidebar:
     st.caption(f"📅 {datetime.now().strftime('%d/%m/%Y %H:%M')}")
 
 # ==================== หน้าที่ 1: หน้าหลัก ====================
-if menu == "🏠 หน้าหลัก":
+if menu == " หน้าหลัก":
     st.markdown("""
     <div class="hero-section">
         <h1>🏥 ระบบประเมินการไปพบแพทย์</h1>
@@ -417,7 +200,7 @@ if menu == "🏠 หน้าหลัก":
     with col3:
         st.markdown("""
         <div class="metric-card">
-            <h3>⚕️ 3</h3>
+            <h3>️ 3</h3>
             <p>ระดับความเสี่ยง</p>
         </div>
         """, unsafe_allow_html=True)
@@ -430,7 +213,7 @@ if menu == "🏠 หน้าหลัก":
         <div class="feature-card">
             <h4>🎯 การประเมินอัจฉริยะ</h4>
             <ul>
-                <li>วิเคราะห์อาการตามเกณฑ์ทางการแพทย์</li>
+                <li>วิเคราะห์อาการตามเกณฑ์ NCDs</li>
                 <li>คำนวณความเสี่ยง 3 ระดับ (สูง/กลาง/ต่ำ)</li>
                 <li>ปรับคะแนนตามอายุและโรคประจำตัว</li>
                 <li>ให้คำแนะนำเฉพาะบุคคล</li>
@@ -470,7 +253,7 @@ if menu == "🏠 หน้าหลัก":
     with col_e3:
         st.markdown("""
         <div class="emergency-card">
-            <h3>🧠 1323</h3>
+            <h3> 1323</h3>
             <p>สุขภาพจิต</p>
         </div>
         """, unsafe_allow_html=True)
@@ -493,8 +276,8 @@ elif menu == " ประเมินอาการ":
         with col2: age = st.number_input("อายุ (ปี) *", min_value=40, max_value=120, value=45)
         with col3: gender = st.selectbox("เพศ *", ["ชาย", "หญิง", "ไม่ระบุ"])
 
-        st.markdown('<h3 class="section-title">🏥 ประวัติสุขภาพ</h3>', unsafe_allow_html=True)
-        chronic = st.multiselect("โรคประจำตัว", CHRONIC_DISEASES)
+        st.markdown('<h3 class="section-title"> ประวัติสุขภาพ</h3>', unsafe_allow_html=True)
+        chronic = st.multiselect("โรคประจำตัว (NCDs)", CHRONIC_DISEASES)
         
         st.markdown('<h3 class="section-title">🤒 อาการที่พบ</h3>', unsafe_allow_html=True)
         st.info("💡 เลือกอาการที่คุณกำลังประสบอยู่ในขณะนี้ (สามารถเลือกได้มากกว่า 1 อาการ)")
@@ -517,15 +300,20 @@ elif menu == " ประเมินอาการ":
 
     if submitted:
         if not name or not selected_symptoms:
-            st.error("⚠️ กรุณากรอกชื่อและเลือกอาการอย่างน้อย 1 รายการ")
+            st.error("️ กรุณากรอกชื่อและเลือกอาการอย่างน้อย 1 รายการ")
         else:
             risk_multiplier = 1.0
+            
             if age >= 70: risk_multiplier += 0.3
             elif age >= 60: risk_multiplier += 0.2
             elif age >= 50: risk_multiplier += 0.1
             
-            if "โรคหัวใจ" in chronic or "โรคหลอดเลือดสมอง" in chronic: 
+            if "โรคหัวใจและหลอดเลือด" in chronic: 
                 risk_multiplier += 0.3
+            if "โรคไตเรื้อรัง" in chronic:
+                risk_multiplier += 0.2
+            if "เบาหวาน" in chronic:
+                risk_multiplier += 0.1
             
             final_score = int(total_score * risk_multiplier)
             
@@ -538,7 +326,7 @@ elif menu == " ประเมินอาการ":
                 
             elif final_score >= 20:
                 risk_level, risk_class = "กลาง", "risk-medium"
-                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">⚠️ ความเสี่ยงกลาง</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">️ ความเสี่ยงกลาง</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
             else:
                 risk_level, risk_class = "ต่ำ", "risk-low"
                 st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">✅ ความเสี่ยงต่ำ</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ดูแลตัวเองได้</p></div>', unsafe_allow_html=True)
@@ -548,7 +336,7 @@ elif menu == " ประเมินอาการ":
             with col1:
                 st.markdown(f"""
                 <div class="info-box">
-                    <b> ข้อมูลผู้ประเมิน:</b><br>
+                    <b>👤 ข้อมูลผู้ประเมิน:</b><br>
                     • ชื่อ: {name}<br>
                     • อายุ: {age} ปี<br>
                     • เพศ: {gender}<br>
@@ -558,7 +346,7 @@ elif menu == " ประเมินอาการ":
             with col2:
                 st.markdown(f"""
                 <div class="info-box">
-                    <b> ผลการประเมิน:</b><br>
+                    <b>📊 ผลการประเมิน:</b><br>
                     • คะแนนดิบ: {total_score}<br>
                     • ตัวคูณความเสี่ยง: {risk_multiplier}x<br>
                     • <b>คะแนนรวม: {final_score}</b><br>
@@ -611,7 +399,7 @@ elif menu == "📊 ประวัติ":
                 st.rerun()
 
 # ==================== หน้าที่ 4: สถิติ ====================
-elif menu == "📈 สถิติ":
+elif menu == " สถิติ":
     st.markdown('<div class="page-header"><h1>📊 สถิติและกราฟ</h1></div>', unsafe_allow_html=True)
 
     df = load_data()
@@ -654,20 +442,18 @@ elif menu == "📈 สถิติ":
 
     st.markdown("---")
     
-    st.markdown('<h3 class="section-title">📊 สัดส่วนระดับความเสี่ยง</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="section-title"> สัดส่วนระดับความเสี่ยง</h3>', unsafe_allow_html=True)
     risk_counts = df['risk'].value_counts().reset_index()
     risk_counts.columns = ['ระดับความเสี่ยง', 'จำนวน']
     fig_pie = px.pie(risk_counts, values='จำนวน', names='ระดับความเสี่ยง', 
                     color='ระดับความเสี่ยง', color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'}, hole=0.4)
-    fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
     st.plotly_chart(fig_pie, use_container_width=True)
 
     st.markdown("---")
-    st.markdown('<h3 class="section-title"> คะแนนความเสี่ยงตามชื่อ</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="section-title">📊 คะแนนความเสี่ยงตามชื่อ</h3>', unsafe_allow_html=True)
     fig_bar = px.bar(df, x='name', y='score', color='risk',
                     color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'},
                     text='score', hover_data=['age'])
-    fig_bar.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
     st.plotly_chart(fig_bar, use_container_width=True)
 
     st.markdown("---")
@@ -675,14 +461,13 @@ elif menu == "📈 สถิติ":
     fig_scatter = px.scatter(df, x='age', y='score', color='risk',
                             color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'},
                             hover_data=['name'], size='score')
-    fig_scatter.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
     st.plotly_chart(fig_scatter, use_container_width=True)
 
 # ==================== หน้าที่ 5: AI ====================
-elif menu == " AI":
+elif menu == "🤖 AI":
     st.markdown('<div class="page-header"><h1>🤖 ระบบ AI ทำนายผล</h1></div>', unsafe_allow_html=True)
-    st.subheader("🧠 โมเดล Random Forest Classifier")
-    st.info("💡 โมเดลนี้ถูกฝึกด้วย Synthetic Dataset 500 รายการ ที่สร้างจาก Logic การให้คะแนนทางการแพทย์ของระบบ")
+    st.subheader(" โมเดล Random Forest Classifier")
+    st.info("💡 โมเดลนี้ถูกฝึกด้วย Synthetic Dataset 500 รายการ ที่สร้างจาก Logic การให้คะแนน NCDs ของระบบ")
 
     np.random.seed(42)
     ages_sim = np.random.randint(40, 90, 500)
@@ -695,8 +480,12 @@ elif menu == " AI":
         if age >= 70: multiplier += 0.3
         elif age >= 60: multiplier += 0.2
         elif age >= 50: multiplier += 0.1
-        has_heart_disease = np.random.choice([True, False], p=[0.3, 0.7])
-        if has_heart_disease: multiplier += 0.3
+        
+        has_heart = np.random.choice([True, False], p=[0.2, 0.8])
+        if has_heart: multiplier += 0.3
+        has_kidney = np.random.choice([True, False], p=[0.1, 0.9])
+        if has_kidney: multiplier += 0.2
+        
         final_score = int(score * multiplier)
         if final_score >= 50: y_sim.append(2)
         elif final_score >= 20: y_sim.append(1)
@@ -734,16 +523,14 @@ elif menu == " AI":
             go.Bar(x=['ต่ำ', 'กลาง', 'สูง'], y=proba * 100, marker_color=['#2ed573', '#ffa502', '#ff6b6b'], 
                    text=[f"{p*100:.1f}%" for p in proba], textposition='auto')
         ])
-        fig_proba.update_layout(title="ความน่าจะเป็นของแต่ละระดับ (%)", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
         st.plotly_chart(fig_proba, use_container_width=True)
 
     st.markdown("---")
-    st.markdown('<h3 class="section-title">📊 Feature Importance</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="section-title"> Feature Importance</h3>', unsafe_allow_html=True)
     feature_names = ['อายุ', 'คะแนนอาการ']
     importances = model.feature_importances_
     fig_imp = go.Figure(data=[go.Bar(x=feature_names, y=importances, marker_color=['#667eea', '#764ba2'], 
                                      text=[f"{i*100:.1f}%" for i in importances], textposition='auto')])
-    fig_imp.update_layout(title="ความสำคัญของฟีเจอร์", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
     st.plotly_chart(fig_imp, use_container_width=True)
 
 # ==================== หน้าที่ 6: เกี่ยวกับ ====================
@@ -756,8 +543,8 @@ elif menu == "ℹ️ เกี่ยวกับ":
         <p style="color: #555; line-height: 1.6;">
             <b>ระบบประเมินการตัดสินใจไปพบแพทย์สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</b><br><br>
             ระบบนี้ถูกพัฒนาขึ้นเพื่อช่วยกลุ่มวัยกลางคนและผู้สูงอายุในการประเมินอาการเบื้องต้น 
-            และตัดสินใจว่าควรไปพบแพทย์หรือไม่ โดยนำเทคโนโลยี Machine Learning และ Data Visualization 
-            มาประยุกต์ใช้เพื่อให้ได้ผลลัพธ์ที่แม่นยำและเข้าใจง่าย
+            โดยเน้นการคัดกรองโรคไม่ติดต่อเรื้อรัง (NCDs) เช่น เบาหวาน ความดันโลหิตสูง โรคหัวใจและหลอดเลือด
+            และนำเทคโนโลยี Machine Learning มาประยุกต์ใช้
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -778,7 +565,7 @@ elif menu == "ℹ️ เกี่ยวกับ":
     with col2:
         st.markdown("""
         <div class="feature-card">
-            <h4>🤖 AI & Integration</h4>
+            <h4> AI & Integration</h4>
             <ul>
                 <li>Scikit-Learn (Machine Learning)</li>
                 <li>Random Forest Classifier</li>
@@ -787,21 +574,20 @@ elif menu == "ℹ️ เกี่ยวกับ":
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown('<h3 class="section-title">🎯 วัตถุประสงค์</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="section-title">📚 แหล่งอ้างอิงเกณฑ์การประเมิน</h3>', unsafe_allow_html=True)
     st.markdown("""
     <div class="feature-card">
         <ul>
-            <li>ช่วยกลุ่มวัยกลางคน (40+) และผู้สูงอายุ ตัดสินใจว่าควรไปพบแพทย์หรือไม่</li>
-            <li>เน้นการป้องกันและเฝ้าระวังโรคไม่ติดต่อเรื้อรัง (NCDs) ตั้งแต่เนิ่นๆ</li>
-            <li>นำเทคโนโลยี AI มาช่วยวิเคราะห์และทำนายความเสี่ยง</li>
-            <li>ออกแบบ UI/UX ที่เหมาะสมและใช้งานง่าย (Accessibility)</li>
+            <li><b>Red Flag Symptoms:</b> เกณฑ์การคัดกรองอาการฉุกเฉินทางคลินิก (Clinical Practice Guidelines)</li>
+            <li><b>NCDs Risk Factors:</b> เกณฑ์การเฝ้าระวังโรคไม่ติดต่อเรื้อรัง กรมควบคุมโรค กระทรวงสาธารณสุข</li>
+            <li><b>Weighted Scoring:</b> พัฒนาจากเกณฑ์คะแนนถ่วงน้ำหนัก โดยปรับค่า Multiplier ตามอายุและภาวะโรคซ้อนทับ</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown("""
     <div class="info-box" style="margin-top: 30px;">
-        <b>️ ข้อจำกัดสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b> 
+        <b>⚠️ ข้อจำกัดสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b> 
         หากมีอาการรุนแรงหรือกังวลใจ ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์โดยตรง
     </div>
     """, unsafe_allow_html=True)
