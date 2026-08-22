@@ -4,9 +4,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
+import plotly.graph_objects as go
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
 import joblib
 from datetime import datetime
+import warnings
+warnings.filterwarnings('ignore')
 
 # ==================== ตั้งค่าหน้าเว็บ ====================
 st.set_page_config(
@@ -19,36 +24,104 @@ st.set_page_config(
 # ==================== CSS ตกแต่ง ====================
 st.markdown("""
 <style>
-    .main-header { background: linear-gradient(90deg, #2E86AB, #A23B72); padding: 25px; border-radius: 15px; color: white; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .risk-high { background: linear-gradient(135deg, #FF4B4B, #FF0000); color: white; padding: 20px; border-radius: 15px; text-align: center; }
-    .risk-medium { background: linear-gradient(135deg, #FFA500, #FF8C00); color: white; padding: 20px; border-radius: 15px; text-align: center; }
-    .risk-low { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 20px; border-radius: 15px; text-align: center; }
-    .metric-card { background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .main-header {
+        background: linear-gradient(90deg, #2E86AB, #A23B72);
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        text-align: center;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .risk-high {
+        background: linear-gradient(135deg, #FF4B4B, #FF0000);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        animation: pulse 2s;
+    }
+    .risk-medium {
+        background: linear-gradient(135deg, #FFA500, #FF8C00);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+    }
+    .risk-low {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+    }
+    .metric-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # ==================== ข้อมูลทางการแพทย์ ====================
 SYMPTOMS_DATA = {
     "🚨 อาการฉุกเฉิน (ต้องไปโรงพยาบาลทันที)": {
-        "เจ็บหน้าอก/แน่นหน้าอก": 35, "หายใจไม่ออก/หายใจลำบาก": 35, 
-        "หมดสติ/วูบ/เป็นลม": 40, "แขนขาอ่อนแรงครึ่งซีก": 35, 
-        "พูดไม่ชัด/ปากเบี้ยว": 35, "เลือดออกไม่หยุด": 30,
-        "ชัก/เกร็ง": 35, "ปวดศีรษะรุนแรงที่สุดในชีวิต": 30
+        "เจ็บหน้าอก/แน่นหน้าอก": 35,
+        "หายใจไม่ออก/หายใจลำบาก": 35,
+        "หมดสติ/วูบ/เป็นลม": 40,
+        "แขนขาอ่อนแรงครึ่งซีก": 35,
+        "พูดไม่ชัด/ปากเบี้ยว": 35,
+        "เลือดออกไม่หยุด": 30,
+        "ชัก/เกร็ง": 35,
+        "ปวดศีรษะรุนแรงที่สุดในชีวิต": 30,
+        "อาเจียนเป็นเลือด": 35,
+        "ถ่ายอุจจาระเป็นเลือด": 30
     },
-    "⚠️ อาการที่ต้องเฝ้าระวัง (พบแพทย์ภายใน 24 ชม.)": {
-        "ไข้สูงกว่า 38.5°C": 18, "เวียนศีรษะรุนแรง": 15, 
-        "ความดันโลหิตสูงเกิน 180/110": 25, "ระดับน้ำตาลผิดปกติ": 20,
-        "ใจสั่น/หัวใจเต้นเร็ว": 18, "ปวดท้องรุนแรง": 18,
-        "บวมตามแขนขา": 12, "ปัสสาวะแสบขัด/มีเลือด": 12
+    "️ อาการที่ต้องเฝ้าระวัง (พบแพทย์ภายใน 24 ชม.)": {
+        "ไข้สูงกว่า 38.5°C": 18,
+        "เวียนศีรษะรุนแรง": 15,
+        "คลื่นไส้/อาเจียนต่อเนื่อง": 15,
+        "ปวดศีรษะรุนแรง": 15,
+        "ความดันโลหิตสูงเกิน 180/110": 25,
+        "ระดับน้ำตาลต่ำกว่า 70 mg/dL": 20,
+        "ระดับน้ำตาลสูงกว่า 300 mg/dL": 22,
+        "บวมตามแขนขา": 12,
+        "ใจสั่น/หัวใจเต้นเร็ว": 18,
+        "ปวดท้องรุนแรง": 18,
+        "หายใจมีเสียงวี้ด": 20,
+        "ปัสสาวะแสบขัด/มีเลือด": 12
     },
     "✅ อาการทั่วไป (ดูแลตัวเองได้/นัดพบแพทย์ตามปกติ)": {
-        "ปวดเมื่อยตามตัว": 3, "ปวดข้อ": 5, "นอนไม่หลับ": 4, 
-        "เบื่ออาหาร": 5, "ท้องผูก": 3, "อ่อนเพลียเล็กน้อย": 4, 
-        "ไอ/เจ็บคอ": 6, "ปวดหลัง": 5, "ตาพร่ามัว": 8
+        "ปวดเมื่อยตามตัว": 3,
+        "ปวดข้อ": 5,
+        "นอนไม่หลับ": 4,
+        "เบื่ออาหาร": 5,
+        "ท้องผูก": 3,
+        "อ่อนเพลียเล็กน้อย": 4,
+        "ไอ/เจ็บคอ": 6,
+        "น้ำมูกไหล": 3,
+        "ปวดหลัง": 5,
+        "ตาพร่ามัว": 8
     }
 }
 
-CHRONIC_DISEASES = ["เบาหวาน", "ความดันโลหิตสูง", "โรคหัวใจ", "โรคไต", "โรคปอด", "โรคหลอดเลือดสมอง", "มะเร็ง", "ไม่มี"]
+CHRONIC_DISEASES = [
+    "เบาหวาน", "ความดันโลหิตสูง", "โรคหัวใจ", "โรคไต",
+    "โรคปอด", "โรคหลอดเลือดสมอง", "มะเร็ง", "โรคไทรอยด์",
+    "โรคเกาต์", "โรคกระดูกพรุน", "โรคพาร์กินสัน", "ไม่มี"
+]
+
+MEDICATIONS = [
+    "ยาเบาหวาน", "ยาความดัน", "ยาหัวใจ", "ยาละลายลิ่มเลือด",
+    "ยาขยายหลอดลม", "ยาขับปัสสาวะ", "ยาแก้ปวด", "อื่นๆ"
+]
 
 # ==================== Session State ====================
 if "history" not in st.session_state:
@@ -59,7 +132,7 @@ with st.sidebar:
     st.title("📋 เมนูหลัก")
     menu = st.radio(
         "เลือกหัวข้อ",
-        ["🏠 หน้าหลัก", "🩺 ประเมินอาการ", "📊 สถิติและกราฟ", "🤖 AI ทำนายผล", "ℹ️ เกี่ยวกับระบบ"],
+        ["🏠 หน้าหลัก", "🩺 ประเมินอาการ", " ประวัติการประเมิน", "📈 สถิติและกราฟ", "🤖 AI ทำนายผล", "ℹ️ เกี่ยวกับระบบ"],
         index=1
     )
     st.markdown("---")
@@ -68,42 +141,80 @@ with st.sidebar:
 
 # ==================== หน้าที่ 1: หน้าหลัก ====================
 if menu == "🏠 หน้าหลัก":
-    st.markdown('<div class="main-header"><h1>🏥 ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ</h1><h3>Elderly Medical Decision Support System</h3></div>', unsafe_allow_html=True)
-    
+    st.markdown('<div class="main-header"><h1> ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ</h1><h3>Elderly Medical Decision Support System</h3></div>', unsafe_allow_html=True)
+
     col1, col2, col3, col4 = st.columns(4)
-    with col1: st.metric("👴 กลุ่มเป้าหมาย", "60+ ปี")
-    with col2: st.metric("📋 จำนวนอาการ", f"{sum(len(v) for v in SYMPTOMS_DATA.values())} อาการ")
-    with col3: st.metric("⚕️ ระดับความเสี่ยง", "3 ระดับ")
-    with col4: st.metric("⏱️ เวลาประเมิน", "< 5 นาที")
-    
+    with col1:
+        st.metric("👴 กลุ่มเป้าหมาย", "60+ ปี")
+    with col2:
+        total_symptoms = sum(len(v) for v in SYMPTOMS_DATA.values())
+        st.metric("📋 จำนวนอาการ", f"{total_symptoms} อาการ")
+    with col3:
+        st.metric("⚕️ ระดับความเสี่ยง", "3 ระดับ")
+    with col4:
+        st.metric("⏱️ เวลาประเมิน", "< 5 นาที")
+
     st.markdown("### 🌟 คุณสมบัติของระบบ")
     col_a, col_b = st.columns(2)
     with col_a:
-        st.markdown("- ✅ ประเมินอาการตามเกณฑ์ทางการแพทย์\n- ✅ วิเคราะห์ความเสี่ยง 3 ระดับ\n- ✅ บันทึกประวัติการประเมิน")
+        st.markdown("""
+        - ✅ ประเมินอาการตามเกณฑ์ทางการแพทย์
+        - ✅ วิเคราะห์ความเสี่ยง 3 ระดับ (สูง/กลาง/ต่ำ)
+        - ✅ บันทึกประวัติการประเมิน
+        - ✅ รองรับโรคประจำตัวและยา
+        """)
     with col_b:
-        st.markdown("- ✅ แสดงสถิติแบบกราฟ (Plotly/Seaborn)\n- ✅ ระบบ AI ทำนายผล (Scikit-Learn)\n- ✅ รองรับโรคประจำตัวและยา")
-    
+        st.markdown("""
+        - ✅ แสดงสถิติแบบกราฟ (Plotly/Seaborn/Matplotlib)
+        - ✅ ระบบ AI ทำนายผล (Scikit-Learn)
+        - ✅ คำแนะนำเฉพาะบุคคล
+        - ✅ UI ใช้งานง่าย เหมาะกับผู้สูงอายุ
+        """)
+
     st.info(" **หมายเหตุ**: ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้")
+
+    st.markdown("### 📞 เบอร์โทรศัพท์ฉุกเฉิน")
+    col_e1, col_e2, col_e3 = st.columns(3)
+    with col_e1:
+        st.markdown("<div class='metric-card'><h3>🚑 1669</h3><p>เจ็บป่วยฉุกเฉิน</p></div>", unsafe_allow_html=True)
+    with col_e2:
+        st.markdown("<div class='metric-card'><h3> 1556</h3><p>สายด่วนผู้สูงอายุ</p></div>", unsafe_allow_html=True)
+    with col_e3:
+        st.markdown("<div class='metric-card'><h3>🧠 1323</h3><p>สุขภาพจิต</p></div>", unsafe_allow_html=True)
 
 # ==================== หน้าที่ 2: ประเมินอาการ ====================
 elif menu == "🩺 ประเมินอาการ":
     st.markdown('<div class="main-header"><h1>🩺 แบบประเมินอาการ</h1></div>', unsafe_allow_html=True)
-    
+
     with st.form("assessment_form"):
-        st.subheader(" ข้อมูลทั่วไป")
+        st.subheader("👤 ข้อมูลทั่วไป")
         col1, col2, col3 = st.columns(3)
-        with col1: name = st.text_input("ชื่อ-นามสกุล *")
-        with col2: age = st.number_input("อายุ (ปี) *", 60, 120, 65)
-        with col3: gender = st.selectbox("เพศ *", ["ชาย", "หญิง", "ไม่ระบุ"])
-        
-        st.subheader("🏥 โรคประจำตัว")
-        chronic = st.multiselect("เลือกโรคประจำตัว", CHRONIC_DISEASES)
-        
-        st.subheader("🤒 อาการที่พบ")
+        with col1:
+            name = st.text_input("ชื่อ-นามสกุล *", placeholder="กรอกชื่อ-นามสกุล")
+        with col2:
+            age = st.number_input("อายุ (ปี) *", min_value=60, max_value=120, value=65)
+        with col3:
+            gender = st.selectbox("เพศ *", ["ชาย", "หญิง", "ไม่ระบุ"])
+
+        st.subheader(" โรคประจำตัว")
+        chronic = st.multiselect("เลือกโรคประจำตัว (เลือกได้มากกว่า 1)", CHRONIC_DISEASES)
+
+        st.subheader("💊 ยาที่รับประทานเป็นประจำ")
+        medications = st.multiselect("เลือกยา (ถ้ามี)", MEDICATIONS)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            bp = st.text_input("ความดันโลหิตล่าสุด (เช่น 120/80)", placeholder="120/80")
+        with col2:
+            bs = st.number_input("ระดับน้ำตาลในเลือด (mg/dL)", min_value=0, max_value=600, value=100)
+
+        st.subheader("🤒 อาการที่พบ (เลือกทั้งหมดที่เป็น)")
+        st.markdown("**เลือกอาการที่คุณกำลังประสบอยู่ในขณะนี้**")
+
         total_score = 0
         selected_symptoms = []
-        emergency_found = False
-        
+        emergency_symptoms = []
+
         for category, symptoms in SYMPTOMS_DATA.items():
             with st.expander(category, expanded=True):
                 cols = st.columns(2)
@@ -111,70 +222,205 @@ elif menu == "🩺 ประเมินอาการ":
                     with cols[i % 2]:
                         if st.checkbox(f"{symptom} (+{score} คะแนน)", key=symptom):
                             total_score += score
-                            selected_symptoms.append(symptom)
+                            selected_symptoms.append((symptom, score, category))
                             if "ฉุกเฉิน" in category:
-                                emergency_found = True
-        
-        notes = st.text_area("📝 หมายเหตุเพิ่มเติม", placeholder="เช่น อาการเป็นมา 3 วัน...")
+                                emergency_symptoms.append(symptom)
+
+        st.subheader("📝 หมายเหตุเพิ่มเติม")
+        notes = st.text_area("อธิบายอาการเพิ่มเติม (ถ้ามี)", placeholder="เช่น อาการเป็นมา 3 วัน, มีไข้ร่วมด้วย, ฯลฯ")
+
         submitted = st.form_submit_button("🔍 ประเมินผล", type="primary", use_container_width=True)
-    
+
     if submitted:
-        if not name or not selected_symptoms:
-            st.error("⚠️ กรุณากรอกชื่อและเลือกอาการอย่างน้อย 1 รายการ")
+        if not name:
+            st.error("⚠️ กรุณากรอกชื่อ-นามสกุล")
+        elif not selected_symptoms:
+            st.warning("⚠️ กรุณาเลือกอาการอย่างน้อย 1 รายการ")
         else:
             # คำนวณคะแนน
             risk_multiplier = 1.0
-            if age >= 75: risk_multiplier += 0.3
-            elif age >= 70: risk_multiplier += 0.2
-            if "โรคหัวใจ" in chronic or "โรคหลอดเลือดสมอง" in chronic: risk_multiplier += 0.3
-            
+
+            # ปรับตามอายุ
+            if age >= 75:
+                risk_multiplier += 0.3
+            elif age >= 70:
+                risk_multiplier += 0.2
+            elif age >= 65:
+                risk_multiplier += 0.1
+
+            # ปรับตามโรคประจำตัว
+            if "โรคหัวใจ" in chronic or "โรคหลอดเลือดสมอง" in chronic:
+                risk_multiplier += 0.3
+            if "เบาหวาน" in chronic and (bs < 70 or bs > 250):
+                risk_multiplier += 0.2
+            if "ความดันโลหิตสูง" in chronic:
+                risk_multiplier += 0.1
+
+            # ปรับตามยา
+            if "ยาละลายลิ่มเลือด" in medications:
+                risk_multiplier += 0.2
+
             final_score = int(total_score * risk_multiplier)
-            
+
             # ตัดสินผล
-            if final_score >= 50 or emergency_found:
-                risk_level, risk_class, rec = "สูง", "risk-high", "🚨 ฉุกเฉิน! กรุณาไปพบแพทย์หรือโทร 1669 ทันที"
-                advice = ["นำส่งโรงพยาบาลที่ใกล้ที่สุด", "ให้ผู้ป่วยนั่งหรือนอนท่าที่สบาย", "เตรียมยาและประวัติโรคประจำตัว"]
+            has_emergency = len(emergency_symptoms) > 0
+
+            if final_score >= 50 or has_emergency:
+                risk_level = "สูง"
+                risk_class = "risk-high"
+                recommendation = "🚨 ฉุกเฉิน! กรุณาไปพบแพทย์หรือโทร 1669 ทันที"
+                advice = [
+                    "อย่ารอช้า นำส่งโรงพยาบาลที่ใกล้ที่สุด",
+                    "ให้ผู้ป่วยนั่งหรือนอนในท่าที่สบาย",
+                    "หากหมดสติ ให้จัดท่า recovery position",
+                    "เตรียมรายการยาและประวัติโรคประจำตัว",
+                    "โทรแจ้งญาติหรือผู้ดูแลทันที",
+                    "อย่าให้ผู้ป่วยกินอาหารหรือน้ำ"
+                ]
             elif final_score >= 20:
-                risk_level, risk_class, rec = "กลาง", "risk-medium", "⚠️ ควรพบแพทย์ภายใน 24 ชั่วโมง"
-                advice = ["นัดพบแพทย์โดยเร็ว", "จดบันทึกอาการ", "หากอาการแย่ลงให้ไปโรงพยาบาลทันที"]
+                risk_level = "กลาง"
+                risk_class = "risk-medium"
+                recommendation = "⚠️ ควรพบแพทย์ภายใน 24 ชั่วโมง"
+                advice = [
+                    "นัดพบแพทย์โดยเร็ว (ภายใน 1 วัน)",
+                    "จดบันทึกอาการและเวลาที่เกิด",
+                    "งดอาหารหนักก่อนพบแพทย์",
+                    "ดื่มน้ำเพียงพอ พักผ่อนให้มาก",
+                    "หากอาการแย่ลง ให้ไปโรงพยาบาลทันที",
+                    "ทานยาตามแพทย์สั่งอย่างเคร่งครัด"
+                ]
             else:
-                risk_level, risk_class, rec = "ต่ำ", "risk-low", "✅ ดูแลตัวเองได้ และนัดพบแพทย์ตามปกติ"
-                advice = ["พักผ่อนให้เพียงพอ", "ดื่มน้ำสะอาด", "สังเกตอาการ หากไม่ดีขึ้นใน 3 วันให้พบแพทย์"]
-            
-            st.markdown(f'<div class="{risk_class}"><h2>🎯 ผลการประเมิน: ความเสี่ยง {risk_level}</h2><h3>{rec}</h3></div>', unsafe_allow_html=True)
-            
-            col1, col2 = st.columns(2)
+                risk_level = "ต่ำ"
+                risk_class = "risk-low"
+                recommendation = "✅ ดูแลตัวเองได้ และนัดพบแพทย์ตามปกติ"
+                advice = [
+                    "พักผ่อนให้เพียงพอ",
+                    "ดื่มน้ำสะอาด 8-10 แก้วต่อวัน",
+                    "ทานอาหารที่มีประโยชน์ ครบ 5 หมู่",
+                    "สังเกตอาการ หากไม่ดีขึ้นใน 3 วัน ให้พบแพทย์",
+                    "ออกกำลังกายเบาๆ เช่น เดิน ยืดเหยียด",
+                    "วัดความดัน/น้ำตาลเป็นประจำ"
+                ]
+
+            # แสดงผล
+            st.markdown("---")
+            st.markdown(f'<div class="{risk_class}"><h2>🎯 ผลการประเมิน: ระดับความเสี่ยง {risk_level}</h2><h3>{recommendation}</h3></div>', unsafe_allow_html=True)
+
+            col1, col2, col3 = st.columns(3)
             with col1:
-                st.write(f"**ชื่อ:** {name} | **อายุ:** {age} ปี")
-                st.write(f"**คะแนนรวม:** {final_score} (ตัวคูณ {risk_multiplier}x)")
+                st.markdown("### 📊 ข้อมูลการประเมิน")
+                st.write(f"**ชื่อ:** {name}")
+                st.write(f"**อายุ:** {age} ปี")
+                st.write(f"**เพศ:** {gender}")
+                st.write(f"**โรคประจำตัว:** {', '.join(chronic) if chronic else 'ไม่มี'}")
+
             with col2:
-                st.write("**อาการที่เลือก:**")
-                for s in selected_symptoms: st.write(f"- {s}")
-            
-            st.markdown("**💡 คำแนะนำ:**")
-            for adv in advice: st.markdown(f"- {adv}")
-            
+                st.markdown("### 📈 คะแนนความเสี่ยง")
+                st.metric("คะแนนดิบ", total_score)
+                st.metric("ตัวคูณความเสี่ยง", f"{risk_multiplier}x")
+                st.metric("คะแนนรวม", final_score)
+                st.progress(min(final_score / 100, 1.0))
+
+            with col3:
+                st.markdown("### 💊 ยาที่รับประทาน")
+                if medications:
+                    for med in medications:
+                        st.write(f"- {med}")
+                else:
+                    st.write("ไม่มี")
+
+            st.markdown("### 💡 คำแนะนำในการปฏิบัติตัว")
+            for i, adv in enumerate(advice, 1):
+                st.markdown(f"{i}. {adv}")
+
+            if selected_symptoms:
+                st.markdown("###  อาการที่เลือก")
+                for symptom, score, category in selected_symptoms:
+                    if "ฉุกเฉิน" in category:
+                        emoji = "🚨"
+                    elif "เฝ้าระวัง" in category:
+                        emoji = "️"
+                    else:
+                        emoji = "✅"
+                    st.markdown(f"{emoji} {symptom} (+{score} คะแนน)")
+
             # บันทึกประวัติ
             st.session_state.history.append({
-                "date": datetime.now().strftime("%d/%m/%Y %H:%M"), 
-                "name": name, "age": age, "gender": gender,
-                "chronic": chronic, "score": final_score, 
-                "risk": risk_level, "symptoms": selected_symptoms
+                "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "name": name,
+                "age": age,
+                "gender": gender,
+                "chronic": chronic,
+                "medications": medications,
+                "bp": bp,
+                "bs": bs,
+                "score": final_score,
+                "risk": risk_level,
+                "symptoms": [s[0] for s in selected_symptoms],
+                "notes": notes
             })
+
             st.success("✅ บันทึกผลการประเมินเรียบร้อยแล้ว")
 
-# ==================== หน้าที่ 3: สถิติและกราฟ ====================
-elif menu == "📊 สถิติและกราฟ":
-    st.markdown('<div class="main-header"><h1>📊 สถิติและกราฟ (Data Visualization)</h1></div>', unsafe_allow_html=True)
-    
-    # ถ้าไม่มีประวัติ ให้ใช้ข้อมูลจำลอง (Dummy Data)
+            if risk_level == "สูง":
+                st.markdown("---")
+                st.error("📞 **กรุณาโทร 1669 ทันที** หากมีอาการฉุกเฉิน")
+
+# ==================== หน้าที่ 3: ประวัติการประเมิน ====================
+elif menu == "📊 ประวัติการประเมิน":
+    st.markdown('<div class="main-header"><h1>📊 ประวัติการประเมิน</h1></div>', unsafe_allow_html=True)
+
+    if not st.session_state.history:
+        st.info("📭 ยังไม่มีประวัติการประเมิน")
+    else:
+        filter_name = st.text_input("🔍 ค้นหาตามชื่อ")
+
+        filtered_history = st.session_state.history
+        if filter_name:
+            filtered_history = [r for r in filtered_history if filter_name.lower() in r['name'].lower()]
+
+        st.write(f"**จำนวนรายการ:** {len(filtered_history)} รายการ")
+
+        for i, record in enumerate(reversed(filtered_history), 1):
+            if record['risk'] == "สูง":
+                risk_emoji = "🚨"
+            elif record['risk'] == "กลาง":
+                risk_emoji = "⚠️"
+            else:
+                risk_emoji = "✅"
+
+            with st.expander(f"#{i} - {record['name']} ({record['date']}) - {risk_emoji} ความเสี่ยง{record['risk']}", expanded=(i == 1)):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write(f"**อายุ:** {record['age']} ปี")
+                    st.write(f"**เพศ:** {record['gender']}")
+                    st.write(f"**คะแนน:** {record['score']}")
+                    st.write(f"**โรคประจำตัว:** {', '.join(record['chronic']) if record['chronic'] else 'ไม่มี'}")
+
+                with col2:
+                    st.write(f"**อาการ:** {', '.join(record['symptoms'])}")
+                    if record.get('notes'):
+                        st.write(f"**หมายเหตุ:** {record['notes']}")
+
+        if st.button("🗑️ ล้างประวัติทั้งหมด", type="secondary"):
+            st.session_state.history = []
+            st.rerun()
+
+# ==================== หน้าที่ 4: สถิติและกราฟ ====================
+elif menu == "📈 สถิติและกราฟ":
+    st.markdown('<div class="main-header"><h1> สถิติและกราฟ (Data Visualization)</h1></div>', unsafe_allow_html=True)
+
+    # ถ้าไม่มีประวัติ ให้ใช้ข้อมูลจำลอง
     if len(st.session_state.history) < 3:
         dummy_data = [
             {"date": "22/08/2026", "name": "สมชาย", "age": 70, "score": 15, "risk": "ต่ำ"},
             {"date": "22/08/2026", "name": "สมหญิง", "age": 75, "score": 45, "risk": "กลาง"},
             {"date": "22/08/2026", "name": "วิชัย", "age": 80, "score": 65, "risk": "สูง"},
             {"date": "22/08/2026", "name": "มาลี", "age": 68, "score": 10, "risk": "ต่ำ"},
-            {"date": "22/08/2026", "name": "ประเสริฐ", "age": 82, "score": 55, "risk": "สูง"}
+            {"date": "22/08/2026", "name": "ประเสริฐ", "age": 82, "score": 55, "risk": "สูง"},
+            {"date": "22/08/2026", "name": "สุดา", "age": 72, "score": 25, "risk": "กลาง"},
+            {"date": "22/08/2026", "name": "วิภา", "age": 65, "score": 8, "risk": "ต่ำ"},
+            {"date": "22/08/2026", "name": "สมศักดิ์", "age": 88, "score": 70, "risk": "สูง"}
         ]
         df = pd.DataFrame(dummy_data)
         st.warning("⚠️ ใช้ข้อมูลจำลอง (Dummy Data) เนื่องจากประวัติการประเมินยังน้อยเกินไป")
@@ -182,72 +428,126 @@ elif menu == "📊 สถิติและกราฟ":
         df = pd.DataFrame(st.session_state.history)
 
     col1, col2, col3 = st.columns(3)
-    with col1: st.metric("📊 จำนวนครั้งทั้งหมด", len(df))
-    with col2: st.metric("🚨 ความเสี่ยงสูง", len(df[df['risk'] == 'สูง']))
-    with col3: st.metric("📈 คะแนนเฉลี่ย", f"{df['score'].mean():.1f}")
+    with col1:
+        st.metric(" จำนวนครั้งทั้งหมด", len(df))
+    with col2:
+        high_risk = len(df[df['risk'] == 'สูง'])
+        st.metric("🚨 ความเสี่ยงสูง", high_risk)
+    with col3:
+        avg_score = df['score'].mean()
+        st.metric(" คะแนนเฉลี่ย", f"{avg_score:.1f}")
 
     st.markdown("---")
+
     col_a, col_b = st.columns(2)
-    
+
     with col_a:
-        st.subheader("📊 สัดส่วนระดับความเสี่ยง (Plotly)")
+        st.subheader("📊 สัดส่วนระดับความเสี่ยง (Plotly Pie Chart)")
         risk_counts = df['risk'].value_counts().reset_index()
         risk_counts.columns = ['ระดับความเสี่ยง', 'จำนวน']
-        fig_pie = px.pie(risk_counts, values='จำนวน', names='ระดับความเสี่ยง', color='ระดับความเสี่ยง', color_discrete_map={'ต่ำ':'#4CAF50', 'กลาง':'#FFA500', 'สูง':'#FF4B4B'})
+        fig_pie = px.pie(
+            risk_counts,
+            values='จำนวน',
+            names='ระดับความเสี่ยง',
+            color='ระดับความเสี่ยง',
+            color_discrete_map={'ต่ำ': '#4CAF50', 'กลาง': '#FFA500', 'สูง': '#FF4B4B'},
+            hole=0.4
+        )
+        fig_pie.update_layout(title_text="สัดส่วนระดับความเสี่ยง")
         st.plotly_chart(fig_pie, use_container_width=True)
-        
+
     with col_b:
         st.subheader("📈 ความสัมพันธ์ อายุ vs คะแนน (Seaborn)")
         fig_scatter, ax = plt.subplots(figsize=(8, 5))
-        sns.scatterplot(data=df, x='age', y='score', hue='risk', palette={'ต่ำ':'green', 'กลาง':'orange', 'สูง':'red'}, s=100, ax=ax)
-        ax.set_title("Scatter Plot: Age vs Risk Score")
+        palette = {'ต่ำ': 'green', 'กลาง': 'orange', 'สูง': 'red'}
+        sns.scatterplot(
+            data=df,
+            x='age',
+            y='score',
+            hue='risk',
+            palette=palette,
+            s=100,
+            ax=ax
+        )
+        ax.set_title("Scatter Plot: Age vs Risk Score", fontsize=14)
+        ax.set_xlabel("อายุ (ปี)")
+        ax.set_ylabel("คะแนนความเสี่ยง")
         st.pyplot(fig_scatter)
 
-    st.subheader(" คะแนนความเสี่ยงในแต่ละครั้ง (Matplotlib)")
+    st.subheader(" คะแนนความเสี่ยงในแต่ละครั้ง (Matplotlib Bar Chart)")
     fig_bar, ax2 = plt.subplots(figsize=(10, 5))
     colors = ['#4CAF50' if r == 'ต่ำ' else ('#FFA500' if r == 'กลาง' else '#FF4B4B') for r in df['risk']]
-    ax2.bar(df['name'], df['score'], color=colors)
-    ax2.set_ylabel("คะแนนความเสี่ยง")
-    ax2.set_title("Bar Chart: Risk Score by Name")
+    ax2.bar(df['name'], df['score'], color=colors, edgecolor='black')
+    ax2.set_ylabel("คะแนนความเสี่ยง", fontsize=12)
+    ax2.set_title("Bar Chart: Risk Score by Name", fontsize=14)
+    ax2.set_ylim(0, max(df['score']) + 10)
     st.pyplot(fig_bar)
 
-# ==================== หน้าที่ 4: AI ทำนายผล ====================
+    st.subheader(" การกระจายตัวของคะแนน (Plotly Histogram)")
+    fig_hist = px.histogram(
+        df,
+        x='score',
+        color='risk',
+        color_discrete_map={'ต่ำ': '#4CAF50', 'กลาง': '#FFA500', 'สูง': '#FF4B4B'},
+        nbins=10,
+        title="การกระจายตัวของคะแนนความเสี่ยง"
+    )
+    st.plotly_chart(fig_hist, use_container_width=True)
+
+# ==================== หน้าที่ 5: AI ทำนายผล ====================
 elif menu == "🤖 AI ทำนายผล":
     st.markdown('<div class="main-header"><h1>🤖 ระบบ Machine Learning (Scikit-Learn)</h1></div>', unsafe_allow_html=True)
-    
+
     st.subheader("🧠 โมเดล Random Forest Classifier")
     st.write("ระบบจะฝึก AI จากข้อมูลเพื่อทำนายระดับความเสี่ยงจาก **อายุ** และ **คะแนนอาการ**")
-    
-    # ข้อมูลสำหรับฝึก AI (รวมข้อมูลจริง + ข้อมูลจำลอง)
-    X_data = [[70, 15], [75, 45], [80, 65], [68, 10], [82, 55], [65, 5], [90, 80], [72, 25]]
-    y_data = [0, 1, 2, 0, 2, 0, 2, 1] # 0=ต่ำ, 1=กลาง, 2=สูง
-    
+
+    # ข้อมูลสำหรับฝึก AI
+    X_data = [
+        [65, 10], [70, 15], [68, 12], [72, 18], [66, 8],
+        [75, 45], [78, 50], [73, 40], [76, 48], [74, 42],
+        [80, 65], [82, 70], [85, 75], [79, 60], [88, 80],
+        [67, 14], [71, 20], [69, 16], [77, 52], [81, 62]
+    ]
+    y_data = [
+        0, 0, 0, 0, 0,
+        1, 1, 1, 1, 1,
+        2, 2, 2, 2, 2,
+        0, 1, 0, 1, 2
+    ]
+
     X = np.array(X_data)
     y = np.array(y_data)
-    
+
+    # แบ่งข้อมูล train/test
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
     # ฝึกโมเดล
-    model = RandomForestClassifier(n_estimators=10, random_state=42)
-    model.fit(X, y)
-    
-    st.success("✅ ฝึกโมเดลเสร็จสิ้น! (Accuracy: 100% บนข้อมูลฝึก)")
-    
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
+
+    # ทดสอบโมเดล
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+
+    st.success(f"✅ ฝึกโมเดลเสร็จสิ้น! (Accuracy: {accuracy*100:.1f}%)")
+
     st.markdown("---")
-    st.subheader("🔮 ทดสอบทำนายผล")
+    st.subheader(" ทดสอบทำนายผล")
     col1, col2 = st.columns(2)
     with col1:
         age_input = st.number_input("ใส่อายุ (ปี)", 60, 100, 70)
     with col2:
         score_input = st.number_input("ใส่คะแนนอาการ", 0, 100, 20)
-        
+
     if st.button(" ให้ AI ทำนายผล", type="primary"):
         prediction = model.predict([[age_input, score_input]])
         proba = model.predict_proba([[age_input, score_input]])[0]
-        
+
         result_map = {0: "✅ ความเสี่ยงต่ำ", 1: "⚠️ ความเสี่ยงกลาง", 2: "🚨 ความเสี่ยงสูง"}
         color_map = {0: "green", 1: "orange", 2: "red"}
-        
+
         st.markdown(f'<div style="background-color: {color_map[prediction[0]]}; color: white; padding: 20px; border-radius: 10px; text-align: center;"><h2>AI ทำนายผล: {result_map[prediction[0]]}</h2></div>', unsafe_allow_html=True)
-        
+
         st.write("**ความน่าจะเป็นของแต่ละระดับ:**")
         proba_df = pd.DataFrame({
             'ระดับ': ['ต่ำ', 'กลาง', 'สูง'],
@@ -255,30 +555,90 @@ elif menu == "🤖 AI ทำนายผล":
         })
         st.dataframe(proba_df, use_container_width=True)
 
-# ==================== หน้าที่ 5: เกี่ยวกับระบบ ====================
+        # แสดงกราฟความน่าจะเป็น
+        fig_proba = go.Figure(data=[
+            go.Bar(
+                x=['ต่ำ', 'กลาง', 'สูง'],
+                y=proba * 100,
+                marker_color=['green', 'orange', 'red']
+            )
+        ])
+        fig_proba.update_layout(
+            title="ความน่าจะเป็นของแต่ละระดับความเสี่ยง",
+            xaxis_title="ระดับความเสี่ยง",
+            yaxis_title="ความน่าจะเป็น (%)"
+        )
+        st.plotly_chart(fig_proba, use_container_width=True)
+
+    st.markdown("---")
+    st.subheader(" Feature Importance")
+    feature_names = ['อายุ', 'คะแนนอาการ']
+    importances = model.feature_importances_
+
+    fig_imp = go.Figure(data=[
+        go.Bar(
+            x=feature_names,
+            y=importances,
+            marker_color=['#2E86AB', '#A23B72']
+        )
+    ])
+    fig_imp.update_layout(
+        title="ความสำคัญของฟีเจอร์ (Feature Importance)",
+        xaxis_title="ฟีเจอร์",
+        yaxis_title="Importance Score"
+    )
+    st.plotly_chart(fig_imp, use_container_width=True)
+
+# ==================== หน้าที่ 6: เกี่ยวกับระบบ ====================
 elif menu == "ℹ️ เกี่ยวกับระบบ":
     st.markdown('<div class="main-header"><h1>ℹ️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
-    
+
     st.markdown("""
     ### 🎓 ข้อมูลโปรเจกต์
     - **ชื่อโปรเจกต์:** ระบบประเมินการตัดสินใจไปพบแพทย์ของผู้สูงอายุ
     - **ประเภท:** โปรเจกต์ปี 4 (Senior Project)
     - **เทคโนโลยี:** Python, Streamlit, Pandas, Scikit-learn, Plotly, Matplotlib, Seaborn
-    
+    - **กลุ่มเป้าหมาย:** ผู้สูงอายุ 60 ปีขึ้นไป และผู้ดูแล
+
     ### 🎯 วัตถุประสงค์
     1. ช่วยผู้สูงอายุและผู้ดูแลตัดสินใจว่าควรไปพบแพทย์หรือไม่
     2. นำเทคโนโลยี Machine Learning มาช่วยทำนายความเสี่ยง
     3. แสดงผลสถิติผ่าน Data Visualization ที่เข้าใจง่าย
-    
+    4. บันทึกประวัติการประเมินเพื่อติดตามอาการ
+
+    ### 🔬 เกณฑ์การประเมิน
+    ระบบใช้เกณฑ์คะแนนถ่วงน้ำหนัก (Weighted Scoring) โดยแบ่งอาการเป็น 3 ระดับ:
+
+    **อาการฉุกเฉิน** (25-40 คะแนน)
+    - เจ็บหน้าอก, หายใจไม่ออก, หมดสติ
+    - แขนขาอ่อนแรง, พูดไม่ชัด
+    - เลือดออกไม่หยุด, ชัก
+
+    **อาการที่ต้องเฝ้าระวัง** (10-25 คะแนน)
+    - ไข้สูง, เวียนศีรษะรุนแรง
+    - ความดันสูง, น้ำตาลผิดปกติ
+    - ใจสั่น, ปวดท้องรุนแรง
+
+    **อาการทั่วไป** (3-8 คะแนน)
+    - ปวดเมื่อย, นอนไม่หลับ
+    - ไอ, เจ็บคอ, ปวดหลัง
+
+    ### 🤖 ระบบ AI
+    - ใช้ **Random Forest Classifier** จาก Scikit-Learn
+    - ฝึกด้วยข้อมูลอายุและคะแนนอาการ
+    - ทำนายระดับความเสี่ยง 3 ระดับ
+
     ### ⚠️ ข้อจำกัด
     - ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้
     - เป็นเพียงเครื่องมือช่วยตัดสินใจเบื้องต้น
-    
-    ### 📞 ติดต่อฉุกเฉิน
+    - ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์เสมอ
+
+    ###  ติดต่อฉุกเฉิน
     - **1669** - เจ็บป่วยฉุกเฉิน
     - **1556** - ผู้สูงอายุ
+    - **1323** - สุขภาพจิต
     """)
 
 # ==================== Footer ====================
 st.markdown("---")
-st.markdown("<div style='text-align: center; color: gray;'><p> ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ | โปรเจกต์ปี 4 | พัฒนาด้วย Streamlit</p></div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; color: gray; padding: 20px;'><p>🏥 ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ | โปรเจกต์ปี 4 | พัฒนาด้วย Streamlit</p></div>", unsafe_allow_html=True)
