@@ -281,4 +281,4 @@ elif menu == "ℹ️ เกี่ยวกับระบบ":
 
 # ==================== Footer ====================
 st.markdown("---")
-st.markdown("<div style='text-align: center; color: gray;'><p> ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ | โปรเจกต์ปี 4 | พัฒนาด้วย Streamlit</p></div>", unsafe_allow_html=True)43
+st.markdown("<div style='text-align: center; color: gray;'><p> ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ | โปรเจกต์ปี 4 | พัฒนาด้วย Streamlit</p></div>", unsafe_allow_html=True)
