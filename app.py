@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score
 from datetime import datetime
 import warnings
 import os
@@ -14,18 +14,16 @@ import requests
 warnings.filterwarnings('ignore')
 
 # ==================== ตั้งค่า Line Notify ====================
-# ไปสร้าง Token ที่: https://notify-bot.line.me/th/
-LINE_NOTIFY_TOKEN = "ใส่_TOKEN_ของคุณที่นี่" # ตัวอย่าง: "AbCdEfGhIjKlMnOpQrStUvWxYz123456"
+LINE_NOTIFY_TOKEN = "ใส่_TOKEN_ของคุณที่นี่" 
 
 def send_line_notify(message):
-    """ส่งข้อความแจ้งเตือนทาง LINE"""
     if LINE_NOTIFY_TOKEN == "ใส่_TOKEN_ของคุณที่นี่":
-        return # ข้ามถ้ายังไม่ได้ใส่ Token
+        return
     headers = {"Authorization": f"Bearer {LINE_NOTIFY_TOKEN}"}
     data = {"message": message}
     try:
         requests.post("https://notify-api.line.me/api/notify", headers=headers, data=data)
-    except Exception as e:
+    except Exception:
         pass
 
 # ==================== ตั้งค่าไฟล์เก็บข้อมูล ====================
@@ -50,7 +48,7 @@ def get_data_count():
 
 # ==================== ตั้งค่าหน้าเว็บ ====================
 st.set_page_config(
-    page_title="ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ",
+    page_title="ระบบประเมินสุขภาพ (วัยกลางคนและผู้สูงอายุ 40+)",
     page_icon="🏥",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -59,15 +57,7 @@ st.set_page_config(
 # ==================== CSS ตกแต่ง ====================
 st.markdown("""
 <style>
-    .main-header {
-        background: linear-gradient(90deg, #2E86AB, #A23B72);
-        padding: 25px;
-        border-radius: 15px;
-        color: white;
-        text-align: center;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
+    .main-header { background: linear-gradient(90deg, #2E86AB, #A23B72); padding: 25px; border-radius: 15px; color: white; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     .risk-high { background: linear-gradient(135deg, #FF4B4B, #FF0000); color: white; padding: 20px; border-radius: 15px; text-align: center; animation: pulse 2s; }
     .risk-medium { background: linear-gradient(135deg, #FFA500, #FF8C00); color: white; padding: 20px; border-radius: 15px; text-align: center; }
     .risk-low { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 20px; border-radius: 15px; text-align: center; }
@@ -93,14 +83,13 @@ SYMPTOMS_DATA = {
     }
 }
 
-CHRONIC_DISEASES = ["เบาหวาน", "ความดันโลหิตสูง", "โรคหัวใจ", "โรคไต", "โรคปอด", "โรคหลอดเลือดสมอง", "ไม่มี"]
+CHRONIC_DISEASES = ["เบาหวาน", "ความดันโลหิตสูง", "โรคหัวใจ", "โรคไต", "โรคปอด", "โรคหลอดเลือดสมอง", "ไขมันในเลือดสูง", "ไม่มี"]
 
 # ==================== Sidebar ====================
 with st.sidebar:
     st.title("📋 เมนูหลัก")
     
-    # ฟีเจอร์ปีที่ 4: โหมดผู้สูงอายุ
-    elderly_mode = st.checkbox("👓 โหมดตัวหนังสือใหญ่ (สำหรับผู้สูงอายุ)")
+    elderly_mode = st.checkbox("👓 โหมดตัวหนังสือใหญ่")
     if elderly_mode:
         st.markdown("<style> html { font-size: 125% !important; } .stTextInput > div > div > input, .stSelectbox > div > div > select { font-size: 1.2rem !important; } </style>", unsafe_allow_html=True)
     
@@ -112,11 +101,11 @@ with st.sidebar:
 
 # ==================== หน้าที่ 1: หน้าหลัก ====================
 if menu == "🏠 หน้าหลัก":
-    st.markdown('<div class="main-header"><h1>🏥 ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ</h1><h3>Elderly Medical Decision Support System</h3></div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header"><h1>🏥 ระบบประเมินการไปพบแพทย์</h1><h3>สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</h3></div>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     with col1: st.metric("📋 จำนวนการประเมิน", get_data_count())
-    with col2: st.metric("👴 กลุ่มเป้าหมาย", "60+ ปี")
+    with col2: st.metric("👥 กลุ่มเป้าหมาย", "40+ ปี")
     with col3: st.metric("⚕️ ระดับความเสี่ยง", "3 ระดับ")
     
     st.markdown("### 💾 การจัดเก็บข้อมูล")
@@ -135,7 +124,7 @@ elif menu == "🩺 ประเมินอาการ":
     with st.form("assessment_form"):
         col1, col2, col3 = st.columns(3)
         with col1: name = st.text_input("ชื่อ-นามสกุล *", placeholder="กรอกชื่อ")
-        with col2: age = st.number_input("อายุ (ปี) *", 60, 120, 65)
+        with col2: age = st.number_input("อายุ (ปี) *", min_value=40, max_value=120, value=45) # ปรับเป็น 40
         with col3: gender = st.selectbox("เพศ *", ["ชาย", "หญิง", "ไม่ระบุ"])
 
         chronic = st.multiselect("🏥 โรคประจำตัว", CHRONIC_DISEASES)
@@ -161,11 +150,18 @@ elif menu == "🩺 ประเมินอาการ":
         if not name or not selected_symptoms:
             st.error("⚠️ กรุณากรอกชื่อและเลือกอาการ")
         else:
-            # คำนวณคะแนน (Weighted Scoring)
+            # คำนวณคะแนน (ปรับ Logic ให้เหมาะกับ 40+)
             risk_multiplier = 1.0
-            if age >= 75: risk_multiplier += 0.3
-            elif age >= 70: risk_multiplier += 0.2
-            if "โรคหัวใจ" in chronic or "โรคหลอดเลือดสมอง" in chronic: risk_multiplier += 0.3
+            if age >= 70: 
+                risk_multiplier += 0.3
+            elif age >= 60: 
+                risk_multiplier += 0.2
+            elif age >= 50: 
+                risk_multiplier += 0.1
+            # อายุ 40-49 เป็นฐาน 1.0
+            
+            if "โรคหัวใจ" in chronic or "โรคหลอดเลือดสมอง" in chronic: 
+                risk_multiplier += 0.3
             
             final_score = int(total_score * risk_multiplier)
             
@@ -174,7 +170,6 @@ elif menu == "🩺 ประเมินอาการ":
                 risk_level, risk_class = "สูง", "risk-high"
                 st.markdown(f'<div class="{risk_class}"><h2>🚨 ความเสี่ยงสูง! ไปพบแพทย์ทันที</h2></div>', unsafe_allow_html=True)
                 
-                # ส่ง Line Notify
                 line_msg = f"🚨 แจ้งเตือนฉุกเฉิน!\nชื่อ: {name}\nอายุ: {age} ปี\nคะแนนความเสี่ยง: {final_score}\nอาการ: {', '.join(selected_symptoms)}\nกรุณาตรวจสอบทันที!"
                 send_line_notify(line_msg)
                 
@@ -185,7 +180,7 @@ elif menu == "🩺 ประเมินอาการ":
                 risk_level, risk_class = "ต่ำ", "risk-low"
                 st.markdown(f'<div class="{risk_class}"><h2>✅ ความเสี่ยงต่ำ ดูแลตัวเองได้</h2></div>', unsafe_allow_html=True)
             
-            st.write(f"**คะแนนรวม:** {final_score} (ตัวคูณ {risk_multiplier}x) | **อาการ:** {', '.join(selected_symptoms)}")
+            st.write(f"**คะแนนรวม:** {final_score} (ตัวคูณความเสี่ยง {risk_multiplier}x) | **อาการ:** {', '.join(selected_symptoms)}")
             
             # บันทึกข้อมูล
             record = {
@@ -209,7 +204,6 @@ elif menu == "📊 ประวัติการประเมิน":
         st.success(f"✅ พบข้อมูลการประเมิน **{len(df)} รายการ**")
         st.dataframe(df.sort_values(by='date', ascending=False), use_container_width=True)
         
-        # ปุ่มดาวน์โหลด (สำคัญมากสำหรับ Streamlit Cloud)
         csv = df.to_csv(index=False).encode('utf-8-sig')
         st.download_button(
             label="📥 ดาวน์โหลดไฟล์ CSV (สำรองข้อมูล)",
@@ -230,15 +224,14 @@ elif menu == "📈 สถิติและกราฟ":
 
     df = load_data()
     
-    # ถ้าไม่มีข้อมูลจริง ให้สร้าง Dummy Data ที่สมจริงตาม Logic ระบบ
     if df.empty:
         st.info("💡 สร้างข้อมูลจำลองเพื่อแสดงตัวอย่างกราฟ (กรุณาประเมินอาการจริงเพื่อดูข้อมูลของคุณ)")
         dummy_data = [
-            {"date": "22/08/2026 10:00", "name": "สมชาย ใจดี", "age": 70, "gender": "ชาย", "chronic": "ความดันโลหิตสูง", "score": 15, "risk": "ต่ำ", "symptoms": "ปวดเมื่อยตามตัว"},
-            {"date": "22/08/2026 11:30", "name": "สมหญิง รักเรียน", "age": 75, "gender": "หญิง", "chronic": "เบาหวาน, ความดันโลหิตสูง", "score": 45, "risk": "กลาง", "symptoms": "เวียนศีรษะรุนแรง, ระดับน้ำตาลผิดปกติ"},
-            {"date": "22/08/2026 13:00", "name": "วิชัย ชาญชัย", "age": 80, "gender": "ชาย", "chronic": "โรคหัวใจ", "score": 65, "risk": "สูง", "symptoms": "เจ็บหน้าอก/แน่นหน้าอก, หายใจไม่ออก/หายใจลำบาก"},
-            {"date": "22/08/2026 14:15", "name": "มาลี มีสุข", "age": 68, "gender": "หญิง", "chronic": "ไม่มี", "score": 10, "risk": "ต่ำ", "symptoms": "ไอ/เจ็บคอ"},
-            {"date": "22/08/2026 15:30", "name": "ประเสริฐ สุขใจ", "age": 82, "gender": "ชาย", "chronic": "โรคหลอดเลือดสมอง", "score": 55, "risk": "สูง", "symptoms": "พูดไม่ชัด/ปากเบี้ยว"}
+            {"date": "22/08/2026 10:00", "name": "สมชาย ใจดี", "age": 45, "gender": "ชาย", "chronic": "ไม่มี", "score": 15, "risk": "ต่ำ", "symptoms": "ปวดเมื่อยตามตัว"},
+            {"date": "22/08/2026 11:30", "name": "สมหญิง รักเรียน", "age": 55, "gender": "หญิง", "chronic": "ความดันโลหิตสูง", "score": 35, "risk": "กลาง", "symptoms": "เวียนศีรษะรุนแรง"},
+            {"date": "22/08/2026 13:00", "name": "วิชัย ชาญชัย", "age": 68, "gender": "ชาย", "chronic": "โรคหัวใจ, เบาหวาน", "score": 65, "risk": "สูง", "symptoms": "เจ็บหน้าอก/แน่นหน้าอก"},
+            {"date": "22/08/2026 14:15", "name": "มาลี มีสุข", "age": 42, "gender": "หญิง", "chronic": "ไม่มี", "score": 10, "risk": "ต่ำ", "symptoms": "ไอ/เจ็บคอ"},
+            {"date": "22/08/2026 15:30", "name": "ประเสริฐ สุขใจ", "age": 75, "gender": "ชาย", "chronic": "โรคหลอดเลือดสมอง", "score": 55, "risk": "สูง", "symptoms": "พูดไม่ชัด/ปากเบี้ยว"}
         ]
         df = pd.DataFrame(dummy_data)
 
@@ -274,18 +267,22 @@ elif menu == "📈 สถิติและกราฟ":
 elif menu == "🤖 AI ทำนายผล":
     st.markdown('<div class="main-header"><h1>🤖 ระบบ Machine Learning (Scikit-Learn)</h1></div>', unsafe_allow_html=True)
     st.subheader("🧠 โมเดล Random Forest Classifier")
-    st.info("💡 **หมายเหตุทางวิชาการ:** โมเดลนี้ถูกฝึกด้วย Synthetic Dataset (ข้อมูลจำลอง 500 รายการ) ที่สร้างขึ้นจาก Logic การให้คะแนนทางการแพทย์ของระบบนี้โดยตรง เพื่อให้การทำนายของ AI สอดคล้องกับเกณฑ์การประเมินจริง")
+    st.info("💡 **หมายเหตุทางวิชาการ:** โมเดลนี้ถูกฝึกด้วย Synthetic Dataset (ข้อมูลจำลอง 500 รายการ) ที่สร้างขึ้นจาก Logic การให้คะแนนทางการแพทย์ของระบบนี้โดยตรง (ช่วงอายุ 40-90 ปี) เพื่อให้การทำนายของ AI สอดคล้องกับเกณฑ์การประเมินจริง")
 
-    # สร้างข้อมูลจำลอง 500 รายการที่สอดคล้องกับ Logic ของเรา (Academic Sound)
+    # สร้างข้อมูลจำลอง 500 รายการ (ปรับช่วงอายุเป็น 40-90)
     np.random.seed(42)
-    ages_sim = np.random.randint(60, 100, 500)
-    scores_sim = np.random.randint(5, 80, 500) + (ages_sim - 60) * 0.5 
+    ages_sim = np.random.randint(40, 90, 500)
+    scores_sim = np.random.randint(5, 80, 500) + (ages_sim - 40) * 0.3 
     X_sim = np.column_stack((ages_sim, scores_sim))
 
     y_sim = []
     for age, score in X_sim:
-        multiplier = 1.0 + (0.3 if age >= 75 else (0.2 if age >= 70 else 0.1))
-        # สมมติว่ามีโรคหัวใจ 30% ของข้อมูลเพื่อเพิ่มความสมจริง
+        # Logic การคูณต้องตรงกับหน้าประเมินอาการเป๊ะๆ
+        multiplier = 1.0
+        if age >= 70: multiplier += 0.3
+        elif age >= 60: multiplier += 0.2
+        elif age >= 50: multiplier += 0.1
+        
         has_heart_disease = np.random.choice([True, False], p=[0.3, 0.7])
         if has_heart_disease: multiplier += 0.3
         
@@ -309,12 +306,15 @@ elif menu == "🤖 AI ทำนายผล":
     st.markdown("---")
     st.subheader("🔮 ทดสอบทำนายผล")
     col1, col2 = st.columns(2)
-    with col1: age_input = st.number_input("ใส่อายุ (ปี)", 60, 100, 70)
+    with col1: age_input = st.number_input("ใส่อายุ (ปี)", 40, 100, 45)
     with col2: score_input = st.number_input("ใส่คะแนนอาการดิบ", 0, 100, 20)
 
     if st.button("🤖 ให้ AI ทำนายผล", type="primary"):
-        # คำนวณคะแนนขั้นสุดท้ายก่อนส่งเข้าโมเดล (เพื่อให้สอดคล้องกับระบบ)
-        multiplier = 1.0 + (0.3 if age_input >= 75 else (0.2 if age_input >= 70 else 0.1))
+        multiplier = 1.0
+        if age_input >= 70: multiplier += 0.3
+        elif age_input >= 60: multiplier += 0.2
+        elif age_input >= 50: multiplier += 0.1
+        
         final_score_input = int(score_input * multiplier)
         
         prediction = model.predict([[age_input, final_score_input]])
@@ -345,7 +345,7 @@ elif menu == "ℹ️ เกี่ยวกับระบบ":
     st.markdown('<div class="main-header"><h1>ℹ️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
     st.markdown("""
     ### 🎓 โปรเจกต์ปี 4 (Senior Project)
-    **ระบบประเมินการตัดสินใจไปพบแพทย์ของผู้สูงอายุ**
+    **ระบบประเมินการตัดสินใจไปพบแพทย์สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)**
     
     ### 🛠️ เทคโนโลยีที่ใช้
     - **Frontend:** Streamlit (Python)
@@ -355,9 +355,9 @@ elif menu == "ℹ️ เกี่ยวกับระบบ":
     - **Integration:** Line Notify API
     
     ### 🎯 วัตถุประสงค์
-    1. ช่วยผู้สูงอายุและผู้ดูแลตัดสินใจว่าควรไปพบแพทย์หรือไม่
-    2. นำเทคโนโลยี Machine Learning มาช่วยทำนายความเสี่ยง
-    3. ออกแบบ UI/UX ที่เหมาะสมกับผู้สูงอายุ (Accessibility)
+    1. ช่วยกลุ่มวัยกลางคน (40+) และผู้สูงอายุ ตัดสินใจว่าควรไปพบแพทย์หรือไม่
+    2. เน้นการป้องกันและเฝ้าระวังโรคไม่ติดต่อเรื้อรัง (NCDs) ตั้งแต่เนิ่นๆ
+    3. ออกแบบ UI/UX ที่เหมาะสม (Accessibility)
     
     ### ⚠️ ข้อจำกัด
     ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น **ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้**
@@ -365,4 +365,4 @@ elif menu == "ℹ️ เกี่ยวกับระบบ":
 
 # ==================== Footer ====================
 st.markdown("---")
-st.markdown("<div style='text-align: center; color: gray; padding: 20px;'><p>🏥 ระบบประเมินการไปพบแพทย์ของผู้สูงอายุ | โปรเจกต์ปี 4 | พัฒนาด้วย Streamlit</p></div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; color: gray; padding: 20px;'><p>🏥 ระบบประเมินสุขภาพ (40+ ปี) | โปรเจกต์ปี 4 | พัฒนาด้วย Streamlit</p></div>", unsafe_allow_html=True)
