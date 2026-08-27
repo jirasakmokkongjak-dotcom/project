@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from datetime import datetime
 import warnings
 import os
@@ -146,13 +149,13 @@ with st.sidebar:
     
     st.markdown("---")
     
-    elderly_mode = st.checkbox("👓 โหมดตัวหนังสือใหญ่")
+    elderly_mode = st.checkbox(" โหมดตัวหนังสือใหญ่")
     if elderly_mode:
         st.markdown("<style> html { font-size: 125% !important; } </style>", unsafe_allow_html=True)
     
     menu = st.radio(
         "เมนูหลัก",
-        ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "ℹ️ เกี่ยวกับ"],
+        ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "🤖 AI ทำนายผล", "ℹ️ เกี่ยวกับ"],
         index=1
     )
     
@@ -176,7 +179,7 @@ if menu == "🏠 หน้าหลัก":
         <h1>🏥 ระบบประเมินสุขภาพส่วนตัว</h1>
         <h3>สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</h3>
         <p style="font-size: 1.1rem; margin-top: 20px; opacity: 0.9;">
-            ประเมินอาการด้วยตัวเอง • บันทึกข้อมูลส่วนตัว • ติดตามผลสุขภาพ
+            ประเมินอาการด้วยตัวเอง • บันทึกข้อมูลส่วนตัว • ปรึกษา AI
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -199,7 +202,7 @@ if menu == "🏠 หน้าหลัก":
     with col3:
         st.markdown("""
         <div class="metric-card">
-            <h3>🔒 ปลอดภัย</h3>
+            <h3> ปลอดภัย</h3>
             <p>เก็บในเครื่องคุณ</p>
         </div>
         """, unsafe_allow_html=True)
@@ -210,6 +213,7 @@ if menu == "🏠 หน้าหลัก":
     with col_a:
         st.info("""
         **1. ประเมินอาการ**
+        
         - กรอกข้อมูลส่วนตัว
         - เลือกอาการที่เป็น
         - ระบบคำนวณความเสี่ยง
@@ -217,6 +221,7 @@ if menu == "🏠 หน้าหลัก":
     with col_b:
         st.info("""
         **2. บันทึกข้อมูล**
+        
         - ข้อมูลจะถูกบันทึกอัตโนมัติ
         - เก็บเป็นไฟล์ CSV
         - เปิดดูใน Excel ได้
@@ -224,6 +229,7 @@ if menu == "🏠 หน้าหลัก":
     with col_c:
         st.info("""
         **3. ดูประวัติ**
+        
         - ดูผลการประเมินย้อนหลัง
         - เปรียบเทียบผลลัพธ์
         - ดาวน์โหลดข้อมูล
@@ -231,9 +237,9 @@ if menu == "🏠 หน้าหลัก":
     
     st.markdown("""
     <div class="info-box" style="margin-top: 30px;">
-        <b>💾 ข้อมูลของคุณ:</b> ระบบจะบันทึกข้อมูลการประเมินทั้งหมดลงในไฟล์ <code>assessment_data.csv</code> 
+        <b> ข้อมูลของคุณ:</b> ระบบจะบันทึกข้อมูลการประเมินทั้งหมดลงในไฟล์ <code>assessment_data.csv</code> 
         ในโฟลเดอร์เดียวกับแอปนี้ คุณสามารถเปิดดู แก้ไข หรือสำรองข้อมูลได้ตลอดเวลา<br>
-        <b>⚠️ หมายเหตุ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b>
+        <b>️ หมายเหตุ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b>
     </div>
     """, unsafe_allow_html=True)
 
@@ -265,7 +271,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
             bs = st.number_input("ระดับน้ำตาลในเลือด (mg/dL)", min_value=0, max_value=600, value=100, help="ระดับน้ำตาลในเลือด")
         
         st.markdown('<h3 class="section-title">🤒 อาการที่คุณกำลังประสบอยู่ (เลือกเอง)</h3>', unsafe_allow_html=True)
-        st.info("💡 **คำแนะนำ:** เลือกอาการที่คุณกำลังเป็นอยู่ในขณะนี้ สามารถเลือกได้มากกว่า 1 อาการ")
+        st.info(" **คำแนะนำ:** เลือกอาการที่คุณกำลังเป็นอยู่ในขณะนี้ สามารถเลือกได้มากกว่า 1 อาการ")
         
         total_score = 0
         selected_symptoms = []
@@ -321,7 +327,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
             # ตัดสินผล
             if final_score >= 50 or len(emergency_symptoms) > 0:
                 risk_level, risk_class = "สูง", "risk-high"
-                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">🚨 ความเสี่ยงสูง!</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">กรุณาไปพบแพทย์ทันที</p></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;"> ความเสี่ยงสูง!</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">กรุณาไปพบแพทย์ทันที</p></div>', unsafe_allow_html=True)
                 
                 # ส่ง Line Notify
                 line_msg = f"🚨 แจ้งเตือนฉุกเฉิน!\nชื่อ: {name}\nอายุ: {age} ปี\nคะแนน: {final_score}\nอาการ: {', '.join(selected_symptoms)}"
@@ -385,11 +391,11 @@ elif menu == "🩺 ประเมินอาการใหม่":
             save_to_csv(record)
             
             st.success(f"✅ บันทึกผลการประเมินเรียบร้อยแล้ว! (รวม {get_data_count()} รายการ)")
-            st.info("💾 ข้อมูลของคุณถูกบันทึกในไฟล์ assessment_data.csv แล้ว")
+            st.info(" ข้อมูลของคุณถูกบันทึกในไฟล์ assessment_data.csv แล้ว")
 
 # ==================== หน้าที่ 3: ประวัติการประเมินของฉัน ====================
 elif menu == "📋 ประวัติการประเมินของฉัน":
-    st.markdown('<div class="page-header"><h1>📋 ประวัติการประเมินของคุณ</h1></div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-header"><h1> ประวัติการประเมินของคุณ</h1></div>', unsafe_allow_html=True)
     
     df = load_data()
     
@@ -404,7 +410,7 @@ elif menu == "📋 ประวัติการประเมินของ�
         st.success(f"✅ พบข้อมูลการประเมิน **{len(df)} รายการ** ของคุณ")
         
         # แสดงตัวเลือกการจัดการ
-        tab1, tab2, tab3 = st.tabs(["👁️ ดูข้อมูล", "✏️ แก้ไข/ลบ", "📥 ดาวน์โหลด"])
+        tab1, tab2, tab3 = st.tabs([" ดูข้อมูล", "✏️ แก้ไข/ลบ", "📥 ดาวน์โหลด"])
         
         with tab1:
             st.markdown("### 📄 ตารางข้อมูลการประเมินทั้งหมด")
@@ -450,7 +456,7 @@ elif menu == "📋 ประวัติการประเมินของ�
                 
                 col1, col2 = st.columns(2)
                 with col1:
-                    if st.button("🗑️ ลบรายการนี้", type="secondary"):
+                    if st.button("️ ลบรายการนี้", type="secondary"):
                         if delete_record(edit_index):
                             st.success("✅ ลบข้อมูลเรียบร้อยแล้ว!")
                             st.rerun()
@@ -463,7 +469,7 @@ elif menu == "📋 ประวัติการประเมินของ�
                         ["ต่ำ", "กลาง", "สูง"],
                         index=["ต่ำ", "กลาง", "สูง"].index(df.iloc[edit_index]['risk'])
                     )
-                    if st.button("💾 บันทึกการแก้ไข"):
+                    if st.button(" บันทึกการแก้ไข"):
                         update_record(edit_index, {'risk': new_risk})
                         st.success("✅ อัปเดตข้อมูลเรียบร้อยแล้ว!")
                         st.rerun()
@@ -474,7 +480,7 @@ elif menu == "📋 ประวัติการประเมินของ�
             st.markdown("### 📥 ดาวน์โหลดข้อมูลของคุณ")
             csv = df.to_csv(index=False).encode('utf-8-sig')
             st.download_button(
-                label="📥 ดาวน์โหลดไฟล์ CSV",
+                label=" ดาวน์โหลดไฟล์ CSV",
                 data=csv,
                 file_name=f'my_health_data_{datetime.now().strftime("%Y%m%d_%H%M")}.csv',
                 mime='text/csv',
@@ -529,7 +535,7 @@ elif menu == "📊 สถิติส่วนตัว":
             avg_score = df['score'].mean()
             st.markdown(f"""
             <div class="metric-card">
-                <h3>📈 {avg_score:.1f}</h3>
+                <h3> {avg_score:.1f}</h3>
                 <p>คะแนนเฉลี่ย</p>
             </div>
             """, unsafe_allow_html=True)
@@ -576,8 +582,68 @@ elif menu == "📊 สถิติส่วนตัว":
         )
         st.plotly_chart(fig_scatter, use_container_width=True)
 
-# ==================== หน้าที่ 5: เกี่ยวกับ ====================
-elif menu == "ℹ️ เกี่ยวกับ":
+# ==================== หน้าที่ 5: AI ทำนายผล ====================
+elif menu == "🤖 AI ทำนายผล":
+    st.markdown('<div class="page-header"><h1>🤖 ระบบ AI ทำนายผล</h1></div>', unsafe_allow_html=True)
+    st.subheader("🧠 โมเดล Random Forest Classifier")
+    st.info("💡 โมเดลนี้ถูกฝึกด้วยข้อมูลจำลอง 500 รายการ ที่สร้างจากเกณฑ์การประเมิน NCDs")
+
+    np.random.seed(42)
+    ages_sim = np.random.randint(40, 90, 500)
+    scores_sim = np.random.randint(5, 80, 500) + (ages_sim - 40) * 0.3 
+    X_sim = np.column_stack((ages_sim, scores_sim))
+
+    y_sim = []
+    for age, score in X_sim:
+        multiplier = 1.0
+        if age >= 70: multiplier += 0.3
+        elif age >= 60: multiplier += 0.2
+        elif age >= 50: multiplier += 0.1
+        
+        has_heart = np.random.choice([True, False], p=[0.2, 0.8])
+        if has_heart: multiplier += 0.3
+        
+        final_score = int(score * multiplier)
+        if final_score >= 50: y_sim.append(2)
+        elif final_score >= 20: y_sim.append(1)
+        else: y_sim.append(0)
+    y_sim = np.array(y_sim)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_sim, y_sim, test_size=0.2, random_state=42)
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
+    accuracy = accuracy_score(y_test, model.predict(X_test))
+    st.success(f"✅ ฝึกโมเดลเสร็จสิ้น! (Accuracy: {accuracy*100:.1f}%)")
+
+    st.markdown("---")
+    st.markdown('<h3 class="section-title"> ทดสอบทำนายผล</h3>', unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    with col1: age_input = st.number_input("อายุ (ปี)", 40, 100, 45)
+    with col2: score_input = st.number_input("คะแนนอาการดิบ", 0, 100, 20)
+
+    if st.button(" ให้ AI ทำนายผล", type="primary"):
+        multiplier = 1.0
+        if age_input >= 70: multiplier += 0.3
+        elif age_input >= 60: multiplier += 0.2
+        elif age_input >= 50: multiplier += 0.1
+        final_score_input = int(score_input * multiplier)
+        
+        prediction = model.predict([[age_input, final_score_input]])
+        proba = model.predict_proba([[age_input, final_score_input]])[0]
+        
+        result_map = {0: "✅ ความเสี่ยงต่ำ", 1: "⚠️ ความเสี่ยงกลาง", 2: "🚨 ความเสี่ยงสูง"}
+        color_map = {0: "#2ed573", 1: "#ffa502", 2: "#ff6b6b"}
+
+        st.markdown(f'<div style="background: linear-gradient(135deg, {color_map[prediction[0]]} 0%, {color_map[prediction[0]]}cc 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.3);"><h2 style="font-size: 2rem; margin: 0;">{result_map[prediction[0]]}</h2><p style="font-size: 1.2rem; margin: 10px 0 0 0;">คะแนนหลังปรับตัวคูณ: {final_score_input}</p></div>', unsafe_allow_html=True)
+        
+        fig_proba = go.Figure(data=[
+            go.Bar(x=['ต่ำ', 'กลาง', 'สูง'], y=proba * 100, marker_color=['#2ed573', '#ffa502', '#ff6b6b'], 
+                   text=[f"{p*100:.1f}%" for p in proba], textposition='auto')
+        ])
+        st.plotly_chart(fig_proba, use_container_width=True)
+
+# ==================== หน้าที่ 6: เกี่ยวกับ ====================
+elif menu == "️ เกี่ยวกับ":
     st.markdown('<div class="page-header"><h1>ℹ️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
     
     st.markdown("""
@@ -593,7 +659,7 @@ elif menu == "ℹ️ เกี่ยวกับ":
     st.markdown("""
     <div class="info-box">
         <b>📁 ไฟล์ข้อมูล:</b> <code>assessment_data.csv</code><br>
-        <b>📍 ตำแหน่ง:</b> โฟลเดอร์เดียวกับแอปนี้<br>
+        <b> ตำแหน่ง:</b> โฟลเดอร์เดียวกับแอปนี้<br>
         <b>🔒 ความเป็นส่วนตัว:</b> ข้อมูลถูกเก็บในเครื่องของคุณเท่านั้น<br>
         <b>📥 การสำรองข้อมูล:</b> สามารถดาวน์โหลดไฟล์ CSV ได้จากหน้า "ประวัติการประเมิน"
     </div>
@@ -601,7 +667,7 @@ elif menu == "ℹ️ เกี่ยวกับ":
     
     st.markdown("""
     <div class="info-box" style="margin-top: 30px;">
-        <b>⚠️ ข้อจำกัดสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
+        <b>️ ข้อจำกัดสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
         <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b> หากมีอาการรุนแรงหรือกังวลใจ 
         ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์โดยตรง
     </div>
@@ -612,6 +678,6 @@ st.markdown("---")
 st.markdown("""
 <div class="footer">
     <p style="margin: 0; font-size: 1.1rem;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) | โปรเจกต์ปี 4</p>
-    <p style="margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.8;">พัฒนาด้วย Streamlit • Python • Data Visualization</p>
+    <p style="margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.8;">พัฒนาด้วย Streamlit • Python • Machine Learning</p>
 </div>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)        
