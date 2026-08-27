@@ -557,7 +557,7 @@ elif menu == "ℹ️ เกี่ยวกับ":
 st.markdown("---")
 st.markdown("""
 <div class="footer">
-    <p style="margin: 0; font-size: 1.1rem;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) | โปรเจกต์ปี 4</p>
+    <p style="margin: 0; font-size: 1.1rem;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) </p>
     <p style="margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.8;">พัฒนาด้วย Streamlit • Python • Data Visualization</p>
 </div>
 """, unsafe_allow_html=True)
