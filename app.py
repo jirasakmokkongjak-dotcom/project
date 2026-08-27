@@ -73,310 +73,24 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ==================== CSS ตกแต่งแบบ Modern UX/UI ====================
+# ==================== CSS ตกแต่ง ====================
 st.markdown("""
 <style>
-    /* ===== Global Styles ===== */
-    .stApp {
-        background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 50%, #80deea 100%);
-        background-attachment: fixed;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    /* ===== Hero Section ===== */
-    .hero-section {
-        background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
-        padding: 50px 40px;
-        border-radius: 20px;
-        color: white;
-        text-align: center;
-        margin-bottom: 40px;
-        box-shadow: 0 15px 50px rgba(0,188,212,0.3);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .hero-section::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: rotate 30s linear infinite;
-    }
-    
-    @keyframes rotate {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    .hero-section h1 {
-        font-size: 2.8rem;
-        font-weight: 800;
-        margin-bottom: 15px;
-        position: relative;
-        z-index: 1;
-        text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-        letter-spacing: 1px;
-    }
-    
-    .hero-section h3 {
-        font-size: 1.4rem;
-        font-weight: 400;
-        opacity: 0.95;
-        position: relative;
-        z-index: 1;
-        margin-top: 10px;
-    }
-    
-    .hero-section p {
-        font-size: 1.1rem;
-        margin-top: 20px;
-        opacity: 0.9;
-        position: relative;
-        z-index: 1;
-    }
-    
-    /* ===== Page Header ===== */
-    .page-header {
-        background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
-        padding: 30px;
-        border-radius: 15px;
-        color: white;
-        text-align: center;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(0,188,212,0.3);
-    }
-    
-    .page-header h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        margin: 0;
-        letter-spacing: 0.5px;
-    }
-    
-    /* ===== Metric Cards ===== */
-    .metric-card {
-        background: rgba(255,255,255,0.95);
-        padding: 30px 25px;
-        border-radius: 20px;
-        text-align: center;
-        box-shadow: 0 8px 32px rgba(0,188,212,0.15);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        border: 2px solid transparent;
-        backdrop-filter: blur(10px);
-    }
-    
-    .metric-card:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 20px 50px rgba(0,188,212,0.3);
-        border-color: #00bcd4;
-    }
-    
-    .metric-card h3 {
-        color: #0097a7;
-        font-size: 2.2rem;
-        font-weight: 800;
-        margin: 15px 0 10px 0;
-    }
-    
-    .metric-card p {
-        color: #555;
-        font-size: 1rem;
-        margin: 0;
-        font-weight: 500;
-    }
-    
-    /* ===== Risk Cards ===== */
-    .risk-high {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-        color: white;
-        padding: 35px;
-        border-radius: 20px;
-        text-align: center;
-        box-shadow: 0 15px 40px rgba(238,90,111,0.4);
-        animation: pulse 2s infinite;
-    }
-    
-    .risk-medium {
-        background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
-        color: white;
-        padding: 35px;
-        border-radius: 20px;
-        text-align: center;
-        box-shadow: 0 15px 40px rgba(251,140,0,0.4);
-    }
-    
-    .risk-low {
-        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
-        color: white;
-        padding: 35px;
-        border-radius: 20px;
-        text-align: center;
-        box-shadow: 0 15px 40px rgba(67,160,71,0.4);
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); box-shadow: 0 15px 40px rgba(238,90,111,0.4); }
-        50% { transform: scale(1.03); box-shadow: 0 20px 50px rgba(238,90,111,0.6); }
-    }
-    
-    /* ===== Info Box ===== */
-    .info-box {
-        background: rgba(255,255,255,0.95);
-        padding: 25px;
-        border-radius: 15px;
-        border-left: 6px solid #00bcd4;
-        box-shadow: 0 5px 20px rgba(0,188,212,0.15);
-        margin: 20px 0;
-        backdrop-filter: blur(10px);
-    }
-    
-    .info-box b {
-        color: #0097a7;
-        font-size: 1.1rem;
-    }
-    
-    /* ===== Section Title ===== */
-    .section-title {
-        color: #0097a7;
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin: 35px 0 20px 0;
-        padding-bottom: 12px;
-        border-bottom: 4px solid #00bcd4;
-        display: inline-block;
-        letter-spacing: 0.5px;
-    }
-    
-    /* ===== Buttons ===== */
-    .stButton>button {
-        background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
-        color: white;
-        border: none;
-        padding: 14px 35px;
-        border-radius: 30px;
-        font-size: 1.05rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 20px rgba(0,188,212,0.4);
-        letter-spacing: 0.5px;
-    }
-    
-    .stButton>button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(0,188,212,0.6);
-    }
-    
-    .stButton>button:active {
-        transform: translateY(-1px);
-    }
-    
-    /* ===== Form Elements ===== */
-    .stTextInput>div>div>input, 
-    .stNumberInput>div>div>input, 
-    .stSelectbox>div>div>select,
-    .stTextArea>div>div>textarea {
-        border-radius: 12px;
-        border: 2px solid #e0e0e0;
-        padding: 12px 15px;
-        transition: all 0.3s ease;
-        background: rgba(255,255,255,0.9);
-    }
-    
-    .stTextInput>div>div>input:focus, 
-    .stNumberInput>div>div>input:focus, 
-    .stSelectbox>div>div>select:focus,
-    .stTextArea>div>div>textarea:focus {
-        border-color: #00bcd4;
-        box-shadow: 0 0 0 4px rgba(0,188,212,0.2);
-        outline: none;
-    }
-    
-    /* ===== Checkbox ===== */
-    .stCheckbox>label {
-        font-size: 1.05rem;
-        font-weight: 500;
-    }
-    
-    /* ===== Expander ===== */
-    .streamlit-expanderHeader {
-        background: rgba(255,255,255,0.9);
-        border-radius: 12px;
-        padding: 15px;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-    
-    /* ===== Footer ===== */
-    .footer {
-        text-align: center;
-        color: white;
-        padding: 35px;
-        margin-top: 60px;
-        background: rgba(0,151,167,0.2);
-        border-radius: 20px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 5px 20px rgba(0,151,167,0.2);
-    }
-    
-    /* ===== Sidebar Enhancement ===== */
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0097a7 0%, #00838f 100%);
-    }
-    
-    /* ===== Tabs ===== */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        background: rgba(255,255,255,0.7);
-        border-radius: 12px 12px 0 0;
-        padding: 12px 24px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    
-    .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        background: white;
-        box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
-    }
-    
-    /* ===== Alert Boxes ===== */
-    .stAlert {
-        border-radius: 12px;
-        padding: 20px;
-        font-size: 1.05rem;
-    }
-    
-    /* ===== Dataframe ===== */
-    .stDataFrame {
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-    
-    /* ===== Scrollbar ===== */
-    ::-webkit-scrollbar {
-        width: 10px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: rgba(0,188,212,0.1);
-        border-radius: 10px;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: #00bcd4;
-        border-radius: 10px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: #0097a7;
-    }
+    .stApp { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-attachment: fixed; }
+    .hero-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 40px; border-radius: 20px; color: white; text-align: center; margin-bottom: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .hero-section h1 { font-size: 3rem; font-weight: 800; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+    .page-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; color: white; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .page-header h1 { font-size: 2.2rem; font-weight: 700; margin: 0; }
+    .metric-card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+    .metric-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+    .metric-card h3 { color: #667eea; font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
+    .risk-high { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 15px 40px rgba(238,90,111,0.4); animation: pulse 2s infinite; }
+    .risk-medium { background: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; }
+    .risk-low { background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+    .info-box { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #667eea; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 20px 0; }
+    .section-title { color: #667eea; font-size: 1.8rem; font-weight: 700; margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 3px solid #667eea; display: inline-block; }
+    .footer { text-align: center; color: white; padding: 30px; margin-top: 50px; background: rgba(0,0,0,0.2); border-radius: 15px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -423,23 +137,22 @@ CHRONIC_DISEASES = [
 # ==================== Sidebar ====================
 with st.sidebar:
     st.markdown("""
-    <div style="text-align: center; padding: 30px 20px; color: white;">
-        <div style="font-size: 4rem; margin-bottom: 15px;">🏥</div>
-        <h2 style="font-size: 1.8rem; margin: 15px 0; font-weight: 700; letter-spacing: 1px;">Health Check</h2>
-        <p style="font-size: 1rem; opacity: 0.9; font-weight: 400;">ระบบประเมินสุขภาพส่วนตัว</p>
-        <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 10px;">สำหรับวัย 40+ ปี</p>
+    <div style="text-align: center; padding: 20px; color: white;">
+        <h2 style="font-size: 2rem; margin: 0;">🏥</h2>
+        <h3 style="font-size: 1.3rem; margin: 10px 0;">Health Check</h3>
+        <p style="font-size: 0.9rem; opacity: 0.9;">ระบบประเมินสุขภาพส่วนตัว</p>
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown("---")
     
-    elderly_mode = st.checkbox("👓 โหมดตัวหนังสือใหญ่", help="เพิ่มขนาดตัวอักษรสำหรับผู้สูงอายุ")
+    elderly_mode = st.checkbox("👓 โหมดตัวหนังสือใหญ่")
     if elderly_mode:
         st.markdown("<style> html { font-size: 125% !important; } </style>", unsafe_allow_html=True)
     
     menu = st.radio(
-        "📋 เมนูหลัก",
-        ["🏠 หน้าหลัก", " ประเมินอาการ", "📋 ประวัติ", "📊 สถิติ", "ℹ️ เกี่ยวกับ"],
+        "เมนูหลัก",
+        ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "ℹ️ เกี่ยวกับ"],
         index=1
     )
     
@@ -447,14 +160,13 @@ with st.sidebar:
     
     data_count = get_data_count()
     st.markdown(f"""
-    <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 15px; text-align: center; color: white; backdrop-filter: blur(10px);">
-        <p style="margin: 0; font-size: 0.95rem; font-weight: 500;"> ข้อมูลของคุณ</p>
-        <h3 style="margin: 15px 0; font-size: 2.5rem; font-weight: 800;">{data_count}</h3>
-        <p style="margin: 0; font-size: 0.85rem; opacity: 0.9;">รายการประเมิน</p>
+    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center; color: white;">
+        <p style="margin: 0; font-size: 0.9rem;">📊 ข้อมูลของคุณ</p>
+        <h3 style="margin: 10px 0; font-size: 2rem;">{data_count}</h3>
+        <p style="margin: 0; font-size: 0.8rem;">รายการประเมิน</p>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("---")
     st.caption(f"📅 {datetime.now().strftime('%d/%m/%Y %H:%M')}")
 
 # ==================== หน้าที่ 1: หน้าหลัก ====================
@@ -463,7 +175,9 @@ if menu == "🏠 หน้าหลัก":
     <div class="hero-section">
         <h1>🏥 ระบบประเมินสุขภาพส่วนตัว</h1>
         <h3>สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</h3>
-        <p>ประเมินอาการด้วยตัวเอง • บันทึกข้อมูลส่วนตัว • ติดตามผลสุขภาพ</p>
+        <p style="font-size: 1.1rem; margin-top: 20px; opacity: 0.9;">
+            ประเมินอาการด้วยตัวเอง • บันทึกข้อมูลส่วนตัว • ติดตามผลสุขภาพ
+        </p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -471,24 +185,21 @@ if menu == "🏠 หน้าหลัก":
     with col1:
         st.markdown(f"""
         <div class="metric-card">
-            <div style="font-size: 3rem; margin-bottom: 10px;"></div>
-            <h3>{get_data_count()}</h3>
+            <h3>📋 {get_data_count()}</h3>
             <p>การประเมินของคุณ</p>
         </div>
         """, unsafe_allow_html=True)
     with col2:
         st.markdown("""
         <div class="metric-card">
-            <div style="font-size: 3rem; margin-bottom: 10px;">👤</div>
-            <h3>ส่วนตัว</h3>
+            <h3>👤 ส่วนตัว</h3>
             <p>ข้อมูลเป็นของคุณ</p>
         </div>
         """, unsafe_allow_html=True)
     with col3:
         st.markdown("""
         <div class="metric-card">
-            <div style="font-size: 3rem; margin-bottom: 10px;">🔒</div>
-            <h3>ปลอดภัย</h3>
+            <h3>🔒 ปลอดภัย</h3>
             <p>เก็บในเครื่องคุณ</p>
         </div>
         """, unsafe_allow_html=True)
@@ -497,51 +208,38 @@ if menu == "🏠 หน้าหลัก":
     
     col_a, col_b, col_c = st.columns(3)
     with col_a:
-        st.markdown("""
-        <div class="info-box">
-            <h4 style="color: #0097a7; margin-top: 0;">1️⃣ ประเมินอาการ</h4>
-            <ul style="margin: 10px 0; padding-left: 20px;">
-                <li>กรอกข้อมูลส่วนตัว</li>
-                <li>เลือกอาการที่เป็น</li>
-                <li>ระบบคำนวณความเสี่ยง</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("""
+        **1. ประเมินอาการ**
+        - กรอกข้อมูลส่วนตัว
+        - เลือกอาการที่เป็น
+        - ระบบคำนวณความเสี่ยง
+        """)
     with col_b:
-        st.markdown("""
-        <div class="info-box">
-            <h4 style="color: #0097a7; margin-top: 0;">2️⃣ บันทึกข้อมูล</h4>
-            <ul style="margin: 10px 0; padding-left: 20px;">
-                <li>ข้อมูลจะถูกบันทึกอัตโนมัติ</li>
-                <li>เก็บเป็นไฟล์ CSV</li>
-                <li>เปิดดูใน Excel ได้</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("""
+        **2. บันทึกข้อมูล**
+        - ข้อมูลจะถูกบันทึกอัตโนมัติ
+        - เก็บเป็นไฟล์ CSV
+        - เปิดดูใน Excel ได้
+        """)
     with col_c:
-        st.markdown("""
-        <div class="info-box">
-            <h4 style="color: #0097a7; margin-top: 0;">3️⃣ ดูประวัติ</h4>
-            <ul style="margin: 10px 0; padding-left: 20px;">
-                <li>ดูผลการประเมินย้อนหลัง</li>
-                <li>เปรียบเทียบผลลัพธ์</li>
-                <li>ดาวน์โหลดข้อมูล</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("""
+        **3. ดูประวัติ**
+        - ดูผลการประเมินย้อนหลัง
+        - เปรียบเทียบผลลัพธ์
+        - ดาวน์โหลดข้อมูล
+        """)
     
     st.markdown("""
-    <div class="info-box" style="margin-top: 40px; padding: 30px;">
+    <div class="info-box" style="margin-top: 30px;">
         <b>💾 ข้อมูลของคุณ:</b> ระบบจะบันทึกข้อมูลการประเมินทั้งหมดลงในไฟล์ <code>assessment_data.csv</code> 
-        ในโฟลเดอร์เดียวกับแอปนี้ คุณสามารถเปิดดู แก้ไข หรือสำรองข้อมูลได้ตลอดเวลา<br><br>
-        <b>⚠️ หมายเหตุสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
-        <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b>
+        ในโฟลเดอร์เดียวกับแอปนี้ คุณสามารถเปิดดู แก้ไข หรือสำรองข้อมูลได้ตลอดเวลา<br>
+        <b>⚠️ หมายเหตุ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b>
     </div>
     """, unsafe_allow_html=True)
 
 # ==================== หน้าที่ 2: ประเมินอาการใหม่ ====================
-elif menu == "🩺 ประเมินอาการ":
-    st.markdown('<div class="page-header"><h1>🩺 แบบประเมินอาการ</h1></div>', unsafe_allow_html=True)
+elif menu == "🩺 ประเมินอาการใหม่":
+    st.markdown('<div class="page-header"><h1>🩺 แบบประเมินอาการ (กรอกเอง)</h1></div>', unsafe_allow_html=True)
 
     with st.form("assessment_form", clear_on_submit=False):
         st.markdown('<h3 class="section-title">👤 ข้อมูลส่วนตัวของคุณ</h3>', unsafe_allow_html=True)
@@ -553,7 +251,7 @@ elif menu == "🩺 ประเมินอาการ":
         with col3: 
             gender = st.selectbox("เพศ *", ["ชาย", "หญิง", "ไม่ระบุ"], help="เลือกเพศของคุณ")
 
-        st.markdown('<h3 class="section-title"> ข้อมูลสุขภาพ</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-title">🏥 ข้อมูลสุขภาพ</h3>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             chronic = st.multiselect("โรคประจำตัว", CHRONIC_DISEASES, help="เลือกโรคประจำตัวที่คุณมี")
@@ -566,7 +264,7 @@ elif menu == "🩺 ประเมินอาการ":
         with col2:
             bs = st.number_input("ระดับน้ำตาลในเลือด (mg/dL)", min_value=0, max_value=600, value=100, help="ระดับน้ำตาลในเลือด")
         
-        st.markdown('<h3 class="section-title"> อาการที่คุณกำลังประสบอยู่</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-title">🤒 อาการที่คุณกำลังประสบอยู่ (เลือกเอง)</h3>', unsafe_allow_html=True)
         st.info("💡 **คำแนะนำ:** เลือกอาการที่คุณกำลังเป็นอยู่ในขณะนี้ สามารถเลือกได้มากกว่า 1 อาการ")
         
         total_score = 0
@@ -588,8 +286,7 @@ elif menu == "🩺 ประเมินอาการ":
         notes = st.text_area(
             "อธิบายอาการเพิ่มเติม (ถ้ามี)", 
             placeholder="เช่น อาการเป็นมา 3 วัน, มีไข้ร่วมด้วย, เคยเป็นมาก่อน, ฯลฯ",
-            help="กรอกรายละเอียดเพิ่มเติมเกี่ยวกับอาการของคุณ",
-            height=100
+            help="กรอกรายละเอียดเพิ่มเติมเกี่ยวกับอาการของคุณ"
         )
 
         submitted = st.form_submit_button("🔍 ประเมินผลตอนนี้", type="primary", use_container_width=True)
@@ -624,7 +321,7 @@ elif menu == "🩺 ประเมินอาการ":
             # ตัดสินผล
             if final_score >= 50 or len(emergency_symptoms) > 0:
                 risk_level, risk_class = "สูง", "risk-high"
-                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2.5rem; margin: 0; font-weight: 800;">🚨 ความเสี่ยงสูง!</h2><p style="font-size: 1.4rem; margin: 15px 0 0 0; font-weight: 500;">กรุณาไปพบแพทย์ทันที</p></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">🚨 ความเสี่ยงสูง!</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">กรุณาไปพบแพทย์ทันที</p></div>', unsafe_allow_html=True)
                 
                 # ส่ง Line Notify
                 line_msg = f"🚨 แจ้งเตือนฉุกเฉิน!\nชื่อ: {name}\nอายุ: {age} ปี\nคะแนน: {final_score}\nอาการ: {', '.join(selected_symptoms)}"
@@ -632,10 +329,10 @@ elif menu == "🩺 ประเมินอาการ":
                 
             elif final_score >= 20:
                 risk_level, risk_class = "กลาง", "risk-medium"
-                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2.5rem; margin: 0; font-weight: 800;">⚠️ ความเสี่ยงกลาง</h2><p style="font-size: 1.4rem; margin: 15px 0 0 0; font-weight: 500;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">⚠️ ความเสี่ยงกลาง</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
             else:
                 risk_level, risk_class = "ต่ำ", "risk-low"
-                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2.5rem; margin: 0; font-weight: 800;">✅ ความเสี่ยงต่ำ</h2><p style="font-size: 1.4rem; margin: 15px 0 0 0; font-weight: 500;">ดูแลตัวเองได้</p></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">✅ ความเสี่ยงต่ำ</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ดูแลตัวเองได้</p></div>', unsafe_allow_html=True)
             
             st.markdown("---")
             st.markdown('<h3 class="section-title">📊 สรุปผลการประเมินของคุณ</h3>', unsafe_allow_html=True)
@@ -644,32 +341,31 @@ elif menu == "🩺 ประเมินอาการ":
             with col1:
                 st.markdown(f"""
                 <div class="info-box">
-                    <h4 style="color: #0097a7; margin-top: 0;">👤 ข้อมูลผู้ประเมิน</h4>
-                    <p style="margin: 8px 0;"><b>ชื่อ:</b> {name}</p>
-                    <p style="margin: 8px 0;"><b>อายุ:</b> {age} ปี</p>
-                    <p style="margin: 8px 0;"><b>เพศ:</b> {gender}</p>
-                    <p style="margin: 8px 0;"><b>โรคประจำตัว:</b> {', '.join(chronic) if chronic else 'ไม่มี'}</p>
-                    <p style="margin: 8px 0;"><b>ยาที่รับประทาน:</b> {medications if medications else 'ไม่มี'}</p>
+                    <b>👤 ข้อมูลผู้ประเมิน:</b><br>
+                    • ชื่อ: {name}<br>
+                    • อายุ: {age} ปี<br>
+                    • เพศ: {gender}<br>
+                    • โรคประจำตัว: {', '.join(chronic) if chronic else 'ไม่มี'}<br>
+                    • ยาที่รับประทาน: {medications if medications else 'ไม่มี'}
                 </div>
                 """, unsafe_allow_html=True)
             with col2:
                 st.markdown(f"""
                 <div class="info-box">
-                    <h4 style="color: #0097a7; margin-top: 0;">📊 ผลการประเมิน</h4>
-                    <p style="margin: 8px 0;"><b>คะแนนดิบ:</b> {total_score}</p>
-                    <p style="margin: 8px 0;"><b>ตัวคูณความเสี่ยง:</b> {risk_multiplier}x</p>
-                    <p style="margin: 8px 0; font-size: 1.2rem;"><b>คะแนนรวม:</b> {final_score}</p>
-                    <p style="margin: 8px 0; font-size: 1.2rem;"><b>ระดับความเสี่ยง:</b> {risk_level}</p>
+                    <b>📊 ผลการประเมิน:</b><br>
+                    • คะแนนดิบ: {total_score}<br>
+                    • ตัวคูณความเสี่ยง: {risk_multiplier}x<br>
+                    • <b>คะแนนรวม: {final_score}</b><br>
+                    • ระดับความเสี่ยง: {risk_level}
                 </div>
                 """, unsafe_allow_html=True)
             
-            st.markdown(f'<h4 style="color: #0097a7; margin-top: 30px;">อาการที่คุณเลือก ({len(selected_symptoms)} อาการ)</h4>')
+            st.markdown(f'<h4>อาการที่คุณเลือก ({len(selected_symptoms)} อาการ)</h4>')
             for symptom in selected_symptoms:
                 st.markdown(f"• {symptom}")
             
             if notes:
-                st.markdown(f'<h4 style="color: #0097a7; margin-top: 20px;">หมายเหตุ</h4>')
-                st.markdown(f"{notes}")
+                st.markdown(f"**หมายเหตุ:** {notes}")
             
             # บันทึกข้อมูล
             record = {
@@ -692,17 +388,16 @@ elif menu == "🩺 ประเมินอาการ":
             st.info("💾 ข้อมูลของคุณถูกบันทึกในไฟล์ assessment_data.csv แล้ว")
 
 # ==================== หน้าที่ 3: ประวัติการประเมินของฉัน ====================
-elif menu == "📋 ประวัติ":
+elif menu == "📋 ประวัติการประเมินของฉัน":
     st.markdown('<div class="page-header"><h1>📋 ประวัติการประเมินของคุณ</h1></div>', unsafe_allow_html=True)
     
     df = load_data()
     
     if df.empty:
         st.markdown("""
-        <div class="info-box" style="text-align: center; padding: 50px;">
-            <div style="font-size: 4rem; margin-bottom: 20px;">📭</div>
-            <h3 style="color: #0097a7; margin: 0;">ยังไม่มีข้อมูล</h3>
-            <p style="margin: 15px 0 0 0; font-size: 1.1rem;">กรุณาไปที่หน้า 'ประเมินอาการ' เพื่อเริ่มประเมิน</p>
+        <div class="info-box" style="text-align: center; padding: 40px;">
+            <h3 style="color: #667eea; margin: 0;">📭 ยังไม่มีข้อมูล</h3>
+            <p style="margin: 10px 0 0 0;">กรุณาไปที่หน้า 'ประเมินอาการใหม่' เพื่อเริ่มประเมิน</p>
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -732,25 +427,17 @@ elif menu == "📋 ประวัติ":
                     st.markdown("### 📝 รายละเอียด")
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.markdown(f"""
-                        <div class="info-box">
-                            <p style="margin: 8px 0;"><b>วันที่:</b> {record['date']}</p>
-                            <p style="margin: 8px 0;"><b>ชื่อ:</b> {record['name']}</p>
-                            <p style="margin: 8px 0;"><b>อายุ:</b> {record['age']} ปี</p>
-                            <p style="margin: 8px 0;"><b>เพศ:</b> {record['gender']}</p>
-                            <p style="margin: 8px 0;"><b>โรคประจำตัว:</b> {record['chronic']}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.write(f"**วันที่:** {record['date']}")
+                        st.write(f"**ชื่อ:** {record['name']}")
+                        st.write(f"**อายุ:** {record['age']} ปี")
+                        st.write(f"**เพศ:** {record['gender']}")
+                        st.write(f"**โรคประจำตัว:** {record['chronic']}")
                     with col2:
-                        st.markdown(f"""
-                        <div class="info-box">
-                            <p style="margin: 8px 0;"><b>คะแนน:</b> {record['score']}</p>
-                            <p style="margin: 8px 0;"><b>ความเสี่ยง:</b> {record['risk']}</p>
-                            <p style="margin: 8px 0;"><b>อาการ:</b> {record['symptoms']}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    if record['notes'] != '-':
-                        st.markdown(f'<div class="info-box"><b>หมายเหตุ:</b> {record["notes"]}</div>', unsafe_allow_html=True)
+                        st.write(f"**คะแนน:** {record['score']}")
+                        st.write(f"**ความเสี่ยง:** {record['risk']}")
+                        st.write(f"**อาการ:** {record['symptoms']}")
+                        if record['notes'] != '-':
+                            st.write(f"**หมายเหตุ:** {record['notes']}")
         
         with tab2:
             st.markdown("### ✏️ แก้ไขหรือลบข้อมูล")
@@ -812,7 +499,7 @@ elif menu == "📋 ประวัติ":
                     st.rerun()
 
 # ==================== หน้าที่ 4: สถิติส่วนตัว ====================
-elif menu == "📊 สถิติ":
+elif menu == "📊 สถิติส่วนตัว":
     st.markdown('<div class="page-header"><h1>📊 สถิติการประเมินของคุณ</h1></div>', unsafe_allow_html=True)
 
     df = load_data()
@@ -826,8 +513,7 @@ elif menu == "📊 สถิติ":
         with col1:
             st.markdown(f"""
             <div class="metric-card">
-                <div style="font-size: 3rem; margin-bottom: 10px;"></div>
-                <h3>{len(df)}</h3>
+                <h3>📋 {len(df)}</h3>
                 <p>การประเมินทั้งหมด</p>
             </div>
             """, unsafe_allow_html=True)
@@ -835,8 +521,7 @@ elif menu == "📊 สถิติ":
             high_count = len(df[df['risk'] == 'สูง'])
             st.markdown(f"""
             <div class="metric-card">
-                <div style="font-size: 3rem; margin-bottom: 10px;">🚨</div>
-                <h3>{high_count}</h3>
+                <h3>🚨 {high_count}</h3>
                 <p>ความเสี่ยงสูง</p>
             </div>
             """, unsafe_allow_html=True)
@@ -844,8 +529,7 @@ elif menu == "📊 สถิติ":
             avg_score = df['score'].mean()
             st.markdown(f"""
             <div class="metric-card">
-                <div style="font-size: 3rem; margin-bottom: 10px;">📈</div>
-                <h3>{avg_score:.1f}</h3>
+                <h3>📈 {avg_score:.1f}</h3>
                 <p>คะแนนเฉลี่ย</p>
             </div>
             """, unsafe_allow_html=True)
@@ -860,13 +544,8 @@ elif menu == "📊 สถิติ":
             values='จำนวน', 
             names='ระดับความเสี่ยง', 
             color='ระดับความเสี่ยง',
-            color_discrete_map={'ต่ำ': '#66bb6a', 'กลาง': '#ffa726', 'สูง': '#ff6b6b'}, 
+            color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'}, 
             hole=0.4
-        )
-        fig_pie.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#333', size=14)
         )
         st.plotly_chart(fig_pie, use_container_width=True)
 
@@ -877,69 +556,54 @@ elif menu == "📊 สถิติ":
             x='date', 
             y='score', 
             color='risk',
-            color_discrete_map={'ต่ำ': '#66bb6a', 'กลาง': '#ffa726', 'สูง': '#ff6b6b'},
+            color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'},
             text='score',
             hover_data=['name', 'symptoms']
         )
         fig_bar.update_traces(textposition='outside')
-        fig_bar.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#333', size=14)
-        )
         st.plotly_chart(fig_bar, use_container_width=True)
 
         st.markdown("---")
-        st.markdown('<h3 class="section-title"> ความสัมพันธ์ อายุ vs คะแนน</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-title">📈 ความสัมพันธ์ อายุ vs คะแนน</h3>', unsafe_allow_html=True)
         fig_scatter = px.scatter(
             df, 
             x='age', 
             y='score', 
             color='risk',
-            color_discrete_map={'ต่ำ': '#66bb6a', 'กลาง': '#ffa726', 'สูง': '#ff6b6b'},
+            color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'},
             hover_data=['name', 'date', 'symptoms'], 
             size='score'
-        )
-        fig_scatter.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#333', size=14)
         )
         st.plotly_chart(fig_scatter, use_container_width=True)
 
 # ==================== หน้าที่ 5: เกี่ยวกับ ====================
 elif menu == "ℹ️ เกี่ยวกับ":
-    st.markdown('<div class="page-header"><h1>️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-header"><h1>ℹ️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
     
     st.markdown("""
-    <div class="info-box" style="padding: 30px;">
-        <h3 style="color: #0097a7; margin-top: 0;">🎓 โปรเจกต์ปี 4 (Senior Project)</h3>
-        <h4 style="color: #0097a7;">ระบบประเมินการตัดสินใจไปพบแพทย์สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</h4>
-        <p style="line-height: 1.8; font-size: 1.05rem;">
-            ระบบนี้ถูกพัฒนาขึ้นเพื่อให้คุณสามารถประเมินอาการสุขภาพด้วยตัวเอง 
-            โดยเน้นการคัดกรองโรคไม่ติดต่อเรื้อรัง (NCDs) เช่น เบาหวาน ความดันโลหิตสูง โรคหัวใจและหลอดเลือด
-        </p>
+    <div class="info-box">
+        <b>🎓 โปรเจกต์ปี 4 (Senior Project)</b><br>
+        <b>ระบบประเมินการตัดสินใจไปพบแพทย์สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</b><br><br>
+        ระบบนี้ถูกพัฒนาขึ้นเพื่อให้คุณสามารถประเมินอาการสุขภาพด้วยตัวเอง 
+        โดยเน้นการคัดกรองโรคไม่ติดต่อเรื้อรัง (NCDs) เช่น เบาหวาน ความดันโลหิตสูง โรคหัวใจและหลอดเลือด
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown('<h3 class="section-title"> การจัดเก็บข้อมูลของคุณ</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="section-title">💾 การจัดเก็บข้อมูลของคุณ</h3>', unsafe_allow_html=True)
     st.markdown("""
-    <div class="info-box" style="padding: 30px;">
-        <p style="margin: 10px 0;"><b>📁 ไฟล์ข้อมูล:</b> <code>assessment_data.csv</code></p>
-        <p style="margin: 10px 0;"><b> ตำแหน่ง:</b> โฟลเดอร์เดียวกับแอปนี้</p>
-        <p style="margin: 10px 0;"><b> ความเป็นส่วนตัว:</b> ข้อมูลถูกเก็บในเครื่องของคุณเท่านั้น</p>
-        <p style="margin: 10px 0;"><b>📥 การสำรองข้อมูล:</b> สามารถดาวน์โหลดไฟล์ CSV ได้จากหน้า "ประวัติ"</p>
+    <div class="info-box">
+        <b>📁 ไฟล์ข้อมูล:</b> <code>assessment_data.csv</code><br>
+        <b>📍 ตำแหน่ง:</b> โฟลเดอร์เดียวกับแอปนี้<br>
+        <b>🔒 ความเป็นส่วนตัว:</b> ข้อมูลถูกเก็บในเครื่องของคุณเท่านั้น<br>
+        <b>📥 การสำรองข้อมูล:</b> สามารถดาวน์โหลดไฟล์ CSV ได้จากหน้า "ประวัติการประเมิน"
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown("""
-    <div class="info-box" style="margin-top: 40px; padding: 30px; border-left-color: #ff6b6b;">
-        <h4 style="color: #ff6b6b; margin-top: 0;">⚠️ ข้อจำกัดสำคัญ</h4>
-        <p style="line-height: 1.8; font-size: 1.05rem;">
-            ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
-            <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b> หากมีอาการรุนแรงหรือกังวลใจ 
-            ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์โดยตรง
-        </p>
+    <div class="info-box" style="margin-top: 30px;">
+        <b>⚠️ ข้อจำกัดสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
+        <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b> หากมีอาการรุนแรงหรือกังวลใจ 
+        ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์โดยตรง
     </div>
     """, unsafe_allow_html=True)
 
@@ -947,7 +611,7 @@ elif menu == "ℹ️ เกี่ยวกับ":
 st.markdown("---")
 st.markdown("""
 <div class="footer">
-    <p style="margin: 0; font-size: 1.2rem; font-weight: 600;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) | โปรเจกต์ปี 4</p>
-    <p style="margin: 15px 0 0 0; font-size: 1rem; opacity: 0.9;">พัฒนาด้วย Streamlit • Python • Data Visualization</p>
+    <p style="margin: 0; font-size: 1.1rem;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) | โปรเจกต์ปี 4</p>
+    <p style="margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.8;">พัฒนาด้วย Streamlit • Python • Data Visualization</p>
 </div>
 """, unsafe_allow_html=True)
