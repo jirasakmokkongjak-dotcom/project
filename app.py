@@ -82,10 +82,24 @@ st.markdown("""
     .metric-card h3 { color: #000000 !important; font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
     .metric-card p { color: #000000 !important; font-size: 1rem; margin: 0; font-weight: 500; }
     
+    .emergency-box {
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(255,75,43,0.4);
+        margin: 15px 0;
+        animation: pulse 2s infinite;
+    }
+    .emergency-box h3 { font-size: 2.5rem; margin: 10px 0; font-weight: 800; }
+    .emergency-box p { font-size: 1.1rem; margin: 5px 0; }
+    
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+    
     .risk-high { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 15px 40px rgba(238,90,111,0.4); animation: pulse 2s infinite; }
     .risk-medium { background: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; }
     .risk-low { background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; }
-    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
     .info-box { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #667eea; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 20px 0; color: #000000 !important; }
     .info-box b { color: #000000 !important; }
     .section-title { color: #667eea; font-size: 1.8rem; font-weight: 700; margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 3px solid #667eea; display: inline-block; }
@@ -147,14 +161,23 @@ with st.sidebar:
     
     st.markdown("---")
     
+    # เพิ่มเบอร์ฉุกเฉินใน Sidebar
+    st.markdown("""
+    <div class="emergency-box">
+        <h3>🚑 1669</h3>
+        <p>ศูนย์นเรนทร<br>เจ็บป่วยฉุกเฉิน</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
     elderly_mode = st.checkbox("👓 โหมดตัวหนังสือใหญ่")
     if elderly_mode:
         st.markdown("<style> html { font-size: 125% !important; } </style>", unsafe_allow_html=True)
     
-    # แก้ไขชื่อเมนูให้ตรงกันเป๊ะกับเงื่อนไขด้านล่าง
     menu = st.radio(
         "เมนูหลัก",
-        ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "ℹ️ เกี่ยวกับ"],
+        ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "️ เกี่ยวกับ"],
         index=1
     )
     
@@ -183,6 +206,15 @@ if menu == "🏠 หน้าหลัก":
     </div>
     """, unsafe_allow_html=True)
     
+    # เพิ่มเบอร์ฉุกเฉินในหน้าหลัก
+    st.markdown("""
+    <div class="emergency-box">
+        <h3>🚑 เบอร์ฉุกเฉินทางการแพทย์</h3>
+        <p style="font-size: 2rem; font-weight: bold; margin: 10px 0;">1669</p>
+        <p>ศูนย์นเรนทร - เจ็บป่วยฉุกเฉิน ฟรี 24 ชม.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     col1, col2, col3 = st.columns(3)
     with col1:
         st.markdown(f"""
@@ -201,7 +233,7 @@ if menu == "🏠 หน้าหลัก":
     with col3:
         st.markdown("""
         <div class="metric-card">
-            <h3>🔒 ปลอดภัย</h3>
+            <h3> ปลอดภัย</h3>
             <p>เก็บในเครื่องคุณ</p>
         </div>
         """, unsafe_allow_html=True)
@@ -291,11 +323,11 @@ elif menu == "🩺 ประเมินอาการใหม่":
             height=100
         )
 
-        submitted = st.form_submit_button("🔍 ประเมินผลตอนนี้", type="primary", use_container_width=True)
+        submitted = st.form_submit_button(" ประเมินผลตอนนี้", type="primary", use_container_width=True)
 
     if submitted:
         if not name:
-            st.error("⚠️ กรุณากรอกชื่อ-นามสกุล")
+            st.error("️ กรุณากรอกชื่อ-นามสกุล")
         elif not selected_symptoms:
             st.warning("⚠️ กรุณาเลือกอาการอย่างน้อย 1 รายการ")
         else:
@@ -314,11 +346,28 @@ elif menu == "🩺 ประเมินอาการใหม่":
             if final_score >= 50 or len(emergency_symptoms) > 0:
                 risk_level, risk_class = "สูง", "risk-high"
                 st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">🚨 ความเสี่ยงสูง!</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">กรุณาไปพบแพทย์ทันที</p></div>', unsafe_allow_html=True)
+                
+                # แสดงเบอร์ฉุกเฉินชัดเจน
+                st.markdown("""
+                <div class="emergency-box">
+                    <h3> โทรด่วน 1669</h3>
+                    <p>ศูนย์นเรนทร - บริการฟรี 24 ชั่วโมง</p>
+                    <p style="font-size: 0.9rem; margin-top: 10px;">หากมีอาการรุนแรง กรุณาโทรขอความช่วยเหลือทันที</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
                 line_msg = f"🚨 แจ้งเตือนฉุกเฉิน!\nชื่อ: {name}\nอายุ: {age} ปี\nคะแนน: {final_score}\nอาการ: {' | '.join(selected_symptoms)}"
                 send_line_notify(line_msg)
             elif final_score >= 20:
                 risk_level, risk_class = "กลาง", "risk-medium"
                 st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">⚠️ ความเสี่ยงกลาง</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
+                
+                # แสดงเบอร์ฉุกเฉินแบบธรรมดา
+                st.markdown("""
+                <div style="background: white; color: black; padding: 15px; border-radius: 10px; border-left: 5px solid #ff6b6b; margin: 15px 0;">
+                    <b>📞 เบอร์ฉุกเฉิน:</b> 1669 (ศูนย์นเรนทร)
+                </div>
+                """, unsafe_allow_html=True)
             else:
                 risk_level, risk_class = "ต่ำ", "risk-low"
                 st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">✅ ความเสี่ยงต่ำ</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ดูแลตัวเองได้</p></div>', unsafe_allow_html=True)
@@ -388,11 +437,12 @@ elif menu == "🩺 ประเมินอาการใหม่":
                         ผลการประเมิน: ระดับความเสี่ยง "{risk_level}" (คะแนนรวม: {final_score})
                     </h3>
                     <p><b>อาการที่พบ:</b> {' | '.join(selected_symptoms)}</p>
-                    <p><b>คำแนะนำ:</b> {'🚨 กรุณาไปพบแพทย์ทันที' if risk_level == 'สูง' else ('⚠️ ควรพบแพทย์ภายใน 24 ชั่วโมง' if risk_level == 'กลาง' else '✅ ดูแลตัวเองได้ตามปกติ')}</p>
+                    <p><b>คำแนะนำ:</b> {'🚨 กรุณาไปพบแพทย์ทันที (โทร 1669)' if risk_level == 'สูง' else ('⚠️ ควรพบแพทย์ภายใน 24 ชั่วโมง' if risk_level == 'กลาง' else '✅ ดูแลตัวเองได้ตามปกติ')}</p>
                     {f'<p><b>หมายเหตุ:</b> {notes}</p>' if notes != '-' else ''}
                     <hr style="border: 1px solid #ccc;">
                     <p style="font-size: 0.8em; color: gray; text-align: center; margin-top: 20px;">
                         *เอกสารนี้สร้างขึ้นจากระบบประเมินเบื้องต้น ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้<br>
+                        🚑 <b>เบอร์ฉุกเฉิน: 1669 (ศูนย์นเรนทร)</b><br>
                         หากรู้สึกไม่สบาย กรุณาไปพบแพทย์ที่โรงพยาบาลทันที
                     </p>
                 </div>
@@ -458,7 +508,7 @@ elif menu == "📋 ประวัติการประเมินของ�
                 
                 with col2:
                     new_risk = st.selectbox("แก้ไขระดับความเสี่ยง", ["ต่ำ", "กลาง", "สูง"], index=["ต่ำ", "กลาง", "สูง"].index(str(df.iloc[edit_index]['risk'])))
-                    if st.button("💾 บันทึกการแก้ไข"):
+                    if st.button(" บันทึกการแก้ไข"):
                         update_record(edit_index, {'risk': new_risk})
                         st.success("✅ อัปเดตข้อมูลเรียบร้อยแล้ว!")
                         st.rerun()
@@ -479,7 +529,7 @@ elif menu == "📋 ประวัติการประเมินของ�
                     st.success("✅ ลบข้อมูลทั้งหมดเรียบร้อยแล้ว!")
                     st.rerun()
 
-# ==================== หน้าที่ 4: สถิติส่วนตัว (แก้ไขชื่อเงื่อนไขให้ตรงกันแล้ว) ====================
+# ==================== หน้าที่ 4: สถิติส่วนตัว ====================
 elif menu == "📊 สถิติส่วนตัว":
     st.markdown('<div class="page-header"><h1>📊 สถิติการประเมินของคุณ</h1></div>', unsafe_allow_html=True)
 
@@ -522,13 +572,13 @@ elif menu == "📊 สถิติส่วนตัว":
                                 hover_data=['name', 'date', 'symptoms'], size='score')
         st.plotly_chart(fig_scatter, use_container_width=True)
 
-# ==================== หน้าที่ 5: เกี่ยวกับ (แก้ไขชื่อเงื่อนไขให้ตรงกันแล้ว) ====================
+# ==================== หน้าที่ 5: เกี่ยวกับ ====================
 elif menu == "ℹ️ เกี่ยวกับ":
     st.markdown('<div class="page-header"><h1>ℹ️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
     
     st.markdown("""
     <div class="info-box">
-        <b>🎓 </b><br>
+        <b>🎓 โปรเจกต์ปี 4 (Senior Project)</b><br>
         <b>ระบบประเมินการตัดสินใจไปพบแพทย์สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</b><br><br>
         ระบบนี้ถูกพัฒนาขึ้นเพื่อให้คุณสามารถประเมินอาการสุขภาพด้วยตัวเอง 
         โดยเน้นการคัดกรองโรคไม่ติดต่อเรื้อรัง (NCDs) เช่น เบาหวาน ความดันโลหิตสูง โรคหัวใจและหลอดเลือด
@@ -538,18 +588,19 @@ elif menu == "ℹ️ เกี่ยวกับ":
     st.markdown('<h3 class="section-title">💾 การจัดเก็บข้อมูลของคุณ</h3>', unsafe_allow_html=True)
     st.markdown("""
     <div class="info-box">
-        <b>📁 ไฟล์ข้อมูล:</b> <code>assessment_data.csv</code><br>
+        <b> ไฟล์ข้อมูล:</b> <code>assessment_data.csv</code><br>
         <b>📍 ตำแหน่ง:</b> โฟลเดอร์เดียวกับแอปนี้<br>
-        <b>🔒 ความเป็นส่วนตัว:</b> ข้อมูลถูกเก็บในเครื่องของคุณเท่านั้น<br>
+        <b> ความเป็นส่วนตัว:</b> ข้อมูลถูกเก็บในเครื่องของคุณเท่านั้น<br>
         <b>📥 การสำรองข้อมูล:</b> สามารถดาวน์โหลดไฟล์ CSV ได้จากหน้า "ประวัติการประเมิน"
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown("""
     <div class="info-box" style="margin-top: 30px; border-left-color: #ff6b6b;">
-        <b>⚠️ ข้อจำกัดสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
+        <b>️ ข้อจำกัดสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
         <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b> หากมีอาการรุนแรงหรือกังวลใจ 
-        ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์โดยตรง
+        ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์โดยตรง<br><br>
+        <b>🚑 เบอร์ฉุกเฉิน:</b> 1669 (ศูนย์นเรนทร - บริการฟรี 24 ชั่วโมง)
     </div>
     """, unsafe_allow_html=True)
 
@@ -557,7 +608,8 @@ elif menu == "ℹ️ เกี่ยวกับ":
 st.markdown("---")
 st.markdown("""
 <div class="footer">
-    <p style="margin: 0; font-size: 1.1rem;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) </p>
+    <p style="margin: 0; font-size: 1.1rem;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) | โปรเจกต์ปี 4</p>
     <p style="margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.8;">พัฒนาด้วย Streamlit • Python • Data Visualization</p>
+    <p style="margin: 5px 0 0 0; font-size: 0.9rem;">🚑 เบอร์ฉุกเฉิน: 1669 (ศูนย์นเรนทร)</p>
 </div>
 """, unsafe_allow_html=True)
