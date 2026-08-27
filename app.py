@@ -68,221 +68,136 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ==================== CSS ตกแต่งแบบ Modern UX/UI ====================
+# ==================== CSS แบบง่ายๆ อ่านง่าย ====================
 st.markdown("""
 <style>
-    /* ===== Global Styles ===== */
-    @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
-    
+    /* พื้นหลังสีอ่อนสบายตา */
     .stApp {
-        background-color: #f4f7f6;
-        font-family: 'Prompt', sans-serif;
+        background-color: #f8f9fa;
     }
     
-    /* ===== Headers ===== */
+    /* หัวข้อใหญ่ */
     .hero-section, .page-header {
         background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
         color: white;
-        padding: 2.5rem 2rem;
-        border-radius: 20px;
+        padding: 2rem;
+        border-radius: 15px;
         text-align: center;
-        margin-bottom: 2.5rem;
-        box-shadow: 0 10px 40px rgba(0, 131, 176, 0.25);
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     
     .hero-section h1, .page-header h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
+        font-size: 2rem;
+        font-weight: bold;
         margin: 0;
-        letter-spacing: -0.5px;
+        color: white !important;
     }
     
-    .hero-section h3, .page-header h3 {
-        font-size: 1.2rem;
-        font-weight: 400;
-        opacity: 0.9;
-        margin-top: 10px;
-    }
-    
-    /* ===== Cards ===== */
-    .metric-card, .info-box {
+    /* การ์ดข้อมูล */
+    .metric-card {
         background: white;
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 1.5rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        border: 1px solid rgba(0,0,0,0.03);
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    
-    .metric-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 30px rgba(0, 131, 176, 0.15);
-        border-color: #00b4db;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid #e0e0e0;
     }
     
     .metric-card h3 {
         color: #0083b0;
-        font-size: 2.2rem;
-        font-weight: 700;
+        font-size: 2rem;
+        font-weight: bold;
         margin: 10px 0;
     }
     
     .metric-card p {
-        color: #6c757d;
+        color: #555;
         font-size: 0.95rem;
         margin: 0;
-        font-weight: 500;
     }
     
-    /* ===== Risk Cards ===== */
+    /* การ์ดความเสี่ยง */
     .risk-high {
-        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        background: #ff4b2b;
         color: white;
         padding: 2rem;
-        border-radius: 20px;
+        border-radius: 15px;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(255, 75, 43, 0.3);
-        animation: pulse 2s infinite;
+        margin: 1rem 0;
     }
     
     .risk-medium {
-        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+        background: #ffa502;
         color: white;
         padding: 2rem;
-        border-radius: 20px;
+        border-radius: 15px;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(247, 151, 30, 0.3);
+        margin: 1rem 0;
     }
     
     .risk-low {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        background: #2ed573;
         color: white;
         padding: 2rem;
-        border-radius: 20px;
+        border-radius: 15px;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(17, 153, 142, 0.3);
+        margin: 1rem 0;
     }
     
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.02); }
-    }
-    
-    /* ===== Info Box ===== */
+    /* กล่องข้อมูล */
     .info-box {
-        background: linear-gradient(to right, #ffffff, #f8f9fa);
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
         border-left: 5px solid #00b4db;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin: 1rem 0;
     }
     
     .info-box b {
         color: #0083b0;
     }
     
-    /* ===== Section Title ===== */
+    /* หัวข้อส่วน */
     .section-title {
         color: #0083b0;
         font-size: 1.5rem;
-        font-weight: 600;
-        margin: 2rem 0 1.5rem 0;
+        font-weight: bold;
+        margin: 2rem 0 1rem 0;
+        border-bottom: 3px solid #00b4db;
         padding-bottom: 0.5rem;
-        border-bottom: 3px solid #e0f2f1;
         display: inline-block;
     }
     
-    /* ===== Buttons ===== */
+    /* ปุ่ม */
     .stButton>button {
-        background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+        background: #00b4db;
         color: white;
         border: none;
-        border-radius: 10px;
+        border-radius: 8px;
         padding: 0.75rem 1.5rem;
-        font-weight: 600;
+        font-weight: bold;
         font-size: 1rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 131, 176, 0.3);
     }
     
     .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 131, 176, 0.4);
+        background: #0083b0;
     }
     
-    .stButton>button[kind="secondary"] {
-        background: #f8f9fa;
-        color: #495057;
-        border: 1px solid #dee2e6;
-        box-shadow: none;
-    }
-    
-    /* ===== Form Elements ===== */
-    .stTextInput>div>div>input, 
-    .stNumberInput>div>div>input, 
-    .stSelectbox>div>div>select,
-    .stTextArea>div>div>textarea {
-        border-radius: 10px;
-        border: 1px solid #e0e0e0;
-        background-color: #fafafa;
-        padding: 0.75rem;
-        transition: all 0.3s ease;
-    }
-    
-    .stTextInput>div>div>input:focus, 
-    .stNumberInput>div>div>input:focus, 
-    .stSelectbox>div>div>select:focus,
-    .stTextArea>div>div>textarea:focus {
-        border-color: #00b4db;
-        background-color: white;
-        box-shadow: 0 0 0 3px rgba(0, 180, 219, 0.15);
-        outline: none;
-    }
-    
-    /* ===== Sidebar ===== */
-    section[data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 1px solid #e0e0e0;
-    }
-    
-    /* ===== Tabs ===== */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
-        border-bottom: 2px solid #e0f2f1;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        background-color: transparent;
-        border-radius: 10px 10px 0 0;
-        padding: 10px 20px;
-        font-weight: 500;
-        color: #6c757d;
-        transition: all 0.3s ease;
-    }
-    
-    .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        background-color: #e0f2f1;
-        color: #0083b0;
-        font-weight: 600;
-    }
-    
-    /* ===== Footer ===== */
+    /* Footer */
     .footer {
         text-align: center;
-        color: #6c757d;
+        color: #666;
         padding: 2rem;
-        margin-top: 4rem;
+        margin-top: 3rem;
         background: white;
-        border-radius: 20px 20px 0 0;
-        box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
+        border-radius: 15px 15px 0 0;
     }
-    
-    /* ===== Scrollbar ===== */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: #00b4db; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #0083b0; }
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== ข้อมูลทางการแพทย์ (NCDs Focus) ====================
+# ==================== ข้อมูลทางการแพทย์ ====================
 SYMPTOMS_DATA = {
     "🚨 อาการฉุกเฉิน (ต้องไปโรงพยาบาลทันที)": {
         "เจ็บหน้าอกร้าวลงแขนซ้าย/กราม": 40,
@@ -324,49 +239,33 @@ CHRONIC_DISEASES = [
 
 # ==================== Sidebar ====================
 with st.sidebar:
-    st.markdown("""
-    <div style="text-align: center; padding: 2rem 1rem; color: #0083b0;">
-        <div style="font-size: 3.5rem; margin-bottom: 10px;">🏥</div>
-        <h2 style="font-size: 1.5rem; margin: 0; font-weight: 700;">Health Check</h2>
-        <p style="font-size: 0.9rem; color: #6c757d; margin-top: 5px;">ระบบประเมินสุขภาพส่วนตัว</p>
-        <p style="font-size: 0.8rem; color: #00b4db; font-weight: 600; background: #e0f2f1; display: inline-block; padding: 4px 12px; border-radius: 20px; margin-top: 10px;">สำหรับวัย 40+ ปี</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
+    st.title("🏥 Health Check")
+    st.markdown("ระบบประเมินสุขภาพส่วนตัว")
+    st.markdown("สำหรับวัย 40+ ปี")
     st.markdown("---")
     
-    elderly_mode = st.checkbox("👓 โหมดตัวหนังสือใหญ่", help="เพิ่มขนาดตัวอักษรสำหรับผู้สูงอายุ")
+    elderly_mode = st.checkbox("👓 โหมดตัวหนังสือใหญ่")
     if elderly_mode:
         st.markdown("<style> html { font-size: 125% !important; } </style>", unsafe_allow_html=True)
     
     menu = st.radio(
         "เมนูหลัก",
-        ["🏠 หน้าหลัก", "🩺 ประเมินอาการ", "📋 ประวัติ", "📊 สถิติ", "ℹ️ เกี่ยวกับ"],
+        [" หน้าหลัก", "🩺 ประเมินอาการ", "📋 ประวัติ", "📊 สถิติ", "ℹ️ เกี่ยวกับ"],
         index=1
     )
     
     st.markdown("---")
     
     data_count = get_data_count()
-    st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%); padding: 1.5rem; border-radius: 16px; text-align: center; color: white; box-shadow: 0 8px 20px rgba(0, 131, 176, 0.3);">
-        <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">ข้อมูลของคุณ</p>
-        <h3 style="margin: 10px 0; font-size: 2.5rem; font-weight: 700;">{data_count}</h3>
-        <p style="margin: 0; font-size: 0.85rem; opacity: 0.9;">รายการประเมิน</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
+    st.info(f"📊 ข้อมูลของคุณ: {data_count} รายการ")
     st.caption(f"📅 {datetime.now().strftime('%d/%m/%Y %H:%M')}")
 
 # ==================== หน้าที่ 1: หน้าหลัก ====================
 if menu == "🏠 หน้าหลัก":
     st.markdown("""
     <div class="hero-section">
-        <h1>🏥 ระบบประเมินสุขภาพส่วนตัว</h1>
-        <h3>สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</h3>
-        <p style="font-size: 1.1rem; margin-top: 20px; opacity: 0.95;">
-            ประเมินอาการด้วยตัวเอง • บันทึกข้อมูลส่วนตัว • ติดตามผลสุขภาพ
-        </p>
+        <h1> ระบบประเมินสุขภาพส่วนตัว</h1>
+        <p style="font-size: 1.2rem; margin-top: 10px;">สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -374,79 +273,43 @@ if menu == "🏠 หน้าหลัก":
     with col1:
         st.markdown(f"""
         <div class="metric-card">
-            <div style="font-size: 2.5rem;">📋</div>
-            <h3>{get_data_count()}</h3>
+            <h3>📋 {get_data_count()}</h3>
             <p>การประเมินของคุณ</p>
         </div>
         """, unsafe_allow_html=True)
     with col2:
         st.markdown("""
         <div class="metric-card">
-            <div style="font-size: 2.5rem;">👤</div>
-            <h3>ส่วนตัว</h3>
+            <h3>👤 ส่วนตัว</h3>
             <p>ข้อมูลเป็นของคุณ</p>
         </div>
         """, unsafe_allow_html=True)
     with col3:
         st.markdown("""
         <div class="metric-card">
-            <div style="font-size: 2.5rem;">🔒</div>
-            <h3>ปลอดภัย</h3>
+            <h3>🔒 ปลอดภัย</h3>
             <p>เก็บในเครื่องคุณ</p>
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown('<h2 class="section-title">📝 วิธีใช้งาน</h2>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">📝 วิธีใช้งาน</div>', unsafe_allow_html=True)
     
     col_a, col_b, col_c = st.columns(3)
     with col_a:
-        st.markdown("""
-        <div class="info-box">
-            <h4 style="color: #0083b0; margin-top: 0;">1️⃣ ประเมินอาการ</h4>
-            <ul style="margin: 10px 0; padding-left: 20px; color: #495057; line-height: 1.6;">
-                <li>กรอกข้อมูลส่วนตัว</li>
-                <li>เลือกอาการที่เป็น</li>
-                <li>ระบบคำนวณความเสี่ยง</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("**1. ประเมินอาการ**\n- กรอกข้อมูลส่วนตัว\n- เลือกอาการที่เป็น\n- ระบบคำนวณความเสี่ยง")
     with col_b:
-        st.markdown("""
-        <div class="info-box">
-            <h4 style="color: #0083b0; margin-top: 0;">2️⃣ บันทึกข้อมูล</h4>
-            <ul style="margin: 10px 0; padding-left: 20px; color: #495057; line-height: 1.6;">
-                <li>ข้อมูลจะถูกบันทึกอัตโนมัติ</li>
-                <li>เก็บเป็นไฟล์ CSV</li>
-                <li>เปิดดูใน Excel ได้</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("**2. บันทึกข้อมูล**\n- ข้อมูลจะถูกบันทึกอัตโนมัติ\n- เก็บเป็นไฟล์ CSV\n- เปิดดูใน Excel ได้")
     with col_c:
-        st.markdown("""
-        <div class="info-box">
-            <h4 style="color: #0083b0; margin-top: 0;">3️⃣ ดูประวัติ</h4>
-            <ul style="margin: 10px 0; padding-left: 20px; color: #495057; line-height: 1.6;">
-                <li>ดูผลการประเมินย้อนหลัง</li>
-                <li>เปรียบเทียบผลลัพธ์</li>
-                <li>ดาวน์โหลดข้อมูล</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("**3. ดูประวัติ**\n- ดูผลการประเมินย้อนหลัง\n- เปรียบเทียบผลลัพธ์\n- ดาวน์โหลดข้อมูล")
     
-    st.markdown("""
-    <div class="info-box" style="margin-top: 40px; padding: 2rem; border-left-color: #ff4b2b;">
-        <b>⚠️ หมายเหตุสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
-        <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b> หากมีอาการรุนแรงหรือกังวลใจ 
-        ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์โดยตรง
-    </div>
-    """, unsafe_allow_html=True)
+    st.warning("⚠️ **หมายเหตุ:** ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้")
 
-# ==================== หน้าที่ 2: ประเมินอาการใหม่ ====================
+# ==================== หน้าที่ 2: ประเมินอาการ ====================
 elif menu == "🩺 ประเมินอาการ":
     st.markdown('<div class="page-header"><h1>🩺 แบบประเมินอาการ</h1></div>', unsafe_allow_html=True)
 
     with st.form("assessment_form", clear_on_submit=False):
-        st.markdown('<h3 class="section-title">👤 ข้อมูลส่วนตัวของคุณ</h3>', unsafe_allow_html=True)
+        st.markdown("### 👤 ข้อมูลส่วนตัวของคุณ")
         col1, col2, col3 = st.columns(3)
         with col1: 
             name = st.text_input("ชื่อ-นามสกุล *", placeholder="กรอกชื่อของคุณ")
@@ -455,12 +318,12 @@ elif menu == "🩺 ประเมินอาการ":
         with col3: 
             gender = st.selectbox("เพศ *", ["ชาย", "หญิง", "ไม่ระบุ"])
 
-        st.markdown('<h3 class="section-title">🏥 ข้อมูลสุขภาพ</h3>', unsafe_allow_html=True)
+        st.markdown("### 🏥 ข้อมูลสุขภาพ")
         col1, col2 = st.columns(2)
         with col1:
             chronic = st.multiselect("โรคประจำตัว", CHRONIC_DISEASES)
         with col2:
-            medications = st.text_input("ยาที่รับประทานประจำ (ถ้ามี)", placeholder="เช่น ยาลดความดัน, ยาเบาหวาน")
+            medications = st.text_input("ยาที่รับประทานประจำ (ถ้ามี)", placeholder="เช่น ยาลดความดัน")
         
         col1, col2 = st.columns(2)
         with col1:
@@ -468,8 +331,8 @@ elif menu == "🩺 ประเมินอาการ":
         with col2:
             bs = st.number_input("ระดับน้ำตาลในเลือด (mg/dL)", min_value=0, max_value=600, value=100)
         
-        st.markdown('<h3 class="section-title">🤒 อาการที่คุณกำลังประสบอยู่</h3>', unsafe_allow_html=True)
-        st.info("💡 **คำแนะนำ:** เลือกอาการที่คุณกำลังเป็นอยู่ในขณะนี้ สามารถเลือกได้มากกว่า 1 อาการ", icon="💡")
+        st.markdown("###  อาการที่คุณกำลังประสบอยู่")
+        st.info("💡 เลือกอาการที่คุณกำลังเป็นอยู่ (เลือกได้มากกว่า 1)")
         
         total_score = 0
         selected_symptoms = []
@@ -486,18 +349,13 @@ elif menu == "🩺 ประเมินอาการ":
                             if "ฉุกเฉิน" in category: 
                                 emergency_symptoms.append(symptom)
 
-        st.markdown('<h3 class="section-title">📝 หมายเหตุเพิ่มเติม</h3>', unsafe_allow_html=True)
-        notes = st.text_area(
-            "อธิบายอาการเพิ่มเติม (ถ้ามี)", 
-            placeholder="เช่น อาการเป็นมา 3 วัน, มีไข้ร่วมด้วย, เคยเป็นมาก่อน, ฯลฯ",
-            height=100
-        )
+        notes = st.text_area(" หมายเหตุเพิ่มเติม (ถ้ามี)", placeholder="เช่น อาการเป็นมา 3 วัน", height=100)
 
-        submitted = st.form_submit_button("🔍 ประเมินผลตอนนี้", type="primary", use_container_width=True)
+        submitted = st.form_submit_button(" ประเมินผลตอนนี้", type="primary", use_container_width=True)
 
     if submitted:
         if not name:
-            st.error("⚠️ กรุณากรอกชื่อ-นามสกุล")
+            st.error("️ กรุณากรอกชื่อ-นามสกุล")
         elif not selected_symptoms:
             st.warning("⚠️ กรุณาเลือกอาการอย่างน้อย 1 รายการ")
         else:
@@ -514,52 +372,48 @@ elif menu == "🩺 ประเมินอาการ":
             final_score = int(total_score * risk_multiplier)
             
             if final_score >= 50 or len(emergency_symptoms) > 0:
-                risk_level, risk_class = "สูง", "risk-high"
-                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2.5rem; margin: 0; font-weight: 700;">🚨 ความเสี่ยงสูง!</h2><p style="font-size: 1.3rem; margin: 15px 0 0 0; font-weight: 500;">กรุณาไปพบแพทย์ทันที</p></div>', unsafe_allow_html=True)
-                
+                risk_level = "สูง"
+                st.markdown('<div class="risk-high"><h2 style="margin:0;font-size:2rem;">🚨 ความเสี่ยงสูง!</h2><p style="font-size:1.3rem;margin:10px 0 0 0;">กรุณาไปพบแพทย์ทันที</p></div>', unsafe_allow_html=True)
                 line_msg = f"🚨 แจ้งเตือนฉุกเฉิน!\nชื่อ: {name}\nอายุ: {age} ปี\nคะแนน: {final_score}\nอาการ: {', '.join(selected_symptoms)}"
                 send_line_notify(line_msg)
-                
             elif final_score >= 20:
-                risk_level, risk_class = "กลาง", "risk-medium"
-                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2.5rem; margin: 0; font-weight: 700;">⚠️ ความเสี่ยงกลาง</h2><p style="font-size: 1.3rem; margin: 15px 0 0 0; font-weight: 500;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
+                risk_level = "กลาง"
+                st.markdown('<div class="risk-medium"><h2 style="margin:0;font-size:2rem;">⚠️ ความเสี่ยงกลาง</h2><p style="font-size:1.3rem;margin:10px 0 0 0;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
             else:
-                risk_level, risk_class = "ต่ำ", "risk-low"
-                st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2.5rem; margin: 0; font-weight: 700;">✅ ความเสี่ยงต่ำ</h2><p style="font-size: 1.3rem; margin: 15px 0 0 0; font-weight: 500;">ดูแลตัวเองได้</p></div>', unsafe_allow_html=True)
+                risk_level = "ต่ำ"
+                st.markdown('<div class="risk-low"><h2 style="margin:0;font-size:2rem;">✅ ความเสี่ยงต่ำ</h2><p style="font-size:1.3rem;margin:10px 0 0 0;">ดูแลตัวเองได้</p></div>', unsafe_allow_html=True)
             
             st.markdown("---")
-            st.markdown('<h3 class="section-title">📊 สรุปผลการประเมินของคุณ</h3>', unsafe_allow_html=True)
+            st.markdown("### 📊 สรุปผลการประเมิน")
             
             col1, col2 = st.columns(2)
             with col1:
                 st.markdown(f"""
                 <div class="info-box">
-                    <h4 style="color: #0083b0; margin-top: 0;">👤 ข้อมูลผู้ประเมิน</h4>
-                    <p style="margin: 8px 0;"><b>ชื่อ:</b> {name}</p>
-                    <p style="margin: 8px 0;"><b>อายุ:</b> {age} ปี</p>
-                    <p style="margin: 8px 0;"><b>เพศ:</b> {gender}</p>
-                    <p style="margin: 8px 0;"><b>โรคประจำตัว:</b> {', '.join(chronic) if chronic else 'ไม่มี'}</p>
-                    <p style="margin: 8px 0;"><b>ยาที่รับประทาน:</b> {medications if medications else 'ไม่มี'}</p>
+                    <b>👤 ข้อมูลผู้ประเมิน:</b><br>
+                    • ชื่อ: {name}<br>
+                    • อายุ: {age} ปี<br>
+                    • เพศ: {gender}<br>
+                    • โรคประจำตัว: {', '.join(chronic) if chronic else 'ไม่มี'}
                 </div>
                 """, unsafe_allow_html=True)
             with col2:
                 st.markdown(f"""
                 <div class="info-box">
-                    <h4 style="color: #0083b0; margin-top: 0;">📊 ผลการประเมิน</h4>
-                    <p style="margin: 8px 0;"><b>คะแนนดิบ:</b> {total_score}</p>
-                    <p style="margin: 8px 0;"><b>ตัวคูณความเสี่ยง:</b> {risk_multiplier}x</p>
-                    <p style="margin: 8px 0; font-size: 1.2rem;"><b>คะแนนรวม:</b> {final_score}</p>
-                    <p style="margin: 8px 0; font-size: 1.2rem;"><b>ระดับความเสี่ยง:</b> {risk_level}</p>
+                    <b> ผลการประเมิน:</b><br>
+                    • คะแนนดิบ: {total_score}<br>
+                    • ตัวคูณความเสี่ยง: {risk_multiplier}x<br>
+                    • <b>คะแนนรวม: {final_score}</b><br>
+                    • ระดับความเสี่ยง: {risk_level}
                 </div>
                 """, unsafe_allow_html=True)
             
-            st.markdown(f'<h4 style="color: #0083b0; margin-top: 30px;">อาการที่คุณเลือก ({len(selected_symptoms)} อาการ)</h4>')
+            st.markdown(f"**อาการที่คุณเลือก ({len(selected_symptoms)} อาการ):**")
             for symptom in selected_symptoms:
-                st.markdown(f"• {symptom}")
+                st.write(f"• {symptom}")
             
             if notes:
-                st.markdown(f'<h4 style="color: #0083b0; margin-top: 20px;">หมายเหตุ</h4>')
-                st.markdown(f"{notes}")
+                st.markdown(f"**หมายเหตุ:** {notes}")
             
             record = {
                 "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -575,210 +429,99 @@ elif menu == "🩺 ประเมินอาการ":
             save_to_csv(record)
             
             st.success(f"✅ บันทึกผลการประเมินเรียบร้อยแล้ว! (รวม {get_data_count()} รายการ)")
-            st.info("💾 ข้อมูลของคุณถูกบันทึกในไฟล์ `assessment_data.csv` แล้ว")
 
-# ==================== หน้าที่ 3: ประวัติการประเมินของฉัน ====================
+# ==================== หน้าที่ 3: ประวัติ ====================
 elif menu == "📋 ประวัติ":
     st.markdown('<div class="page-header"><h1>📋 ประวัติการประเมินของคุณ</h1></div>', unsafe_allow_html=True)
     
     df = load_data()
     
     if df.empty:
-        st.markdown("""
-        <div class="info-box" style="text-align: center; padding: 4rem 2rem;">
-            <div style="font-size: 4rem; margin-bottom: 20px;">📭</div>
-            <h3 style="color: #0083b0; margin: 0;">ยังไม่มีข้อมูล</h3>
-            <p style="margin: 15px 0 0 0; font-size: 1.1rem; color: #6c757d;">กรุณาไปที่หน้า 'ประเมินอาการ' เพื่อเริ่มประเมิน</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("📭 ยังไม่มีข้อมูล กรุณาไปที่หน้า 'ประเมินอาการ' เพื่อเริ่มประเมิน")
     else:
-        st.success(f"✅ พบข้อมูลการประเมิน **{len(df)} รายการ** ของคุณ")
+        st.success(f"✅ พบข้อมูลการประเมิน **{len(df)} รายการ**")
         
         tab1, tab2, tab3 = st.tabs(["👁️ ดูข้อมูล", "✏️ แก้ไข/ลบ", "📥 ดาวน์โหลด"])
         
         with tab1:
-            st.markdown("### 📄 ตารางข้อมูลการประเมินทั้งหมด")
-            st.dataframe(df.sort_values(by='date', ascending=False), use_container_width=True, height=400)
+            st.dataframe(df.sort_values(by='date', ascending=False), use_container_width=True)
             
             if len(df) > 0:
-                selected_index = st.selectbox(
-                    "เลือกรายการเพื่อดูรายละเอียด",
-                    range(len(df)),
-                    format_func=lambda x: f"{df.iloc[x]['date']} - {df.iloc[x]['name']} (ความเสี่ยง: {df.iloc[x]['risk']})"
-                )
+                selected_index = st.selectbox("เลือกรายการเพื่อดูรายละเอียด", range(len(df)),
+                    format_func=lambda x: f"{df.iloc[x]['date']} - {df.iloc[x]['name']} (ความเสี่ยง: {df.iloc[x]['risk']})")
                 
-                if selected_index is not None:
-                    record = df.iloc[selected_index]
-                    st.markdown("### 📝 รายละเอียด")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.markdown(f"""
-                        <div class="info-box">
-                            <p style="margin: 8px 0;"><b>วันที่:</b> {record['date']}</p>
-                            <p style="margin: 8px 0;"><b>ชื่อ:</b> {record['name']}</p>
-                            <p style="margin: 8px 0;"><b>อายุ:</b> {record['age']} ปี</p>
-                            <p style="margin: 8px 0;"><b>เพศ:</b> {record['gender']}</p>
-                            <p style="margin: 8px 0;"><b>โรคประจำตัว:</b> {record['chronic']}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    with col2:
-                        st.markdown(f"""
-                        <div class="info-box">
-                            <p style="margin: 8px 0;"><b>คะแนน:</b> {record['score']}</p>
-                            <p style="margin: 8px 0;"><b>ความเสี่ยง:</b> {record['risk']}</p>
-                            <p style="margin: 8px 0;"><b>อาการ:</b> {record['symptoms']}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    if record['notes'] != '-':
-                        st.markdown(f'<div class="info-box"><b>หมายเหตุ:</b> {record["notes"]}</div>', unsafe_allow_html=True)
+                record = df.iloc[selected_index]
+                st.write(f"**วันที่:** {record['date']}")
+                st.write(f"**ชื่อ:** {record['name']}")
+                st.write(f"**อายุ:** {record['age']} ปี")
+                st.write(f"**คะแนน:** {record['score']}")
+                st.write(f"**ความเสี่ยง:** {record['risk']}")
+                st.write(f"**อาการ:** {record['symptoms']}")
         
         with tab2:
-            st.markdown("### ✏️ แก้ไขหรือลบข้อมูล")
             if len(df) > 0:
-                edit_index = st.selectbox("เลือกรายการที่ต้องการแก้ไข/ลบ", range(len(df)), format_func=lambda x: f"{df.iloc[x]['date']} - {df.iloc[x]['name']}")
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button("🗑️ ลบรายการนี้", type="secondary"):
-                        if delete_record(edit_index):
-                            st.success("✅ ลบข้อมูลเรียบร้อยแล้ว!")
-                            st.rerun()
-                
-                with col2:
-                    new_risk = st.selectbox("แก้ไขระดับความเสี่ยง", ["ต่ำ", "กลาง", "สูง"], index=["ต่ำ", "กลาง", "สูง"].index(df.iloc[edit_index]['risk']))
-                    if st.button("💾 บันทึกการแก้ไข"):
-                        update_record(edit_index, {'risk': new_risk})
-                        st.success("✅ อัปเดตข้อมูลเรียบร้อยแล้ว!")
+                edit_index = st.selectbox("เลือกรายการที่ต้องการลบ", range(len(df)),
+                    format_func=lambda x: f"{df.iloc[x]['date']} - {df.iloc[x]['name']}")
+                if st.button("🗑️ ลบรายการนี้"):
+                    if delete_record(edit_index):
+                        st.success("✅ ลบข้อมูลเรียบร้อยแล้ว!")
                         st.rerun()
         
         with tab3:
-            st.markdown("### 📥 ดาวน์โหลดข้อมูลของคุณ")
             csv = df.to_csv(index=False).encode('utf-8-sig')
-            st.download_button(
-                label="📥 ดาวน์โหลดไฟล์ CSV",
-                data=csv,
-                file_name=f'my_health_data_{datetime.now().strftime("%Y%m%d_%H%M")}.csv',
-                mime='text/csv',
-                use_container_width=True
-            )
-            
-            st.info("💡 **วิธีเปิดไฟล์ CSV:** คลิกปุ่มดาวน์โหลดด้านบน แล้วเปิดไฟล์ด้วย Microsoft Excel หรือ Google Sheets")
-        
-        st.markdown("---")
-        if st.button("⚠️ ล้างข้อมูลทั้งหมด (ระวัง!)", type="secondary"):
-            st.warning("⚠️ การดำเนินการนี้จะลบข้อมูลทั้งหมดของคุณถาวร!")
-            if st.checkbox("ฉันเข้าใจและยืนยันที่จะลบข้อมูลทั้งหมด"):
-                if os.path.exists(DATA_FILE):
-                    os.remove(DATA_FILE)
-                    st.success("✅ ลบข้อมูลทั้งหมดเรียบร้อยแล้ว!")
-                    st.rerun()
+            st.download_button(label=" ดาวน์โหลดไฟล์ CSV", data=csv,
+                file_name=f'my_health_data_{datetime.now().strftime("%Y%m%d")}.csv', mime='text/csv')
 
-# ==================== หน้าที่ 4: สถิติส่วนตัว ====================
-elif menu == "📊 สถิติ":
+# ==================== หน้าที่ 4: สถิติ ====================
+elif menu == " สถิติ":
     st.markdown('<div class="page-header"><h1>📊 สถิติการประเมินของคุณ</h1></div>', unsafe_allow_html=True)
 
     df = load_data()
     
     if df.empty:
-        st.info("💡 ยังไม่มีข้อมูล กรุณาประเมินอาการอย่างน้อย 1 ครั้งเพื่อดูสถิติของคุณ")
+        st.info("💡 ยังไม่มีข้อมูล กรุณาประเมินอาการอย่างน้อย 1 ครั้ง")
     else:
         st.success(f"📊 แสดงสถิติจากข้อมูลของคุณ **{len(df)} รายการ**")
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.markdown(f"""
-            <div class="metric-card">
-                <div style="font-size: 2.5rem;">📋</div>
-                <h3>{len(df)}</h3>
-                <p>การประเมินทั้งหมด</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><h3>📋 {len(df)}</h3><p>การประเมินทั้งหมด</p></div>', unsafe_allow_html=True)
         with col2:
             high_count = len(df[df['risk'] == 'สูง'])
-            st.markdown(f"""
-            <div class="metric-card">
-                <div style="font-size: 2.5rem;">🚨</div>
-                <h3>{high_count}</h3>
-                <p>ความเสี่ยงสูง</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><h3>🚨 {high_count}</h3><p>ความเสี่ยงสูง</p></div>', unsafe_allow_html=True)
         with col3:
             avg_score = df['score'].mean()
-            st.markdown(f"""
-            <div class="metric-card">
-                <div style="font-size: 2.5rem;">📈</div>
-                <h3>{avg_score:.1f}</h3>
-                <p>คะแนนเฉลี่ย</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><h3>📈 {avg_score:.1f}</h3><p>คะแนนเฉลี่ย</p></div>', unsafe_allow_html=True)
 
         st.markdown("---")
-        
-        st.markdown('<h3 class="section-title">📊 สัดส่วนระดับความเสี่ยงของคุณ</h3>', unsafe_allow_html=True)
+        st.markdown("### 📊 สัดส่วนระดับความเสี่ยง")
         risk_counts = df['risk'].value_counts().reset_index()
         risk_counts.columns = ['ระดับความเสี่ยง', 'จำนวน']
         fig_pie = px.pie(risk_counts, values='จำนวน', names='ระดับความเสี่ยง', 
-                        color='ระดับความเสี่ยง', color_discrete_map={'ต่ำ': '#38ef7d', 'กลาง': '#ffd200', 'สูง': '#ff4b2b'}, hole=0.4)
-        fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#333', family='Prompt'))
+                        color='ระดับความเสี่ยง', color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'})
         st.plotly_chart(fig_pie, use_container_width=True)
 
         st.markdown("---")
-        st.markdown('<h3 class="section-title">📊 คะแนนความเสี่ยงในแต่ละครั้ง</h3>', unsafe_allow_html=True)
+        st.markdown("###  คะแนนความเสี่ยงในแต่ละครั้ง")
         fig_bar = px.bar(df.sort_values('date'), x='date', y='score', color='risk',
-                        color_discrete_map={'ต่ำ': '#38ef7d', 'กลาง': '#ffd200', 'สูง': '#ff4b2b'}, text='score', hover_data=['name', 'symptoms'])
-        fig_bar.update_traces(textposition='outside')
-        fig_bar.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#333', family='Prompt'))
+                        color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'})
         st.plotly_chart(fig_bar, use_container_width=True)
-
-        st.markdown("---")
-        st.markdown('<h3 class="section-title">📈 ความสัมพันธ์ อายุ vs คะแนน</h3>', unsafe_allow_html=True)
-        fig_scatter = px.scatter(df, x='age', y='score', color='risk',
-                                color_discrete_map={'ต่ำ': '#38ef7d', 'กลาง': '#ffd200', 'สูง': '#ff4b2b'},
-                                hover_data=['name', 'date', 'symptoms'], size='score')
-        fig_scatter.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#333', family='Prompt'))
-        st.plotly_chart(fig_scatter, use_container_width=True)
 
 # ==================== หน้าที่ 5: เกี่ยวกับ ====================
 elif menu == "ℹ️ เกี่ยวกับ":
     st.markdown('<div class="page-header"><h1>ℹ️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
     
     st.markdown("""
-    <div class="info-box" style="padding: 2rem;">
-        <h3 style="color: #0083b0; margin-top: 0;">🎓 โปรเจกต์ปี 4 (Senior Project)</h3>
-        <h4 style="color: #0083b0;">ระบบประเมินการตัดสินใจไปพบแพทย์สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</h4>
-        <p style="line-height: 1.8; font-size: 1.05rem; color: #495057;">
-            ระบบนี้ถูกพัฒนาขึ้นเพื่อให้คุณสามารถประเมินอาการสุขภาพด้วยตัวเอง 
-            โดยเน้นการคัดกรองโรคไม่ติดต่อเรื้อรัง (NCDs) เช่น เบาหวาน ความดันโลหิตสูง โรคหัวใจและหลอดเลือด
-        </p>
+    <div class="info-box">
+        <b>🎓 โปรเจกต์ปี 4 (Senior Project)</b><br>
+        <b>ระบบประเมินการตัดสินใจไปพบแพทย์สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</b><br><br>
+        ระบบนี้ถูกพัฒนาขึ้นเพื่อให้คุณสามารถประเมินอาการสุขภาพด้วยตัวเอง 
+        โดยเน้นการคัดกรองโรคไม่ติดต่อเรื้อรัง (NCDs)
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown('<h3 class="section-title">💾 การจัดเก็บข้อมูลของคุณ</h3>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="info-box" style="padding: 2rem;">
-        <p style="margin: 10px 0; color: #495057;"><b>📁 ไฟล์ข้อมูล:</b> <code>assessment_data.csv</code></p>
-        <p style="margin: 10px 0; color: #495057;"><b>📍 ตำแหน่ง:</b> โฟลเดอร์เดียวกับแอปนี้</p>
-        <p style="margin: 10px 0; color: #495057;"><b>🔒 ความเป็นส่วนตัว:</b> ข้อมูลถูกเก็บในเครื่องของคุณเท่านั้น</p>
-        <p style="margin: 10px 0; color: #495057;"><b>📥 การสำรองข้อมูล:</b> สามารถดาวน์โหลดไฟล์ CSV ได้จากหน้า "ประวัติ"</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div class="info-box" style="margin-top: 40px; padding: 2rem; border-left-color: #ff4b2b; background: linear-gradient(to right, #fff5f5, #ffffff);">
-        <h4 style="color: #ff4b2b; margin-top: 0;">⚠️ ข้อจำกัดสำคัญ</h4>
-        <p style="line-height: 1.8; font-size: 1.05rem; color: #495057;">
-            ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
-            <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b> หากมีอาการรุนแรงหรือกังวลใจ 
-            ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์โดยตรง
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.warning("⚠️ **ข้อจำกัด:** ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้")
 
 # ==================== Footer ====================
 st.markdown("---")
-st.markdown("""
-<div class="footer">
-    <p style="margin: 0; font-size: 1.1rem; font-weight: 600; color: #0083b0;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) | โปรเจกต์ปี 4</p>
-    <p style="margin: 10px 0 0 0; font-size: 0.9rem; color: #6c757d;">พัฒนาด้วย Streamlit • Python • Data Visualization</p>
-</div>
-""", unsafe_allow_html=True)
+st.markdown('<div class="footer"><p> ระบบประเมินสุขภาพส่วนตัว (40+ ปี) | โปรเจกต์ปี 4</p><p>พัฒนาด้วย Streamlit • Python</p></div>', unsafe_allow_html=True)
