@@ -165,7 +165,7 @@ with st.sidebar:
     st.markdown("""
     <div class="emergency-box">
         <h3>🚑 1669</h3>
-        <p>ศูนย์นเรนทร<br>เจ็บป่วยฉุกเฉิน</p>
+        <p><br>เจ็บป่วยฉุกเฉิน</p>
     </div>
     """, unsafe_allow_html=True)
     
