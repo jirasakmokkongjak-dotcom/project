@@ -35,7 +35,6 @@ def save_to_csv(data_dict):
 
 def load_data():
     if os.path.exists(DATA_FILE):
-        # เพิ่ม on_bad_lines='skip' เพื่อป้องกันไฟล์เสียทำให้แอปพัง
         return pd.read_csv(DATA_FILE, on_bad_lines='skip')
     return pd.DataFrame()
 
@@ -69,7 +68,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ==================== CSS ตกแต่ง (แก้สีตัวอักษรเป็นสีดำแล้ว) ====================
+# ==================== CSS ตกแต่งแบบจัดเต็ม ====================
 st.markdown("""
 <style>
     .stApp { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-attachment: fixed; }
@@ -78,19 +77,45 @@ st.markdown("""
     .page-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; color: white; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .page-header h1 { font-size: 2.2rem; font-weight: 700; margin: 0; }
     
-    /* แก้ไขสีตัวอักษรใน Metric Card เป็นสีดำ */
+    /* Metric Card - ตัวอักษรสีดำ */
     .metric-card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: all 0.3s ease; }
     .metric-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
     .metric-card h3 { color: #000000 !important; font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
     .metric-card p { color: #000000 !important; font-size: 1rem; margin: 0; font-weight: 500; }
     
+    /* Info Box และ Alert - ตัวอักษรสีดำ */
+    .stAlert, .stInfo, .element-container .stMarkdown, div[data-testid="stAlert"] {
+        color: #000000 !important;
+    }
+    .stAlert h4, .stInfo h4, .element-container .stMarkdown h4, div[data-testid="stAlert"] h4 {
+        color: #000000 !important;
+        font-weight: bold;
+    }
+    .stAlert ul li, .stInfo ul li {
+        color: #000000 !important;
+    }
+    
+    /* กล่อง Info แบบ Custom */
+    .info-box { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #667eea; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 20px 0; color: #000000 !important; }
+    .info-box b { color: #000000 !important; font-size: 1.1rem; }
+    .info-box p, .info-box span { color: #000000 !important; }
+    
+    /* Risk Cards */
     .risk-high { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 15px 40px rgba(238,90,111,0.4); animation: pulse 2s infinite; }
     .risk-medium { background: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; }
     .risk-low { background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; }
     @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-    .info-box { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #667eea; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 20px 0; }
+    
+    /* Section Title */
     .section-title { color: #667eea; font-size: 1.8rem; font-weight: 700; margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 3px solid #667eea; display: inline-block; }
+    
+    /* Footer */
     .footer { text-align: center; color: white; padding: 30px; margin-top: 50px; background: rgba(0,0,0,0.2); border-radius: 15px; }
+    
+    /* ปรับปรุงการแสดงผลทั่วไป */
+    .stMarkdown, .stMarkdown p, .stMarkdown li {
+        color: #000000 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -152,7 +177,7 @@ with st.sidebar:
     
     menu = st.radio(
         "เมนูหลัก",
-        ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "️ เกี่ยวกับ"],
+        ["🏠 หน้าหลัก", " ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "ℹ️ เกี่ยวกับ"],
         index=1
     )
     
@@ -173,7 +198,7 @@ with st.sidebar:
 if menu == "🏠 หน้าหลัก":
     st.markdown("""
     <div class="hero-section">
-        <h1>🏥 ระบบประเมินสุขภาพส่วนตัว</h1>
+        <h1> ระบบประเมินสุขภาพส่วนตัว</h1>
         <h3>สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</h3>
         <p style="font-size: 1.1rem; margin-top: 20px; opacity: 0.9;">
             ประเมินอาการด้วยตัวเอง • บันทึกข้อมูลส่วนตัว • ติดตามผลสุขภาพ
@@ -185,7 +210,7 @@ if menu == "🏠 หน้าหลัก":
     with col1:
         st.markdown(f"""
         <div class="metric-card">
-            <h3> {get_data_count()}</h3>
+            <h3>📋 {get_data_count()}</h3>
             <p>การประเมินของคุณ</p>
         </div>
         """, unsafe_allow_html=True)
@@ -208,15 +233,36 @@ if menu == "🏠 หน้าหลัก":
     
     col_a, col_b, col_c = st.columns(3)
     with col_a:
-        st.info("**1. ประเมินอาการ**\n- กรอกข้อมูลส่วนตัว\n- เลือกอาการที่เป็น\n- ระบบคำนวณความเสี่ยง")
+        st.markdown("""
+        <div style="background: rgba(255,255,255,0.95); padding: 20px; border-radius: 12px; color: black;">
+        **1. ประเมินอาการ**
+        - กรอกข้อมูลส่วนตัว
+        - เลือกอาการที่เป็น
+        - ระบบคำนวณความเสี่ยง
+        </div>
+        """, unsafe_allow_html=True)
     with col_b:
-        st.info("**2. บันทึกข้อมูล**\n- ข้อมูลจะถูกบันทึกอัตโนมัติ\n- เก็บเป็นไฟล์ CSV\n- เปิดดูใน Excel ได้")
+        st.markdown("""
+        <div style="background: rgba(255,255,255,0.95); padding: 20px; border-radius: 12px; color: black;">
+        **2. บันทึกข้อมูล**
+        - ข้อมูลจะถูกบันทึกอัตโนมัติ
+        - เก็บเป็นไฟล์ CSV
+        - เปิดดูใน Excel ได้
+        </div>
+        """, unsafe_allow_html=True)
     with col_c:
-        st.info("**3. ดูประวัติ**\n- ดูผลการประเมินย้อนหลัง\n- เปรียบเทียบผลลัพธ์\n- ดาวน์โหลดข้อมูล")
+        st.markdown("""
+        <div style="background: rgba(255,255,255,0.95); padding: 20px; border-radius: 12px; color: black;">
+        **3. ดูประวัติ**
+        - ดูผลการประเมินย้อนหลัง
+        - เปรียบเทียบผลลัพธ์
+        - ดาวน์โหลดข้อมูล
+        </div>
+        """, unsafe_allow_html=True)
     
     st.markdown("""
     <div class="info-box" style="margin-top: 30px;">
-        <b>💾 ข้อมูลของคุณ:</b> ระบบจะบันทึกข้อมูลการประเมินทั้งหมดลงในไฟล์ <code>assessment_data.csv</code> 
+        <b> ข้อมูลของคุณ:</b> ระบบจะบันทึกข้อมูลการประเมินทั้งหมดลงในไฟล์ <code>assessment_data.csv</code> 
         ในโฟลเดอร์เดียวกับแอปนี้ คุณสามารถเปิดดู แก้ไข หรือสำรองข้อมูลได้ตลอดเวลา<br>
         <b>⚠️ หมายเหตุ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b>
     </div>
@@ -236,7 +282,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
         with col3: 
             gender = st.selectbox("เพศ *", ["ชาย", "หญิง", "ไม่ระบุ"])
 
-        st.markdown('<h3 class="section-title">🏥 ข้อมูลสุขภาพ</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-title"> ข้อมูลสุขภาพ</h3>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             chronic = st.multiselect("โรคประจำตัว", CHRONIC_DISEASES)
@@ -264,7 +310,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
         
         st.info(f"📊 **ค่า BMI ของคุณ:** {bmi:.1f} (**{bmi_status}**)")
 
-        st.markdown('<h3 class="section-title">🤒 อาการที่คุณกำลังประสบอยู่</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-title"> อาการที่คุณกำลังประสบอยู่</h3>', unsafe_allow_html=True)
         st.info("💡 **คำแนะนำ:** เลือกอาการที่คุณกำลังเป็นอยู่ในขณะนี้ สามารถเลือกได้มากกว่า 1 อาการ")
         
         total_score = 0
@@ -282,18 +328,18 @@ elif menu == "🩺 ประเมินอาการใหม่":
                             if "ฉุกเฉิน" in category: 
                                 emergency_symptoms.append(symptom)
 
-        st.markdown('<h3 class="section-title">📝 หมายเหตุเพิ่มเติม</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-title"> หมายเหตุเพิ่มเติม</h3>', unsafe_allow_html=True)
         notes = st.text_area(
             "อธิบายอาการเพิ่มเติม (ถ้ามี)", 
             placeholder="เช่น อาการเป็นมา 3 วัน, มีไข้ร่วมด้วย, เคยเป็นมาก่อน, ฯลฯ",
             height=100
         )
 
-        submitted = st.form_submit_button(" ประเมินผลตอนนี้", type="primary", use_container_width=True)
+        submitted = st.form_submit_button("🔍 ประเมินผลตอนนี้", type="primary", use_container_width=True)
 
     if submitted:
         if not name:
-            st.error("️ กรุณากรอกชื่อ-นามสกุล")
+            st.error("⚠️ กรุณากรอกชื่อ-นามสกุล")
         elif not selected_symptoms:
             st.warning("⚠️ กรุณาเลือกอาการอย่างน้อย 1 รายการ")
         else:
@@ -339,7 +385,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
             with col2:
                 st.markdown(f"""
                 <div class="info-box">
-                    <b> ผลการประเมิน:</b><br>
+                    <b>📊 ผลการประเมิน:</b><br>
                     • คะแนนดิบ: {total_score}<br>
                     • ตัวคูณความเสี่ยง: {risk_multiplier}x<br>
                     • <b>คะแนนรวม: {final_score}</b><br>
@@ -355,7 +401,6 @@ elif menu == "🩺 ประเมินอาการใหม่":
             if notes:
                 st.markdown(f"**หมายเหตุ:** {notes}")
             
-            # บันทึกข้อมูล (ใช้ | แทน , เพื่อป้องกัน CSV พัง)
             record = {
                 "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
                 "name": name, "age": age, "gender": gender,
@@ -373,7 +418,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
             st.info("💾 ข้อมูลของคุณถูกบันทึกในไฟล์ assessment_data.csv แล้ว")
 
             st.markdown("---")
-            if st.button("️ สร้างใบสรุปผลสุขภาพ (สำหรับพิมพ์ / บันทึก PDF)", type="secondary", use_container_width=True):
+            if st.button("🖨️ สร้างใบสรุปผลสุขภาพ (สำหรับพิมพ์ / บันทึก PDF)", type="secondary", use_container_width=True):
                 st.markdown(f"""
                 <div style="background: white; color: black; padding: 30px; border-radius: 10px; border: 2px solid #333; font-family: sans-serif; line-height: 1.6;">
                     <h2 style="text-align: center; color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">🏥 ใบสรุปผลการประเมินสุขภาพเบื้องต้น</h2>
@@ -407,14 +452,14 @@ elif menu == "📋 ประวัติการประเมินของ�
     if df.empty:
         st.markdown("""
         <div class="info-box" style="text-align: center; padding: 40px;">
-            <h3 style="color: #667eea; margin: 0;">📭 ยังไม่มีข้อมูล</h3>
+            <h3 style="color: #667eea; margin: 0;"> ยังไม่มีข้อมูล</h3>
             <p style="margin: 10px 0 0 0;">กรุณาไปที่หน้า 'ประเมินอาการใหม่' เพื่อเริ่มประเมิน</p>
         </div>
         """, unsafe_allow_html=True)
     else:
         st.success(f"✅ พบข้อมูลการประเมิน **{len(df)} รายการ** ของคุณ")
         
-        tab1, tab2, tab3 = st.tabs(["👁️ ดูข้อมูล", "✏️ แก้ไข/ลบ", "📥 ดาวน์โหลด"])
+        tab1, tab2, tab3 = st.tabs(["👁️ ดูข้อมูล", "✏️ แก้ไข/ลบ", " ดาวน์โหลด"])
         
         with tab1:
             st.markdown("### 📄 ตารางข้อมูลการประเมินทั้งหมด")
@@ -463,14 +508,14 @@ elif menu == "📋 ประวัติการประเมินของ�
                         st.rerun()
         
         with tab3:
-            st.markdown("### 📥 ดาวน์โหลดข้อมูลของคุณ")
+            st.markdown("###  ดาวน์โหลดข้อมูลของคุณ")
             csv = df.to_csv(index=False).encode('utf-8-sig')
             st.download_button(label="📥 ดาวน์โหลดไฟล์ CSV", data=csv,
                 file_name=f'my_health_data_{datetime.now().strftime("%Y%m%d_%H%M")}.csv', mime='text/csv', use_container_width=True)
             st.info("💡 **วิธีเปิดไฟล์ CSV:** คลิกปุ่มดาวน์โหลดด้านบน แล้วเปิดไฟล์ด้วย Microsoft Excel หรือ Google Sheets")
         
         st.markdown("---")
-        if st.button("️ ล้างข้อมูลทั้งหมด (ระวัง!)", type="secondary"):
+        if st.button("⚠️ ล้างข้อมูลทั้งหมด (ระวัง!)", type="secondary"):
             st.warning("⚠️ การดำเนินการนี้จะลบข้อมูลทั้งหมดของคุณถาวร!")
             if st.checkbox("ฉันเข้าใจและยืนยันที่จะลบข้อมูลทั้งหมด"):
                 if os.path.exists(DATA_FILE):
@@ -479,7 +524,7 @@ elif menu == "📋 ประวัติการประเมินของ�
                     st.rerun()
 
 # ==================== หน้าที่ 4: สถิติส่วนตัว ====================
-elif menu == " สถิติส่วนตัว":
+elif menu == "📊 สถิติส่วนตัว":
     st.markdown('<div class="page-header"><h1>📊 สถิติการประเมินของคุณ</h1></div>', unsafe_allow_html=True)
 
     df = load_data()
@@ -491,7 +536,7 @@ elif menu == " สถิติส่วนตัว":
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.markdown(f'<div class="metric-card"><h3> {len(df)}</h3><p>การประเมินทั้งหมด</p></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><h3>📋 {len(df)}</h3><p>การประเมินทั้งหมด</p></div>', unsafe_allow_html=True)
         with col2:
             high_count = len(df[df['risk'] == 'สูง'])
             st.markdown(f'<div class="metric-card"><h3>🚨 {high_count}</h3><p>ความเสี่ยงสูง</p></div>', unsafe_allow_html=True)
@@ -515,14 +560,14 @@ elif menu == " สถิติส่วนตัว":
         st.plotly_chart(fig_bar, use_container_width=True)
 
         st.markdown("---")
-        st.markdown('<h3 class="section-title"> ความสัมพันธ์ อายุ vs คะแนน</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-title">📈 ความสัมพันธ์ อายุ vs คะแนน</h3>', unsafe_allow_html=True)
         fig_scatter = px.scatter(df, x='age', y='score', color='risk',
                                 color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'},
                                 hover_data=['name', 'date', 'symptoms'], size='score')
         st.plotly_chart(fig_scatter, use_container_width=True)
 
 # ==================== หน้าที่ 5: เกี่ยวกับ ====================
-elif menu == "ℹ️ เกี่ยวกับ":
+elif menu == "️ เกี่ยวกับ":
     st.markdown('<div class="page-header"><h1>ℹ️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
     
     st.markdown("""
@@ -534,7 +579,7 @@ elif menu == "ℹ️ เกี่ยวกับ":
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown('<h3 class="section-title">💾 การจัดเก็บข้อมูลของคุณ</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="section-title"> การจัดเก็บข้อมูลของคุณ</h3>', unsafe_allow_html=True)
     st.markdown("""
     <div class="info-box">
         <b>📁 ไฟล์ข้อมูล:</b> <code>assessment_data.csv</code><br>
