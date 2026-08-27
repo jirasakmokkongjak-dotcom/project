@@ -239,7 +239,7 @@ if menu == "🏠 หน้าหลัก":
 
 # ==================== หน้าที่ 2: ประเมินอาการใหม่ ====================
 elif menu == "🩺 ประเมินอาการใหม่":
-    st.markdown('<div class="page-header"><h1>🩺 แบบประเมินอาการ </h1></div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-header"><h1>🩺 แบบประเมินอาการ (กรอกเอง)</h1></div>', unsafe_allow_html=True)
 
     with st.form("assessment_form", clear_on_submit=False):
         st.markdown('<h3 class="section-title">👤 ข้อมูลส่วนตัวของคุณ</h3>', unsafe_allow_html=True)
