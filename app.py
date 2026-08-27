@@ -365,7 +365,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
                 # แสดงเบอร์ฉุกเฉินแบบธรรมดา
                 st.markdown("""
                 <div style="background: white; color: black; padding: 15px; border-radius: 10px; border-left: 5px solid #ff6b6b; margin: 15px 0;">
-                    <b>📞 เบอร์ฉุกเฉิน:</b> 1669 (ศูนย์นเรนทร)
+                    <b>📞 เบอร์ฉุกเฉิน:</b> 1669
                 </div>
                 """, unsafe_allow_html=True)
             else:
@@ -442,7 +442,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
                     <hr style="border: 1px solid #ccc;">
                     <p style="font-size: 0.8em; color: gray; text-align: center; margin-top: 20px;">
                         *เอกสารนี้สร้างขึ้นจากระบบประเมินเบื้องต้น ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้<br>
-                        🚑 <b>เบอร์ฉุกเฉิน: 1669 (ศูนย์นเรนทร)</b><br>
+                        🚑 <b>เบอร์ฉุกเฉิน: 1669 </b><br>
                         หากรู้สึกไม่สบาย กรุณาไปพบแพทย์ที่โรงพยาบาลทันที
                     </p>
                 </div>
@@ -610,6 +610,6 @@ st.markdown("""
 <div class="footer">
     <p style="margin: 0; font-size: 1.1rem;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) </p>
     <p style="margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.8;">พัฒนาด้วย Streamlit • Python • Data Visualization</p>
-    <p style="margin: 5px 0 0 0; font-size: 0.9rem;">🚑 เบอร์ฉุกเฉิน: 1669 (ศูนย์นเรนทร)</p>
+    <p style="margin: 5px 0 0 0; font-size: 0.9rem;">🚑 เบอร์ฉุกเฉิน: 1669 </p>
 </div>
 """, unsafe_allow_html=True)
