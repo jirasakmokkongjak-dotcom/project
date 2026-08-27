@@ -35,7 +35,6 @@ def save_to_csv(data_dict):
 
 def load_data():
     if os.path.exists(DATA_FILE):
-        # เพิ่ม on_bad_lines='skip' เพื่อป้องกันไฟล์เสียทำให้แอปพัง
         return pd.read_csv(DATA_FILE, on_bad_lines='skip')
     return pd.DataFrame()
 
@@ -69,7 +68,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ==================== CSS ตกแต่ง (แก้สีตัวอักษรเป็นสีดำแล้ว) ====================
+# ==================== CSS ตกแต่ง ====================
 st.markdown("""
 <style>
     .stApp { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-attachment: fixed; }
@@ -78,7 +77,6 @@ st.markdown("""
     .page-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; color: white; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .page-header h1 { font-size: 2.2rem; font-weight: 700; margin: 0; }
     
-    /* แก้ไขสีตัวอักษรใน Metric Card เป็นสีดำ */
     .metric-card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: all 0.3s ease; }
     .metric-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
     .metric-card h3 { color: #000000 !important; font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
@@ -88,9 +86,12 @@ st.markdown("""
     .risk-medium { background: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; }
     .risk-low { background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; }
     @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-    .info-box { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #667eea; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 20px 0; }
+    .info-box { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #667eea; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 20px 0; color: #000000 !important; }
+    .info-box b { color: #000000 !important; }
     .section-title { color: #667eea; font-size: 1.8rem; font-weight: 700; margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 3px solid #667eea; display: inline-block; }
     .footer { text-align: center; color: white; padding: 30px; margin-top: 50px; background: rgba(0,0,0,0.2); border-radius: 15px; }
+    
+    .stAlert, .stInfo, .element-container .stMarkdown { color: #000000 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -150,9 +151,10 @@ with st.sidebar:
     if elderly_mode:
         st.markdown("<style> html { font-size: 125% !important; } </style>", unsafe_allow_html=True)
     
+    # แก้ไขชื่อเมนูให้ตรงกันเป๊ะกับเงื่อนไขด้านล่าง
     menu = st.radio(
         "เมนูหลัก",
-        ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "️ เกี่ยวกับ"],
+        ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "ℹ️ เกี่ยวกับ"],
         index=1
     )
     
@@ -185,7 +187,7 @@ if menu == "🏠 หน้าหลัก":
     with col1:
         st.markdown(f"""
         <div class="metric-card">
-            <h3> {get_data_count()}</h3>
+            <h3>📋 {get_data_count()}</h3>
             <p>การประเมินของคุณ</p>
         </div>
         """, unsafe_allow_html=True)
@@ -208,11 +210,11 @@ if menu == "🏠 หน้าหลัก":
     
     col_a, col_b, col_c = st.columns(3)
     with col_a:
-        st.info("**1. ประเมินอาการ**\n- กรอกข้อมูลส่วนตัว\n- เลือกอาการที่เป็น\n- ระบบคำนวณความเสี่ยง")
+        st.markdown('<div style="background: rgba(255,255,255,0.95); padding: 20px; border-radius: 12px; color: black;"><b>1. ประเมินอาการ</b><br>- กรอกข้อมูลส่วนตัว<br>- เลือกอาการที่เป็น<br>- ระบบคำนวณความเสี่ยง</div>', unsafe_allow_html=True)
     with col_b:
-        st.info("**2. บันทึกข้อมูล**\n- ข้อมูลจะถูกบันทึกอัตโนมัติ\n- เก็บเป็นไฟล์ CSV\n- เปิดดูใน Excel ได้")
+        st.markdown('<div style="background: rgba(255,255,255,0.95); padding: 20px; border-radius: 12px; color: black;"><b>2. บันทึกข้อมูล</b><br>- ข้อมูลจะถูกบันทึกอัตโนมัติ<br>- เก็บเป็นไฟล์ CSV<br>- เปิดดูใน Excel ได้</div>', unsafe_allow_html=True)
     with col_c:
-        st.info("**3. ดูประวัติ**\n- ดูผลการประเมินย้อนหลัง\n- เปรียบเทียบผลลัพธ์\n- ดาวน์โหลดข้อมูล")
+        st.markdown('<div style="background: rgba(255,255,255,0.95); padding: 20px; border-radius: 12px; color: black;"><b>3. ดูประวัติ</b><br>- ดูผลการประเมินย้อนหลัง<br>- เปรียบเทียบผลลัพธ์<br>- ดาวน์โหลดข้อมูล</div>', unsafe_allow_html=True)
     
     st.markdown("""
     <div class="info-box" style="margin-top: 30px;">
@@ -289,11 +291,11 @@ elif menu == "🩺 ประเมินอาการใหม่":
             height=100
         )
 
-        submitted = st.form_submit_button(" ประเมินผลตอนนี้", type="primary", use_container_width=True)
+        submitted = st.form_submit_button("🔍 ประเมินผลตอนนี้", type="primary", use_container_width=True)
 
     if submitted:
         if not name:
-            st.error("️ กรุณากรอกชื่อ-นามสกุล")
+            st.error("⚠️ กรุณากรอกชื่อ-นามสกุล")
         elif not selected_symptoms:
             st.warning("⚠️ กรุณาเลือกอาการอย่างน้อย 1 รายการ")
         else:
@@ -339,7 +341,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
             with col2:
                 st.markdown(f"""
                 <div class="info-box">
-                    <b> ผลการประเมิน:</b><br>
+                    <b>📊 ผลการประเมิน:</b><br>
                     • คะแนนดิบ: {total_score}<br>
                     • ตัวคูณความเสี่ยง: {risk_multiplier}x<br>
                     • <b>คะแนนรวม: {final_score}</b><br>
@@ -355,7 +357,6 @@ elif menu == "🩺 ประเมินอาการใหม่":
             if notes:
                 st.markdown(f"**หมายเหตุ:** {notes}")
             
-            # บันทึกข้อมูล (ใช้ | แทน , เพื่อป้องกัน CSV พัง)
             record = {
                 "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
                 "name": name, "age": age, "gender": gender,
@@ -373,7 +374,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
             st.info("💾 ข้อมูลของคุณถูกบันทึกในไฟล์ assessment_data.csv แล้ว")
 
             st.markdown("---")
-            if st.button("️ สร้างใบสรุปผลสุขภาพ (สำหรับพิมพ์ / บันทึก PDF)", type="secondary", use_container_width=True):
+            if st.button("🖨️ สร้างใบสรุปผลสุขภาพ (สำหรับพิมพ์ / บันทึก PDF)", type="secondary", use_container_width=True):
                 st.markdown(f"""
                 <div style="background: white; color: black; padding: 30px; border-radius: 10px; border: 2px solid #333; font-family: sans-serif; line-height: 1.6;">
                     <h2 style="text-align: center; color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">🏥 ใบสรุปผลการประเมินสุขภาพเบื้องต้น</h2>
@@ -470,7 +471,7 @@ elif menu == "📋 ประวัติการประเมินของ�
             st.info("💡 **วิธีเปิดไฟล์ CSV:** คลิกปุ่มดาวน์โหลดด้านบน แล้วเปิดไฟล์ด้วย Microsoft Excel หรือ Google Sheets")
         
         st.markdown("---")
-        if st.button("️ ล้างข้อมูลทั้งหมด (ระวัง!)", type="secondary"):
+        if st.button("⚠️ ล้างข้อมูลทั้งหมด (ระวัง!)", type="secondary"):
             st.warning("⚠️ การดำเนินการนี้จะลบข้อมูลทั้งหมดของคุณถาวร!")
             if st.checkbox("ฉันเข้าใจและยืนยันที่จะลบข้อมูลทั้งหมด"):
                 if os.path.exists(DATA_FILE):
@@ -478,8 +479,8 @@ elif menu == "📋 ประวัติการประเมินของ�
                     st.success("✅ ลบข้อมูลทั้งหมดเรียบร้อยแล้ว!")
                     st.rerun()
 
-# ==================== หน้าที่ 4: สถิติส่วนตัว ====================
-elif menu == " สถิติส่วนตัว":
+# ==================== หน้าที่ 4: สถิติส่วนตัว (แก้ไขชื่อเงื่อนไขให้ตรงกันแล้ว) ====================
+elif menu == "📊 สถิติส่วนตัว":
     st.markdown('<div class="page-header"><h1>📊 สถิติการประเมินของคุณ</h1></div>', unsafe_allow_html=True)
 
     df = load_data()
@@ -491,7 +492,7 @@ elif menu == " สถิติส่วนตัว":
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.markdown(f'<div class="metric-card"><h3> {len(df)}</h3><p>การประเมินทั้งหมด</p></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><h3>📋 {len(df)}</h3><p>การประเมินทั้งหมด</p></div>', unsafe_allow_html=True)
         with col2:
             high_count = len(df[df['risk'] == 'สูง'])
             st.markdown(f'<div class="metric-card"><h3>🚨 {high_count}</h3><p>ความเสี่ยงสูง</p></div>', unsafe_allow_html=True)
@@ -515,13 +516,13 @@ elif menu == " สถิติส่วนตัว":
         st.plotly_chart(fig_bar, use_container_width=True)
 
         st.markdown("---")
-        st.markdown('<h3 class="section-title"> ความสัมพันธ์ อายุ vs คะแนน</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-title">📈 ความสัมพันธ์ อายุ vs คะแนน</h3>', unsafe_allow_html=True)
         fig_scatter = px.scatter(df, x='age', y='score', color='risk',
                                 color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'},
                                 hover_data=['name', 'date', 'symptoms'], size='score')
         st.plotly_chart(fig_scatter, use_container_width=True)
 
-# ==================== หน้าที่ 5: เกี่ยวกับ ====================
+# ==================== หน้าที่ 5: เกี่ยวกับ (แก้ไขชื่อเงื่อนไขให้ตรงกันแล้ว) ====================
 elif menu == "ℹ️ เกี่ยวกับ":
     st.markdown('<div class="page-header"><h1>ℹ️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
     
@@ -556,7 +557,7 @@ elif menu == "ℹ️ เกี่ยวกับ":
 st.markdown("---")
 st.markdown("""
 <div class="footer">
-    <p style="margin: 0; font-size: 1.1rem;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) </p>
+    <p style="margin: 0; font-size: 1.1rem;">🏥 ระบบประเมินสุขภาพส่วนตัว (40+ ปี) | โปรเจกต์ปี 4</p>
     <p style="margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.8;">พัฒนาด้วย Streamlit • Python • Data Visualization</p>
 </div>
 """, unsafe_allow_html=True)
