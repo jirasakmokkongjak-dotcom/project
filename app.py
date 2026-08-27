@@ -27,6 +27,7 @@ def send_line_notify(message):
 DATA_FILE = "assessment_data.csv"
 
 def save_to_csv(data_dict):
+    """บันทึกข้อมูลใหม่ลง CSV"""
     df_new = pd.DataFrame([data_dict])
     if os.path.exists(DATA_FILE):
         df_new.to_csv(DATA_FILE, mode='a', header=False, index=False, encoding='utf-8-sig')
@@ -34,16 +35,19 @@ def save_to_csv(data_dict):
         df_new.to_csv(DATA_FILE, mode='w', header=True, index=False, encoding='utf-8-sig')
 
 def load_data():
+    """โหลดข้อมูลจาก CSV"""
     if os.path.exists(DATA_FILE):
         return pd.read_csv(DATA_FILE)
     return pd.DataFrame()
 
 def get_data_count():
+    """นับจำนวนข้อมูล"""
     if os.path.exists(DATA_FILE):
         return len(pd.read_csv(DATA_FILE))
     return 0
 
 def update_record(index, updated_data):
+    """อัปเดตข้อมูลตาม index"""
     df = load_data()
     if 0 <= index < len(df):
         for key, value in updated_data.items():
@@ -53,6 +57,7 @@ def update_record(index, updated_data):
     return False
 
 def delete_record(index):
+    """ลบข้อมูลตาม index"""
     df = load_data()
     if 0 <= index < len(df):
         df = df.drop(index).reset_index(drop=True)
@@ -203,11 +208,26 @@ if menu == "🏠 หน้าหลัก":
     
     col_a, col_b, col_c = st.columns(3)
     with col_a:
-        st.info("**1. ประเมินอาการ**\n- กรอกข้อมูลส่วนตัว\n- เลือกอาการที่เป็น\n- ระบบคำนวณความเสี่ยง")
+        st.info("""
+        **1. ประเมินอาการ**
+        - กรอกข้อมูลส่วนตัว
+        - เลือกอาการที่เป็น
+        - ระบบคำนวณความเสี่ยง
+        """)
     with col_b:
-        st.info("**2. บันทึกข้อมูล**\n- ข้อมูลจะถูกบันทึกอัตโนมัติ\n- เก็บเป็นไฟล์ CSV\n- เปิดดูใน Excel ได้")
+        st.info("""
+        **2. บันทึกข้อมูล**
+        - ข้อมูลจะถูกบันทึกอัตโนมัติ
+        - เก็บเป็นไฟล์ CSV
+        - เปิดดูใน Excel ได้
+        """)
     with col_c:
-        st.info("**3. ดูประวัติ**\n- ดูผลการประเมินย้อนหลัง\n- เปรียบเทียบผลลัพธ์\n- ดาวน์โหลดข้อมูล")
+        st.info("""
+        **3. ดูประวัติ**
+        - ดูผลการประเมินย้อนหลัง
+        - เปรียบเทียบผลลัพธ์
+        - ดาวน์โหลดข้อมูล
+        """)
     
     st.markdown("""
     <div class="info-box" style="margin-top: 30px;">
@@ -219,49 +239,32 @@ if menu == "🏠 หน้าหลัก":
 
 # ==================== หน้าที่ 2: ประเมินอาการใหม่ ====================
 elif menu == "🩺 ประเมินอาการใหม่":
-    st.markdown('<div class="page-header"><h1>🩺 แบบประเมินอาการ</h1></div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-header"><h1>🩺 แบบประเมินอาการ </h1></div>', unsafe_allow_html=True)
 
     with st.form("assessment_form", clear_on_submit=False):
         st.markdown('<h3 class="section-title">👤 ข้อมูลส่วนตัวของคุณ</h3>', unsafe_allow_html=True)
         col1, col2, col3 = st.columns(3)
         with col1: 
-            name = st.text_input("ชื่อ-นามสกุล *", placeholder="กรอกชื่อของคุณ")
+            name = st.text_input("ชื่อ-นามสกุล *", placeholder="กรอกชื่อของคุณ", help="ระบุชื่อ-นามสกุลของคุณ")
         with col2: 
-            age = st.number_input("อายุ (ปี) *", min_value=40, max_value=120, value=45)
+            age = st.number_input("อายุ (ปี) *", min_value=40, max_value=120, value=45, help="ระบุอายุของคุณ")
         with col3: 
-            gender = st.selectbox("เพศ *", ["ชาย", "หญิง", "ไม่ระบุ"])
+            gender = st.selectbox("เพศ *", ["ชาย", "หญิง", "ไม่ระบุ"], help="เลือกเพศของคุณ")
 
         st.markdown('<h3 class="section-title">🏥 ข้อมูลสุขภาพ</h3>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
-            chronic = st.multiselect("โรคประจำตัว", CHRONIC_DISEASES)
+            chronic = st.multiselect("โรคประจำตัว", CHRONIC_DISEASES, help="เลือกโรคประจำตัวที่คุณมี")
         with col2:
             medications = st.text_input("ยาที่รับประทานประจำ (ถ้ามี)", placeholder="เช่น ยาลดความดัน, ยาเบาหวาน")
         
         col1, col2 = st.columns(2)
         with col1:
-            bp = st.text_input("ความดันโลหิตล่าสุด", placeholder="เช่น 120/80")
+            bp = st.text_input("ความดันโลหิตล่าสุด", placeholder="เช่น 120/80", help="ความดันโลหิตตัวบน/ตัวล่าง")
         with col2:
-            bs = st.number_input("ระดับน้ำตาลในเลือด (mg/dL)", min_value=0, max_value=600, value=100)
+            bs = st.number_input("ระดับน้ำตาลในเลือด (mg/dL)", min_value=0, max_value=600, value=100, help="ระดับน้ำตาลในเลือด")
         
-        # ==================== ฟีเจอร์ใหม่: คำนวณ BMI ====================
-        st.markdown('<h4 style="color: #667eea; margin-top: 15px; margin-bottom: 5px;">📏 ส่วนสูงและน้ำหนัก (สำหรับคำนวณ BMI)</h4>', unsafe_allow_html=True)
-        col1, col2 = st.columns(2)
-        with col1:
-            height = st.number_input("ส่วนสูง (ซม.)", min_value=100, max_value=250, value=160)
-        with col2:
-            weight = st.number_input("น้ำหนัก (กก.)", min_value=30, max_value=200, value=60)
-        
-        bmi = weight / ((height/100) ** 2)
-        if bmi < 18.5: bmi_status = "ผอม"
-        elif bmi < 23: bmi_status = "ปกติ"
-        elif bmi < 25: bmi_status = "ท้วม"
-        else: bmi_status = "อ้วน"
-        
-        st.info(f"📊 **ค่า BMI ของคุณ:** {bmi:.1f} (**{bmi_status}**)")
-        # ============================================================
-
-        st.markdown('<h3 class="section-title">🤒 อาการที่คุณกำลังประสบอยู่</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-title">🤒 อาการที่คุณกำลังประสบอยู่ (เลือกเอง)</h3>', unsafe_allow_html=True)
         st.info("💡 **คำแนะนำ:** เลือกอาการที่คุณกำลังเป็นอยู่ในขณะนี้ สามารถเลือกได้มากกว่า 1 อาการ")
         
         total_score = 0
@@ -283,7 +286,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
         notes = st.text_area(
             "อธิบายอาการเพิ่มเติม (ถ้ามี)", 
             placeholder="เช่น อาการเป็นมา 3 วัน, มีไข้ร่วมด้วย, เคยเป็นมาก่อน, ฯลฯ",
-            height=100
+            help="กรอกรายละเอียดเพิ่มเติมเกี่ยวกับอาการของคุณ"
         )
 
         submitted = st.form_submit_button("🔍 ประเมินผลตอนนี้", type="primary", use_container_width=True)
@@ -294,23 +297,36 @@ elif menu == "🩺 ประเมินอาการใหม่":
         elif not selected_symptoms:
             st.warning("⚠️ กรุณาเลือกอาการอย่างน้อย 1 รายการ")
         else:
+            # คำนวณคะแนน
             risk_multiplier = 1.0
             
-            if age >= 70: risk_multiplier += 0.3
-            elif age >= 60: risk_multiplier += 0.2
-            elif age >= 50: risk_multiplier += 0.1
+            # ปรับตามอายุ
+            if age >= 70: 
+                risk_multiplier += 0.3
+            elif age >= 60: 
+                risk_multiplier += 0.2
+            elif age >= 50: 
+                risk_multiplier += 0.1
             
-            if "โรคหัวใจและหลอดเลือด" in chronic: risk_multiplier += 0.3
-            if "โรคไตเรื้อรัง" in chronic: risk_multiplier += 0.2
-            if "เบาหวาน" in chronic: risk_multiplier += 0.1
+            # ปรับตามโรคประจำตัว
+            if "โรคหัวใจและหลอดเลือด" in chronic: 
+                risk_multiplier += 0.3
+            if "โรคไตเรื้อรัง" in chronic:
+                risk_multiplier += 0.2
+            if "เบาหวาน" in chronic:
+                risk_multiplier += 0.1
             
             final_score = int(total_score * risk_multiplier)
             
+            # ตัดสินผล
             if final_score >= 50 or len(emergency_symptoms) > 0:
                 risk_level, risk_class = "สูง", "risk-high"
                 st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">🚨 ความเสี่ยงสูง!</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">กรุณาไปพบแพทย์ทันที</p></div>', unsafe_allow_html=True)
+                
+                # ส่ง Line Notify
                 line_msg = f"🚨 แจ้งเตือนฉุกเฉิน!\nชื่อ: {name}\nอายุ: {age} ปี\nคะแนน: {final_score}\nอาการ: {', '.join(selected_symptoms)}"
                 send_line_notify(line_msg)
+                
             elif final_score >= 20:
                 risk_level, risk_class = "กลาง", "risk-medium"
                 st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">⚠️ ความเสี่ยงกลาง</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
@@ -340,8 +356,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
                     • คะแนนดิบ: {total_score}<br>
                     • ตัวคูณความเสี่ยง: {risk_multiplier}x<br>
                     • <b>คะแนนรวม: {final_score}</b><br>
-                    • ระดับความเสี่ยง: {risk_level}<br>
-                    • <b>BMI:</b> {bmi:.1f} ({bmi_status})
+                    • ระดับความเสี่ยง: {risk_level}
                 </div>
                 """, unsafe_allow_html=True)
             
@@ -352,15 +367,18 @@ elif menu == "🩺 ประเมินอาการใหม่":
             if notes:
                 st.markdown(f"**หมายเหตุ:** {notes}")
             
-            # บันทึกข้อมูล (เพิ่ม bmi และ bmi_status เข้าไปแล้ว)
+            # บันทึกข้อมูล
             record = {
                 "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
-                "name": name, "age": age, "gender": gender,
+                "name": name, 
+                "age": age, 
+                "gender": gender,
                 "chronic": ", ".join(chronic) if chronic else "ไม่มี",
                 "medications": medications if medications else "ไม่มี",
-                "bp": bp if bp else "-", "bs": bs,
-                "bmi": f"{bmi:.1f}", "bmi_status": bmi_status,
-                "score": final_score, "risk": risk_level,
+                "bp": bp if bp else "-",
+                "bs": bs,
+                "score": final_score, 
+                "risk": risk_level,
                 "symptoms": ", ".join(selected_symptoms),
                 "notes": notes if notes else "-"
             }
@@ -368,34 +386,6 @@ elif menu == "🩺 ประเมินอาการใหม่":
             
             st.success(f"✅ บันทึกผลการประเมินเรียบร้อยแล้ว! (รวม {get_data_count()} รายการ)")
             st.info("💾 ข้อมูลของคุณถูกบันทึกในไฟล์ assessment_data.csv แล้ว")
-
-            # ==================== ฟีเจอร์ใหม่: ใบสรุปผลสุขภาพแบบพิมพ์ได้ ====================
-            st.markdown("---")
-            if st.button("🖨️ สร้างใบสรุปผลสุขภาพ (สำหรับพิมพ์ / บันทึก PDF)", type="secondary", use_container_width=True):
-                st.markdown(f"""
-                <div style="background: white; color: black; padding: 30px; border-radius: 10px; border: 2px solid #333; font-family: sans-serif; line-height: 1.6;">
-                    <h2 style="text-align: center; color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">🏥 ใบสรุปผลการประเมินสุขภาพเบื้องต้น</h2>
-                    <p><b>วันที่ประเมิน:</b> {datetime.now().strftime("%d/%m/%Y %H:%M")}</p>
-                    <hr style="border: 1px solid #ccc;">
-                    <p><b>ชื่อ-นามสกุล:</b> {name} &nbsp;&nbsp;|&nbsp;&nbsp; <b>อายุ:</b> {age} ปี &nbsp;&nbsp;|&nbsp;&nbsp; <b>เพศ:</b> {gender}</p>
-                    <p><b>โรคประจำตัว:</b> {', '.join(chronic) if chronic else 'ไม่มี'}</p>
-                    <p><b>ค่า BMI:</b> {bmi:.1f} ({bmi_status}) &nbsp;&nbsp;|&nbsp;&nbsp; <b>ความดัน:</b> {bp if bp else '-'} &nbsp;&nbsp;|&nbsp;&nbsp; <b>น้ำตาล:</b> {bs} mg/dL</p>
-                    <hr style="border: 1px solid #ccc;">
-                    <h3 style="text-align: center; color: {'#d32f2f' if risk_level == 'สูง' else ('#f57c00' if risk_level == 'กลาง' else '#388e3c')};">
-                        ผลการประเมิน: ระดับความเสี่ยง "{risk_level}" (คะแนนรวม: {final_score})
-                    </h3>
-                    <p><b>อาการที่พบ:</b> {', '.join(selected_symptoms)}</p>
-                    <p><b>คำแนะนำ:</b> {'🚨 กรุณาไปพบแพทย์ทันที' if risk_level == 'สูง' else ('⚠️ ควรพบแพทย์ภายใน 24 ชั่วโมง' if risk_level == 'กลาง' else '✅ ดูแลตัวเองได้ตามปกติ')}</p>
-                    {f'<p><b>หมายเหตุ:</b> {notes}</p>' if notes != '-' else ''}
-                    <hr style="border: 1px solid #ccc;">
-                    <p style="font-size: 0.8em; color: gray; text-align: center; margin-top: 20px;">
-                        *เอกสารนี้สร้างขึ้นจากระบบประเมินเบื้องต้น ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้<br>
-                        หากรู้สึกไม่สบาย กรุณาไปพบแพทย์ที่โรงพยาบาลทันที
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-                st.info("💡 **เคล็ดลับ:** กด `Ctrl + P` (หรือ `Cmd + P` บน Mac) บนคีย์บอร์ด แล้วเลือก 'Save as PDF' (บันทึกเป็น PDF) เพื่อเก็บไฟล์นี้ไว้")
-            # ==============================================================================
 
 # ==================== หน้าที่ 3: ประวัติการประเมินของฉัน ====================
 elif menu == "📋 ประวัติการประเมินของฉัน":
@@ -413,15 +403,24 @@ elif menu == "📋 ประวัติการประเมินของ�
     else:
         st.success(f"✅ พบข้อมูลการประเมิน **{len(df)} รายการ** ของคุณ")
         
+        # แสดงตัวเลือกการจัดการ
         tab1, tab2, tab3 = st.tabs(["👁️ ดูข้อมูล", "✏️ แก้ไข/ลบ", "📥 ดาวน์โหลด"])
         
         with tab1:
             st.markdown("### 📄 ตารางข้อมูลการประเมินทั้งหมด")
-            st.dataframe(df.sort_values(by='date', ascending=False), use_container_width=True, height=400)
+            st.dataframe(
+                df.sort_values(by='date', ascending=False),
+                use_container_width=True,
+                height=400
+            )
             
+            # แสดงรายละเอียดเมื่อคลิก
             if len(df) > 0:
-                selected_index = st.selectbox("เลือกรายการเพื่อดูรายละเอียด", range(len(df)),
-                    format_func=lambda x: f"{df.iloc[x]['date']} - {df.iloc[x]['name']} (ความเสี่ยง: {df.iloc[x]['risk']})")
+                selected_index = st.selectbox(
+                    "เลือกรายการเพื่อดูรายละเอียด",
+                    range(len(df)),
+                    format_func=lambda x: f"{df.iloc[x]['date']} - {df.iloc[x]['name']} (ความเสี่ยง: {df.iloc[x]['risk']})"
+                )
                 
                 if selected_index is not None:
                     record = df.iloc[selected_index]
@@ -436,16 +435,18 @@ elif menu == "📋 ประวัติการประเมินของ�
                     with col2:
                         st.write(f"**คะแนน:** {record['score']}")
                         st.write(f"**ความเสี่ยง:** {record['risk']}")
-                        st.write(f"**BMI:** {record.get('bmi', '-')} ({record.get('bmi_status', '-')})")
                         st.write(f"**อาการ:** {record['symptoms']}")
-                    if record['notes'] != '-':
-                        st.write(f"**หมายเหตุ:** {record['notes']}")
+                        if record['notes'] != '-':
+                            st.write(f"**หมายเหตุ:** {record['notes']}")
         
         with tab2:
             st.markdown("### ✏️ แก้ไขหรือลบข้อมูล")
             if len(df) > 0:
-                edit_index = st.selectbox("เลือกรายการที่ต้องการแก้ไข/ลบ", range(len(df)),
-                    format_func=lambda x: f"{df.iloc[x]['date']} - {df.iloc[x]['name']}")
+                edit_index = st.selectbox(
+                    "เลือกรายการที่ต้องการแก้ไข/ลบ",
+                    range(len(df)),
+                    format_func=lambda x: f"{df.iloc[x]['date']} - {df.iloc[x]['name']}"
+                )
                 
                 col1, col2 = st.columns(2)
                 with col1:
@@ -453,21 +454,41 @@ elif menu == "📋 ประวัติการประเมินของ�
                         if delete_record(edit_index):
                             st.success("✅ ลบข้อมูลเรียบร้อยแล้ว!")
                             st.rerun()
+                        else:
+                            st.error("❌ เกิดข้อผิดพลาดในการลบ")
                 
                 with col2:
-                    new_risk = st.selectbox("แก้ไขระดับความเสี่ยง", ["ต่ำ", "กลาง", "สูง"], index=["ต่ำ", "กลาง", "สูง"].index(df.iloc[edit_index]['risk']))
+                    new_risk = st.selectbox(
+                        "แก้ไขระดับความเสี่ยง (ถ้าต้องการ)",
+                        ["ต่ำ", "กลาง", "สูง"],
+                        index=["ต่ำ", "กลาง", "สูง"].index(df.iloc[edit_index]['risk'])
+                    )
                     if st.button("💾 บันทึกการแก้ไข"):
                         update_record(edit_index, {'risk': new_risk})
                         st.success("✅ อัปเดตข้อมูลเรียบร้อยแล้ว!")
                         st.rerun()
+            else:
+                st.info("ไม่มีข้อมูลให้แก้ไข")
         
         with tab3:
             st.markdown("### 📥 ดาวน์โหลดข้อมูลของคุณ")
             csv = df.to_csv(index=False).encode('utf-8-sig')
-            st.download_button(label="📥 ดาวน์โหลดไฟล์ CSV", data=csv,
-                file_name=f'my_health_data_{datetime.now().strftime("%Y%m%d_%H%M")}.csv', mime='text/csv', use_container_width=True)
-            st.info("💡 **วิธีเปิดไฟล์ CSV:** คลิกปุ่มดาวน์โหลดด้านบน แล้วเปิดไฟล์ด้วย Microsoft Excel หรือ Google Sheets")
+            st.download_button(
+                label="📥 ดาวน์โหลดไฟล์ CSV",
+                data=csv,
+                file_name=f'my_health_data_{datetime.now().strftime("%Y%m%d_%H%M")}.csv',
+                mime='text/csv',
+                help="คลิกเพื่อดาวน์โหลดข้อมูลการประเมินทั้งหมดของคุณ"
+            )
+            
+            st.info("""
+            **💡 วิธีเปิดไฟล์ CSV:**
+            - คลิกปุ่มดาวน์โหลดด้านบน
+            - เปิดไฟล์ด้วย Microsoft Excel, Google Sheets หรือโปรแกรมตารางคำนวณ
+            - ข้อมูลจะแสดงเป็นตารางพร้อมใช้งาน
+            """)
         
+        # ปุ่มล้างข้อมูลทั้งหมด
         st.markdown("---")
         if st.button("⚠️ ล้างข้อมูลทั้งหมด (ระวัง!)", type="secondary"):
             st.warning("⚠️ การดำเนินการนี้จะลบข้อมูลทั้งหมดของคุณถาวร!")
@@ -490,34 +511,69 @@ elif menu == "📊 สถิติส่วนตัว":
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.markdown(f'<div class="metric-card"><h3>📋 {len(df)}</h3><p>การประเมินทั้งหมด</p></div>', unsafe_allow_html=True)
+            st.markdown(f"""
+            <div class="metric-card">
+                <h3>📋 {len(df)}</h3>
+                <p>การประเมินทั้งหมด</p>
+            </div>
+            """, unsafe_allow_html=True)
         with col2:
             high_count = len(df[df['risk'] == 'สูง'])
-            st.markdown(f'<div class="metric-card"><h3>🚨 {high_count}</h3><p>ความเสี่ยงสูง</p></div>', unsafe_allow_html=True)
+            st.markdown(f"""
+            <div class="metric-card">
+                <h3>🚨 {high_count}</h3>
+                <p>ความเสี่ยงสูง</p>
+            </div>
+            """, unsafe_allow_html=True)
         with col3:
             avg_score = df['score'].mean()
-            st.markdown(f'<div class="metric-card"><h3>📈 {avg_score:.1f}</h3><p>คะแนนเฉลี่ย</p></div>', unsafe_allow_html=True)
+            st.markdown(f"""
+            <div class="metric-card">
+                <h3>📈 {avg_score:.1f}</h3>
+                <p>คะแนนเฉลี่ย</p>
+            </div>
+            """, unsafe_allow_html=True)
 
         st.markdown("---")
+        
         st.markdown('<h3 class="section-title">📊 สัดส่วนระดับความเสี่ยงของคุณ</h3>', unsafe_allow_html=True)
         risk_counts = df['risk'].value_counts().reset_index()
         risk_counts.columns = ['ระดับความเสี่ยง', 'จำนวน']
-        fig_pie = px.pie(risk_counts, values='จำนวน', names='ระดับความเสี่ยง', 
-                        color='ระดับความเสี่ยง', color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'}, hole=0.4)
+        fig_pie = px.pie(
+            risk_counts, 
+            values='จำนวน', 
+            names='ระดับความเสี่ยง', 
+            color='ระดับความเสี่ยง',
+            color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'}, 
+            hole=0.4
+        )
         st.plotly_chart(fig_pie, use_container_width=True)
 
         st.markdown("---")
         st.markdown('<h3 class="section-title">📊 คะแนนความเสี่ยงในแต่ละครั้ง</h3>', unsafe_allow_html=True)
-        fig_bar = px.bar(df.sort_values('date'), x='date', y='score', color='risk',
-                        color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'}, text='score', hover_data=['name', 'symptoms'])
+        fig_bar = px.bar(
+            df.sort_values('date'), 
+            x='date', 
+            y='score', 
+            color='risk',
+            color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'},
+            text='score',
+            hover_data=['name', 'symptoms']
+        )
         fig_bar.update_traces(textposition='outside')
         st.plotly_chart(fig_bar, use_container_width=True)
 
         st.markdown("---")
         st.markdown('<h3 class="section-title">📈 ความสัมพันธ์ อายุ vs คะแนน</h3>', unsafe_allow_html=True)
-        fig_scatter = px.scatter(df, x='age', y='score', color='risk',
-                                color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'},
-                                hover_data=['name', 'date', 'symptoms'], size='score')
+        fig_scatter = px.scatter(
+            df, 
+            x='age', 
+            y='score', 
+            color='risk',
+            color_discrete_map={'ต่ำ': '#2ed573', 'กลาง': '#ffa502', 'สูง': '#ff6b6b'},
+            hover_data=['name', 'date', 'symptoms'], 
+            size='score'
+        )
         st.plotly_chart(fig_scatter, use_container_width=True)
 
 # ==================== หน้าที่ 5: เกี่ยวกับ ====================
@@ -544,7 +600,7 @@ elif menu == "ℹ️ เกี่ยวกับ":
     """, unsafe_allow_html=True)
     
     st.markdown("""
-    <div class="info-box" style="margin-top: 30px; border-left-color: #ff6b6b;">
+    <div class="info-box" style="margin-top: 30px;">
         <b>⚠️ ข้อจำกัดสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
         <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b> หากมีอาการรุนแรงหรือกังวลใจ 
         ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์โดยตรง
