@@ -11,6 +11,8 @@ import requests
 warnings.filterwarnings('ignore')
 
 # ==================== ตั้งค่า Line Notify ====================
+# ⚠️ หมายเหตุ: LINE Notify API จะถูกยกเลิกบริการอย่างเป็นทางการ มี.ค. 2025 
+# ควรเตรียมแผนย้ายไปใช้ LINE Messaging API (Webhook) ในอนาคต
 LINE_NOTIFY_TOKEN = "ใส่_TOKEN_ของคุณที่นี่"
 
 def send_line_notify(message):
@@ -122,8 +124,6 @@ SYMPTOMS_DATA = {
         "ปวดท้องรุนแรงเฉียบพลัน": 30
     },
     "⚠️ อาการที่ต้องเฝ้าระวัง (พบแพทย์ภายใน 24-48 ชม.)": {
-        "ความดันโลหิตตัวบน ≥ 180 หรือตัวล่าง ≥ 110": 25,
-        "ระดับน้ำตาลในเลือด < 70 หรือ > 250 mg/dL": 25,
         "น้ำหนักลดลงผิดปกติ (>5% ใน 6 เดือน)": 20,
         "ใจสั่น/หัวใจเต้นผิดจังหวะ": 18,
         "เวียนศีรษะรุนแรง/ทรงตัวไม่ได้": 18,
@@ -149,6 +149,11 @@ CHRONIC_DISEASES = [
     "โรคปอดอุดกั้นเรื้อรัง (COPD)", "ไม่มี"
 ]
 
+FAMILY_HISTORY_OPTIONS = [
+    "เบาหวาน", "ความดันโลหิตสูง", "โรคหัวใจและหลอดเลือด", 
+    "โรคหลอดเลือดสมอง (Stroke)", "โรคไตเรื้อรัง", "ไม่มี"
+]
+
 # ==================== Sidebar ====================
 with st.sidebar:
     st.markdown("""
@@ -161,7 +166,6 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # เพิ่มเบอร์ฉุกเฉินใน Sidebar
     st.markdown("""
     <div class="emergency-box">
         <h3>🚑 1669</h3>
@@ -177,7 +181,7 @@ with st.sidebar:
     
     menu = st.radio(
         "เมนูหลัก",
-        ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "️ เกี่ยวกับ"],
+        ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", "📊 สถิติส่วนตัว", "ℹ️ เกี่ยวกับ"],
         index=1
     )
     
@@ -206,7 +210,6 @@ if menu == "🏠 หน้าหลัก":
     </div>
     """, unsafe_allow_html=True)
     
-    # เพิ่มเบอร์ฉุกเฉินในหน้าหลัก
     st.markdown("""
     <div class="emergency-box">
         <h3>🚑 เบอร์ฉุกเฉินทางการแพทย์</h3>
@@ -233,7 +236,7 @@ if menu == "🏠 หน้าหลัก":
     with col3:
         st.markdown("""
         <div class="metric-card">
-            <h3> ปลอดภัย</h3>
+            <h3>🔒 ปลอดภัย</h3>
             <p>เก็บในเครื่องคุณ</p>
         </div>
         """, unsafe_allow_html=True)
@@ -277,12 +280,22 @@ elif menu == "🩺 ประเมินอาการใหม่":
         with col2:
             medications = st.text_input("ยาที่รับประทานประจำ (ถ้ามี)", placeholder="เช่น ยาลดความดัน, ยาเบาหวาน")
         
-        col1, col2 = st.columns(2)
+        # 🔧 แก้ไขจุดที่ 1: แยกช่องกรอกความดันเป็นตัวเลข 2 ช่อง
+        st.markdown('<h4 style="color: #667eea; margin-top: 15px; margin-bottom: 5px;">🩸 ค่าความดันและน้ำตาลในเลือดล่าสุด</h4>', unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
         with col1:
-            bp = st.text_input("ความดันโลหิตล่าสุด", placeholder="เช่น 120/80")
+            systolic = st.number_input("ความดันตัวบน (Systolic) mmHg", min_value=70, max_value=300, value=120)
         with col2:
-            bs = st.number_input("ระดับน้ำตาลในเลือด (mg/dL)", min_value=0, max_value=600, value=100)
+            diastolic = st.number_input("ความดันตัวล่าง (Diastolic) mmHg", min_value=40, max_value=200, value=80)
+        with col3:
+            bs = st.number_input("ระดับน้ำตาลในเลือด (mg/dL)", min_value=0, max_value=600, value=100, help="หากงดอาหารมา 8 ชม. ค่าปกติควร < 100")
         
+        # 🔧 แก้ไขจุดที่ 2: เพิ่มประวัติครอบครัว
+        st.markdown('<h4 style="color: #667eea; margin-top: 15px; margin-bottom: 5px;">🧬 ประวัติสุขภาพครอบครัว (พ่อแม่/พี่น้องสายตรง)</h4>', unsafe_allow_html=True)
+        family_history = st.multiselect("เลือกโรคที่คนในครอบครัวเคยเป็น", FAMILY_HISTORY_OPTIONS)
+        if "ไม่มี" in family_history and len(family_history) > 1:
+            st.warning("⚠️ หากเลือก 'ไม่มี' กรุณาเลือกเฉพาะ 'ไม่มี' อย่างเดียว")
+
         st.markdown('<h4 style="color: #667eea; margin-top: 15px; margin-bottom: 5px;">📏 ส่วนสูงและน้ำหนัก (สำหรับคำนวณ BMI)</h4>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
@@ -323,16 +336,50 @@ elif menu == "🩺 ประเมินอาการใหม่":
             height=100
         )
 
-        submitted = st.form_submit_button(" ประเมินผลตอนนี้", type="primary", use_container_width=True)
+        submitted = st.form_submit_button("📊 ประเมินผลตอนนี้", type="primary", use_container_width=True)
 
     if submitted:
         if not name:
-            st.error("️ กรุณากรอกชื่อ-นามสกุล")
-        elif not selected_symptoms:
-            st.warning("⚠️ กรุณาเลือกอาการอย่างน้อย 1 รายการ")
+            st.error("❌ กรุณากรอกชื่อ-นามสกุล")
+        elif not selected_symptoms and systolic < 180 and diastolic < 110 and bs >= 70 and bs <= 250:
+            st.warning("⚠️ กรุณาเลือกอาการอย่างน้อย 1 รายการ หรือตรวจสอบว่าค่าความดัน/น้ำตาลอยู่ในเกณฑ์ปกติ")
         else:
-            risk_multiplier = 1.0
+            # 🔧 แก้ไขจุดที่ 3: ตรรกะการคำนวณคะแนนใหม่ (BP/BS มีผลจริง)
             
+            # 1. คำนวณความเสี่ยงจาก BP
+            bp_emergency = False
+            if systolic >= 180 or diastolic >= 110:
+                total_score += 40  # คะแนนเทียบเท่าอาการฉุกเฉิน
+                bp_emergency = True
+                emergency_symptoms.append(f"ความดันโลหิตสูงวิกฤต ({systolic}/{diastolic} mmHg)")
+            elif systolic >= 140 or diastolic >= 90:
+                total_score += 15  # เฝ้าระวังความดันสูง
+                
+            # 2. คำนวณความเสี่ยงจาก BS
+            bs_emergency = False
+            if bs < 70:
+                total_score += 25
+                bs_emergency = True
+                emergency_symptoms.append(f"น้ำตาลในเลือดต่ำวิกฤต ({bs} mg/dL)")
+            elif bs > 250:
+                total_score += 25
+                bs_emergency = True
+                emergency_symptoms.append(f"น้ำตาลในเลือดสูงวิกฤต ({bs} mg/dL)")
+            elif bs >= 126:
+                total_score += 10  # เฝ้าระวังเบาหวาน
+                
+            # 3. คำนวณความเสี่ยงจากประวัติครอบครัว
+            fh_score = 0
+            fh_risk_multiplier = 1.0
+            for disease in family_history:
+                if disease != "ไม่มี":
+                    fh_score += 5
+                    fh_risk_multiplier += 0.05  # เพิ่มความเสี่ยงทีละ 5% ต่อโรค
+                    
+            total_score += fh_score
+            
+            # 4. คำนวณตัวคูณความเสี่ยงรวม (Age + Chronic + Family History)
+            risk_multiplier = fh_risk_multiplier
             if age >= 70: risk_multiplier += 0.3
             elif age >= 60: risk_multiplier += 0.2
             elif age >= 50: risk_multiplier += 0.1
@@ -343,26 +390,28 @@ elif menu == "🩺 ประเมินอาการใหม่":
             
             final_score = int(total_score * risk_multiplier)
             
-            if final_score >= 50 or len(emergency_symptoms) > 0:
+            # 5. ตรวจสอบสถานะฉุกเฉิน (รวม Flag จาก BP/BS)
+            is_emergency = len(emergency_symptoms) > 0 or bp_emergency or bs_emergency
+            
+            if final_score >= 50 or is_emergency:
                 risk_level, risk_class = "สูง", "risk-high"
                 st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">🚨 ความเสี่ยงสูง!</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">กรุณาไปพบแพทย์ทันที</p></div>', unsafe_allow_html=True)
                 
-                # แสดงเบอร์ฉุกเฉินชัดเจน
                 st.markdown("""
                 <div class="emergency-box">
-                    <h3> โทรด่วน 1669</h3>
-                    <p>  บริการฟรี 24 ชั่วโมง</p>
+                    <h3>📞 โทรด่วน 1669</h3>
+                    <p>บริการฟรี 24 ชั่วโมง</p>
                     <p style="font-size: 0.9rem; margin-top: 10px;">หากมีอาการรุนแรง กรุณาโทรขอความช่วยเหลือทันที</p>
                 </div>
                 """, unsafe_allow_html=True)
                 
-                line_msg = f"🚨 แจ้งเตือนฉุกเฉิน!\nชื่อ: {name}\nอายุ: {age} ปี\nคะแนน: {final_score}\nอาการ: {' | '.join(selected_symptoms)}"
+                line_msg = f"🚨 แจ้งเตือนฉุกเฉิน!\nชื่อ: {name}\nอายุ: {age} ปี\nคะแนน: {final_score}\nอาการ/ค่าวิกฤต: {' | '.join(emergency_symptoms)}"
                 send_line_notify(line_msg)
+                
             elif final_score >= 20:
                 risk_level, risk_class = "กลาง", "risk-medium"
                 st.markdown(f'<div class="{risk_class}"><h2 style="font-size: 2rem; margin: 0;">⚠️ ความเสี่ยงกลาง</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
                 
-                # แสดงเบอร์ฉุกเฉินแบบธรรมดา
                 st.markdown("""
                 <div style="background: white; color: black; padding: 15px; border-radius: 10px; border-left: 5px solid #ff6b6b; margin: 15px 0;">
                     <b>📞 เบอร์ฉุกเฉิน:</b> 1669
@@ -384,7 +433,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
                     • อายุ: {age} ปี<br>
                     • เพศ: {gender}<br>
                     • โรคประจำตัว: {' | '.join(chronic) if chronic else 'ไม่มี'}<br>
-                    • ยาที่รับประทาน: {medications if medications else 'ไม่มี'}
+                    • ประวัติครอบครัว: {' | '.join(family_history) if family_history else 'ไม่มี'}
                 </div>
                 """, unsafe_allow_html=True)
             with col2:
@@ -392,26 +441,34 @@ elif menu == "🩺 ประเมินอาการใหม่":
                 <div class="info-box">
                     <b>📊 ผลการประเมิน:</b><br>
                     • คะแนนดิบ: {total_score}<br>
-                    • ตัวคูณความเสี่ยง: {risk_multiplier}x<br>
+                    • ตัวคูณความเสี่ยง: {risk_multiplier:.2f}x<br>
                     • <b>คะแนนรวม: {final_score}</b><br>
                     • ระดับความเสี่ยง: {risk_level}<br>
-                    • <b>BMI:</b> {bmi:.1f} ({bmi_status})
+                    • <b>BMI:</b> {bmi:.1f} ({bmi_status})<br>
+                    • <b>BP:</b> {systolic}/{diastolic} mmHg | <b>BS:</b> {bs} mg/dL
                 </div>
                 """, unsafe_allow_html=True)
             
-            st.markdown(f'<h4>อาการที่คุณเลือก ({len(selected_symptoms)} อาการ)</h4>')
+            if emergency_symptoms:
+                st.markdown('<h4 style="color: #ff4b2b;">🚨 ปัจจัยที่กระตุ้นความเสี่ยงสูง:</h4>')
+                for item in emergency_symptoms:
+                    st.markdown(f"• {item}")
+            
+            st.markdown(f'<h4>อาการอื่นๆ ที่คุณเลือก ({len(selected_symptoms)} อาการ)</h4>')
             for symptom in selected_symptoms:
                 st.markdown(f"• {symptom}")
             
             if notes:
                 st.markdown(f"**หมายเหตุ:** {notes}")
             
+            # 🔧 แก้ไขจุดที่ 4: บันทึกข้อมูล BP แยกส่วน และ Family History เพื่อรองรับ Time Series ในอนาคต
             record = {
                 "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
                 "name": name, "age": age, "gender": gender,
                 "chronic": " | ".join(chronic) if chronic else "ไม่มี",
                 "medications": medications if medications else "ไม่มี",
-                "bp": bp if bp else "-", "bs": bs,
+                "systolic": systolic, "diastolic": diastolic, "bs": bs,
+                "family_history": " | ".join(family_history) if family_history else "ไม่มี",
                 "bmi": f"{bmi:.1f}", "bmi_status": bmi_status,
                 "score": final_score, "risk": risk_level,
                 "symptoms": " | ".join(selected_symptoms),
@@ -431,18 +488,19 @@ elif menu == "🩺 ประเมินอาการใหม่":
                     <hr style="border: 1px solid #ccc;">
                     <p><b>ชื่อ-นามสกุล:</b> {name} &nbsp;&nbsp;|&nbsp;&nbsp; <b>อายุ:</b> {age} ปี &nbsp;&nbsp;|&nbsp;&nbsp; <b>เพศ:</b> {gender}</p>
                     <p><b>โรคประจำตัว:</b> {' | '.join(chronic) if chronic else 'ไม่มี'}</p>
-                    <p><b>ค่า BMI:</b> {bmi:.1f} ({bmi_status}) &nbsp;&nbsp;|&nbsp;&nbsp; <b>ความดัน:</b> {bp if bp else '-'} &nbsp;&nbsp;|&nbsp;&nbsp; <b>น้ำตาล:</b> {bs} mg/dL</p>
+                    <p><b>ประวัติครอบครัว:</b> {' | '.join(family_history) if family_history else 'ไม่มี'}</p>
+                    <p><b>ค่า BMI:</b> {bmi:.1f} ({bmi_status}) &nbsp;&nbsp;|&nbsp;&nbsp; <b>ความดัน:</b> {systolic}/{diastolic} mmHg &nbsp;&nbsp;|&nbsp;&nbsp; <b>น้ำตาล:</b> {bs} mg/dL</p>
                     <hr style="border: 1px solid #ccc;">
                     <h3 style="text-align: center; color: {'#d32f2f' if risk_level == 'สูง' else ('#f57c00' if risk_level == 'กลาง' else '#388e3c')};">
                         ผลการประเมิน: ระดับความเสี่ยง "{risk_level}" (คะแนนรวม: {final_score})
                     </h3>
-                    <p><b>อาการที่พบ:</b> {' | '.join(selected_symptoms)}</p>
+                    <p><b>อาการที่พบ:</b> {' | '.join(selected_symptoms) if selected_symptoms else 'ไม่มีอาการเฉพาะเจาะจง'}</p>
                     <p><b>คำแนะนำ:</b> {'🚨 กรุณาไปพบแพทย์ทันที (โทร 1669)' if risk_level == 'สูง' else ('⚠️ ควรพบแพทย์ภายใน 24 ชั่วโมง' if risk_level == 'กลาง' else '✅ ดูแลตัวเองได้ตามปกติ')}</p>
                     {f'<p><b>หมายเหตุ:</b> {notes}</p>' if notes != '-' else ''}
                     <hr style="border: 1px solid #ccc;">
                     <p style="font-size: 0.8em; color: gray; text-align: center; margin-top: 20px;">
                         *เอกสารนี้สร้างขึ้นจากระบบประเมินเบื้องต้น ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้<br>
-                        🚑 <b>เบอร์ฉุกเฉิน: 1669 </b><br>
+                        🚑 <b>เบอร์ฉุกเฉิน: 1669</b><br>
                         หากรู้สึกไม่สบาย กรุณาไปพบแพทย์ที่โรงพยาบาลทันที
                     </p>
                 </div>
@@ -485,10 +543,13 @@ elif menu == "📋 ประวัติการประเมินของ�
                         st.write(f"**อายุ:** {record['age']} ปี")
                         st.write(f"**เพศ:** {record['gender']}")
                         st.write(f"**โรคประจำตัว:** {record['chronic']}")
+                        st.write(f"**ประวัติครอบครัว:** {record.get('family_history', 'ไม่มี')}")
                     with col2:
                         st.write(f"**คะแนน:** {record['score']}")
                         st.write(f"**ความเสี่ยง:** {record['risk']}")
                         st.write(f"**BMI:** {record.get('bmi', '-')} ({record.get('bmi_status', '-')})")
+                        st.write(f"**BP:** {record.get('systolic', '-')}/{record.get('diastolic', '-')} mmHg")
+                        st.write(f"**BS:** {record.get('bs', '-')} mg/dL")
                         st.write(f"**อาการ:** {record['symptoms']}")
                     if str(record.get('notes', '-')) != '-':
                         st.write(f"**หมายเหตุ:** {record['notes']}")
@@ -508,7 +569,7 @@ elif menu == "📋 ประวัติการประเมินของ�
                 
                 with col2:
                     new_risk = st.selectbox("แก้ไขระดับความเสี่ยง", ["ต่ำ", "กลาง", "สูง"], index=["ต่ำ", "กลาง", "สูง"].index(str(df.iloc[edit_index]['risk'])))
-                    if st.button(" บันทึกการแก้ไข"):
+                    if st.button("💾 บันทึกการแก้ไข"):
                         update_record(edit_index, {'risk': new_risk})
                         st.success("✅ อัปเดตข้อมูลเรียบร้อยแล้ว!")
                         st.rerun()
@@ -582,25 +643,27 @@ elif menu == "ℹ️ เกี่ยวกับ":
         <b>ระบบประเมินการตัดสินใจไปพบแพทย์สำหรับวัยกลางคนและผู้สูงอายุ (40+ ปี)</b><br><br>
         ระบบนี้ถูกพัฒนาขึ้นเพื่อให้คุณสามารถประเมินอาการสุขภาพด้วยตัวเอง 
         โดยเน้นการคัดกรองโรคไม่ติดต่อเรื้อรัง (NCDs) เช่น เบาหวาน ความดันโลหิตสูง โรคหัวใจและหลอดเลือด
+        <br><br>
+        <b>✅ อัปเดตล่าสุด:</b> ระบบได้เพิ่มตรรกะการคำนวณความเสี่ยงจากค่าความดันโลหิต (BP) และน้ำตาลในเลือด (BS) แบบเรียลไทม์ รวมถึงการประเมินปัจจัยเสี่ยงทางพันธุกรรม (Family History) เพื่อเพิ่มความแม่นยำในการคัดกรองเบื้องต้น
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown('<h3 class="section-title">💾 การจัดเก็บข้อมูลของคุณ</h3>', unsafe_allow_html=True)
     st.markdown("""
     <div class="info-box">
-        <b> ไฟล์ข้อมูล:</b> <code>assessment_data.csv</code><br>
+        <b>📁 ไฟล์ข้อมูล:</b> <code>assessment_data.csv</code><br>
         <b>📍 ตำแหน่ง:</b> โฟลเดอร์เดียวกับแอปนี้<br>
-        <b> ความเป็นส่วนตัว:</b> ข้อมูลถูกเก็บในเครื่องของคุณเท่านั้น<br>
+        <b>🔒 ความเป็นส่วนตัว:</b> ข้อมูลถูกเก็บในเครื่องของคุณเท่านั้น<br>
         <b>📥 การสำรองข้อมูล:</b> สามารถดาวน์โหลดไฟล์ CSV ได้จากหน้า "ประวัติการประเมิน"
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown("""
     <div class="info-box" style="margin-top: 30px; border-left-color: #ff6b6b;">
-        <b>️ ข้อจำกัดสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
+        <b>⚠️ ข้อจำกัดสำคัญ:</b> ระบบนี้เป็นเครื่องมือช่วยตัดสินใจเบื้องต้น 
         <b>ไม่สามารถทดแทนการวินิจฉัยของแพทย์ได้</b> หากมีอาการรุนแรงหรือกังวลใจ 
         ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์โดยตรง<br><br>
-        <b>🚑 เบอร์ฉุกเฉิน:</b> 1669 ( บริการฟรี 24 ชั่วโมง)
+        <b>🚑 เบอร์ฉุกเฉิน:</b> 1669 (บริการฟรี 24 ชั่วโมง)
     </div>
     """, unsafe_allow_html=True)
 
