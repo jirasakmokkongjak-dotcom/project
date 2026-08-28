@@ -456,8 +456,26 @@ elif menu == "🧪 ทดสอบความแม่นยำ":
             3. วางในโฟลเดอร์เดียวกับ <code>app.py</code>
         </div>""", unsafe_allow_html=True)
     else:
-        df_test = pd.read_csv(TEST_FILE, encoding='utf-8-sig')
-        df_test.columns = df_test.columns.str.strip()  # ป้องกัน KeyError จาก BOM
+               # อ่าน CSV ด้วย encoding หลายแบบเพื่อป้องกันปัญหา
+        try:
+            df_test = pd.read_csv(TEST_FILE, encoding='utf-8')
+        except:
+            df_test = pd.read_csv(TEST_FILE, encoding='utf-8-sig')
+        
+        # ลบ BOM และ strip ชื่อคอลัมน์
+        df_test.columns = [col.strip().lstrip('\ufeff') for col in df_test.columns]
+        
+        # Debug: แสดงชื่อคอลัมน์จริง (ลบออกได้หลังแก้เสร็จ)
+        st.write(f" ชื่อคอลัมน์ในไฟล์: {list(df_test.columns)}")
+        
+        # ตรวจสอบว่ามีคอลัมน์ที่จำเป็นครบไหม
+        required_cols = ['name', 'age', 'gender', 'systolic', 'diastolic', 'bs', 
+                        'chronic', 'family_history', 'symptoms', 'expected_risk']
+        missing_cols = [col for col in required_cols if col not in df_test.columns]
+        
+        if missing_cols:
+            st.error(f"❌ ไฟล์ CSV ขาดคอลัมน์: {missing_cols}")
+            st.stop()
         st.success(f"✅ โหลดข้อมูลทดสอบ **{len(df_test)} เคส** เรียบร้อยแล้ว")
 
         if st.button("🚀 เริ่มทดสอบความแม่นยำ", type="primary", use_container_width=True):
