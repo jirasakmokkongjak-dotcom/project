@@ -44,6 +44,15 @@ def get_data_count():
         return len(pd.read_csv(DATA_FILE, on_bad_lines='skip'))
     return 0
 
+def get_test_case_count():
+    if os.path.exists(TEST_FILE):
+        try:
+            df_test = pd.read_csv(TEST_FILE, encoding='utf-8-sig')
+            return len(df_test)
+        except:
+            return 0
+    return 0
+
 def update_record(index, updated_data):
     df = load_data()
     if 0 <= index < len(df):
@@ -139,7 +148,7 @@ FAMILY_HISTORY_OPTIONS = [
     "โรคหลอดเลือดสมอง (Stroke)", "โรคไตเรื้อรัง", "ไม่มี"
 ]
 
-# ==================== 🧠 ฟังก์ชันคำนวณความเสี่ยงกลาง (Single Source of Truth) ====================
+# ==================== 🧠 ฟังก์ชันคำนวณความเสี่ยงกลาง ====================
 def calculate_risk(age, systolic, diastolic, bs, chronic_list, family_history_list, symptoms_list):
     total_score = 0
     emergency_symptoms = []
@@ -226,20 +235,22 @@ with st.sidebar:
     if elderly_mode:
         st.markdown("<style> html { font-size: 125% !important; } </style>", unsafe_allow_html=True)
 
-    # เพิ่มเมนูทดสอบความแม่นยำ
+    # เพิ่มเมนู
     menu = st.radio(
         "เมนูหลัก",
         ["🏠 หน้าหลัก", "🩺 ประเมินอาการใหม่", "📋 ประวัติการประเมินของฉัน", 
-         "📊 สถิติส่วนตัว", "🧪 ทดสอบความแม่นยำ", "ℹ️ เกี่ยวกับ"],
+         " สถิติส่วนตัว", "🧪 ทดสอบความแม่นยำ", "📝 เพิ่มเคสทดสอบ", "ℹ️ เกี่ยวกับ"],
         index=1
     )
     st.markdown("---")
     data_count = get_data_count()
+    test_count = get_test_case_count()
     st.markdown(f"""
     <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center; color: white;">
         <p style="margin: 0; font-size: 0.9rem;">📊 ข้อมูลของคุณ</p>
         <h3 style="margin: 10px 0; font-size: 2rem;">{data_count}</h3>
         <p style="margin: 0; font-size: 0.8rem;">รายการประเมิน</p>
+        <p style="margin: 10px 0 0 0; font-size: 0.8rem;">🧪 {test_count} เคสทดสอบ</p>
     </div>
     """, unsafe_allow_html=True)
     st.caption(f"📅 {datetime.now().strftime('%d/%m/%Y %H:%M')}")
@@ -264,8 +275,8 @@ if menu == "🏠 หน้าหลัก":
     """, unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     with col1: st.markdown(f'<div class="metric-card"><h3>📋 {get_data_count()}</h3><p>การประเมินของคุณ</p></div>', unsafe_allow_html=True)
-    with col2: st.markdown('<div class="metric-card"><h3>👤 ส่วนตัว</h3><p>ข้อมูลเป็นของคุณ</p></div>', unsafe_allow_html=True)
-    with col3: st.markdown('<div class="metric-card"><h3>🔒 ปลอดภัย</h3><p>เก็บในเครื่องคุณ</p></div>', unsafe_allow_html=True)
+    with col2: st.markdown(f'<div class="metric-card"><h3>🧪 {test_count}</h3><p>เคสทดสอบ</p></div>', unsafe_allow_html=True)
+    with col3: st.markdown('<div class="metric-card"><h3> ปลอดภัย</h3><p>เก็บในเครื่องคุณ</p></div>', unsafe_allow_html=True)
     
     st.markdown('<h2 class="section-title">📝 วิธีใช้งาน</h2>', unsafe_allow_html=True)
     col_a, col_b, col_c = st.columns(3)
@@ -321,7 +332,7 @@ elif menu == "🩺 ประเมินอาการใหม่":
                             selected_symptoms.append(symptom)
 
         notes = st.text_area("อธิบายอาการเพิ่มเติม (ถ้ามี)", placeholder="เช่น อาการเป็นมา 3 วัน", height=100)
-        submitted = st.form_submit_button("📊 ประเมินผลตอนนี้", type="primary", use_container_width=True)
+        submitted = st.form_submit_button(" ประเมินผลตอนนี้", type="primary", use_container_width=True)
 
     if submitted:
         if not name:
@@ -330,18 +341,17 @@ elif menu == "🩺 ประเมินอาการใหม่":
             chronic_clean = [c for c in chronic if c != "ไม่มี"]
             fh_clean = [f for f in family_history if f != "ไม่มี"]
             
-            # เรียกใช้ฟังก์ชันกลาง
             risk_level, final_score, total_score, risk_multiplier, all_emergency = calculate_risk(
                 age, systolic, diastolic, bs, chronic_clean, fh_clean, selected_symptoms
             )
 
             if risk_level == "สูง":
                 st.markdown('<div class="risk-high"><h2 style="font-size: 2rem; margin: 0;">🚨 ความเสี่ยงสูง!</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">กรุณาไปพบแพทย์ทันที</p></div>', unsafe_allow_html=True)
-                st.markdown('<div class="emergency-box"><h3>📞 โทรด่วน 1669</h3><p>บริการฟรี 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
+                st.markdown('<div class="emergency-box"><h3> โทรด่วน 1669</h3><p>บริการฟรี 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
                 line_msg = f"🚨 แจ้งเตือนฉุกเฉิน!\nชื่อ: {name}\nอายุ: {age} ปี\nคะแนน: {final_score}\nอาการ/ค่าวิกฤต: {' | '.join(all_emergency)}"
                 send_line_notify(line_msg)
             elif risk_level == "กลาง":
-                st.markdown('<div class="risk-medium"><h2 style="font-size: 2rem; margin: 0;">⚠️ ความเสี่ยงกลาง</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
+                st.markdown('<div class="risk-medium"><h2 style="font-size: 2rem; margin: 0;">️ ความเสี่ยงกลาง</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ควรพบแพทย์ภายใน 24 ชั่วโมง</p></div>', unsafe_allow_html=True)
             else:
                 st.markdown('<div class="risk-low"><h2 style="font-size: 2rem; margin: 0;">✅ ความเสี่ยงต่ำ</h2><p style="font-size: 1.3rem; margin: 10px 0 0 0;">ดูแลตัวเองได้</p></div>', unsafe_allow_html=True)
 
@@ -396,7 +406,7 @@ elif menu == "📋 ประวัติการประเมินของ�
         st.markdown('<div class="info-box" style="text-align: center; padding: 40px;"><h3 style="color: #667eea; margin: 0;">📭 ยังไม่มีข้อมูล</h3></div>', unsafe_allow_html=True)
     else:
         st.success(f"✅ พบข้อมูล **{len(df)} รายการ**")
-        tab1, tab2, tab3 = st.tabs(["👁️ ดูข้อมูล", "✏️ แก้ไข/ลบ", "📥 ดาวน์โหลด"])
+        tab1, tab2, tab3 = st.tabs(["👁️ ดูข้อมูล", "️ แก้ไข/ลบ", " ดาวน์โหลด"])
         with tab1:
             st.dataframe(df.sort_values(by='date', ascending=False), use_container_width=True, height=400)
             if len(df) > 0:
@@ -407,9 +417,54 @@ elif menu == "📋 ประวัติการประเมินของ�
                     with c1:
                         st.write(f"**ชื่อ:** {r['name']} | **อายุ:** {r['age']} | **เพศ:** {r['gender']}")
                         st.write(f"**โรคประจำตัว:** {r['chronic']}")
+                        st.write(f"**BP:** {r.get('systolic','-')}/{r.get('diastolic','-')} | **BS:** {r.get('bs','-')}")
                     with c2:
                         st.write(f"**คะแนน:** {r['score']} | **ความเสี่ยง:** {r['risk']}")
-                        st.write(f"**BP:** {r.get('systolic','-')}/{r.get('diastolic','-')} | **BS:** {r.get('bs','-')}")
+                        st.write(f"**BMI:** {r.get('bmi','-')} ({r.get('bmi_status','-')})")
+                        st.write(f"**อาการ:** {r['symptoms']}")
+                    
+                    # ✨ ฟีเจอร์ใหม่: เพิ่มเป็นเคสทดสอบ
+                    st.markdown("---")
+                    st.markdown("### 🧪 บันทึกเคสนี้เป็นข้อมูลทดสอบ")
+                    st.info("💡 ใช้ฟีเจอร์นี้เพื่อช่วยพัฒนาระบบให้แม่นยำขึ้น")
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        expected_risk_test = st.selectbox(
+                            "เคสนี้ควรได้ความเสี่ยงระดับไหน? (สำหรับทดสอบระบบ)",
+                            ["ต่ำ", "กลาง", "สูง"],
+                            key=f"expected_{sel}",
+                            index=["ต่ำ", "กลาง", "สูง"].index(r['risk'])
+                        )
+                    with col2:
+                        if st.button("➕ เพิ่มเป็นเคสทดสอบ", key=f"add_test_{sel}", type="secondary"):
+                            new_test_case = {
+                                "name": f"{r['name']}_{r['date'].replace('/','-').replace(':','-')}",
+                                "age": int(r['age']),
+                                "gender": r['gender'],
+                                "systolic": int(r.get('systolic', 120)) if pd.notna(r.get('systolic')) else 120,
+                                "diastolic": int(r.get('diastolic', 80)) if pd.notna(r.get('diastolic')) else 80,
+                                "bs": int(r.get('bs', 100)) if pd.notna(r.get('bs')) else 100,
+                                "chronic": r['chronic'],
+                                "family_history": r.get('family_history', 'ไม่มี'),
+                                "symptoms": r['symptoms'],
+                                "expected_risk": expected_risk_test
+                            }
+                            
+                            if os.path.exists(TEST_FILE):
+                                try:
+                                    df_test = pd.read_csv(TEST_FILE, encoding='utf-8-sig')
+                                    df_test = pd.concat([df_test, pd.DataFrame([new_test_case])], ignore_index=True)
+                                except:
+                                    df_test = pd.DataFrame([new_test_case])
+                            else:
+                                df_test = pd.DataFrame([new_test_case])
+                            
+                            df_test.to_csv(TEST_FILE, index=False, encoding='utf-8-sig')
+                            st.success(f"✅ เพิ่มเคสทดสอบเรียบร้อย! (รวม {len(df_test)} เคส)")
+                            st.balloons()
+                            st.info("🙏 ขอบคุณที่ช่วยพัฒนาระบบให้แม่นยำขึ้น!")
+        
         with tab2:
             if len(df) > 0:
                 edit_idx = st.selectbox("เลือกรายการ", range(len(df)), format_func=lambda x: f"{df.iloc[x]['date']} - {df.iloc[x]['name']}", key="edit_sel")
@@ -435,73 +490,66 @@ elif menu == "📊 สถิติส่วนตัว":
         c1, c2, c3 = st.columns(3)
         with c1: st.markdown(f'<div class="metric-card"><h3>📋 {len(df)}</h3><p>ทั้งหมด</p></div>', unsafe_allow_html=True)
         with c2: st.markdown(f'<div class="metric-card"><h3>🚨 {len(df[df["risk"]=="สูง"])}</h3><p>เสี่ยงสูง</p></div>', unsafe_allow_html=True)
-        with c3: st.markdown(f'<div class="metric-card"><h3>📈 {df["score"].mean():.1f}</h3><p>คะแนนเฉลี่ย</p></div>', unsafe_allow_html=True)
+        with c3: st.markdown(f'<div class="metric-card"><h3> {df["score"].mean():.1f}</h3><p>คะแนนเฉลี่ย</p></div>', unsafe_allow_html=True)
         rc = df['risk'].value_counts().reset_index()
         rc.columns = ['ระดับ', 'จำนวน']
         fig = px.pie(rc, values='จำนวน', names='ระดับ', color='ระดับ', color_discrete_map={'ต่ำ':'#2ed573','กลาง':'#ffa502','สูง':'#ff6b6b'}, hole=0.4)
         st.plotly_chart(fig, use_container_width=True)
 
-# ==================== หน้า 5: ทดสอบความแม่นยำ (ใหม่!) ====================
+# ==================== หน้า 5: ทดสอบความแม่นยำ ====================
 elif menu == "🧪 ทดสอบความแม่นยำ":
     st.markdown('<div class="page-header"><h1>🧪 ทดสอบความแม่นยำของระบบ</h1></div>', unsafe_allow_html=True)
-    st.info("💡 หน้านี้ใช้ทดสอบว่าระบบประเมินความเสี่ยงได้ตรงกับเกณฑ์ทางการแพทย์หรือไม่ โดยเปรียบเทียบกับไฟล์ `test_cases.csv`")
+    st.info("💡 หน้านี้ใช้ทดสอบว่าระบบประเมินความเสี่ยงได้ตรงกับเกณฑ์ทางการแพทย์หรือไม่")
 
     if not os.path.exists(TEST_FILE):
-        st.error("❌ ไม่พบไฟล์ `test_cases.csv` ในโฟลเดอร์เดียวกับแอป")
+        st.error("❌ ไม่พบไฟล์ `test_cases.csv`")
         st.markdown("""
         <div class="info-box">
             <b>📝 วิธีสร้าง:</b><br>
-            1. สร้างไฟล์ <code>test_cases.csv</code> (Encoding: UTF-8)<br>
-            2. คอลัมน์: name, age, gender, systolic, diastolic, bs, chronic, family_history, symptoms, <b>expected_risk</b><br>
-            3. วางในโฟลเดอร์เดียวกับ <code>app.py</code>
+            1. ไปที่หน้า "📝 เพิ่มเคสทดสอบ" เพื่อสร้างเคสทดสอบแรก<br>
+            2. หรืออัปโหลดไฟล์ <code>test_cases.csv</code> ผ่าน GitHub
         </div>""", unsafe_allow_html=True)
     else:
-               # อ่าน CSV ด้วย encoding หลายแบบเพื่อป้องกันปัญหา
         try:
-            df_test = pd.read_csv(TEST_FILE, encoding='utf-8')
-        except:
             df_test = pd.read_csv(TEST_FILE, encoding='utf-8-sig')
-        
-        # ลบ BOM และ strip ชื่อคอลัมน์
-        df_test.columns = [col.strip().lstrip('\ufeff') for col in df_test.columns]
-        
-        # Debug: แสดงชื่อคอลัมน์จริง (ลบออกได้หลังแก้เสร็จ)
-        st.write(f" ชื่อคอลัมน์ในไฟล์: {list(df_test.columns)}")
-        
-        # ตรวจสอบว่ามีคอลัมน์ที่จำเป็นครบไหม
-        required_cols = ['name', 'age', 'gender', 'systolic', 'diastolic', 'bs', 
-                        'chronic', 'family_history', 'symptoms', 'expected_risk']
-        missing_cols = [col for col in required_cols if col not in df_test.columns]
-        
-        if missing_cols:
-            st.error(f"❌ ไฟล์ CSV ขาดคอลัมน์: {missing_cols}")
+            df_test.columns = [col.strip().lstrip('\ufeff') for col in df_test.columns]
+            st.success(f"✅ โหลดข้อมูลทดสอบ **{len(df_test)} เคส** เรียบร้อยแล้ว")
+        except Exception as e:
+            st.error(f"❌ เกิดข้อผิดพลาดในการอ่านไฟล์: {str(e)}")
             st.stop()
-        st.success(f"✅ โหลดข้อมูลทดสอบ **{len(df_test)} เคส** เรียบร้อยแล้ว")
 
         if st.button("🚀 เริ่มทดสอบความแม่นยำ", type="primary", use_container_width=True):
             try:
                 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
             except ImportError:
-                st.error("❌ ต้องติดตั้ง scikit-learn ก่อน: `python -m pip install scikit-learn`")
+                st.error("❌ ต้องติดตั้ง scikit-learn")
                 st.stop()
 
             results = []
             for _, row in df_test.iterrows():
-                chronic_list = [c.strip() for c in str(row['chronic']).split('|')] if pd.notna(row['chronic']) and str(row['chronic']).strip() != 'ไม่มี' else []
-                fh_list = [f.strip() for f in str(row['family_history']).split('|')] if pd.notna(row['family_history']) and str(row['family_history']).strip() != 'ไม่มี' else []
-                sym_list = [s.strip() for s in str(row['symptoms']).split('|')] if pd.notna(row['symptoms']) else []
+                try:
+                    chronic_list = [c.strip() for c in str(row['chronic']).split('|')] if pd.notna(row['chronic']) and str(row['chronic']).strip() != 'ไม่มี' else []
+                    fh_list = [f.strip() for f in str(row['family_history']).split('|')] if pd.notna(row['family_history']) and str(row['family_history']).strip() != 'ไม่มี' else []
+                    sym_list = [s.strip() for s in str(row['symptoms']).split('|')] if pd.notna(row['symptoms']) else []
 
-                predicted, final_score, raw_score, mult, _ = calculate_risk(
-                    int(row['age']), int(row['systolic']), int(row['diastolic']),
-                    int(row['bs']), chronic_list, fh_list, sym_list
-                )
-                results.append({
-                    'ชื่อ': row['name'],
-                    'คำตอบที่ถูกต้อง': str(row['expected_risk']).strip(),
-                    'ระบบทำนาย': predicted,
-                    'คะแนนรวม': final_score,
-                    'ถูกต้อง': str(row['expected_risk']).strip() == predicted
-                })
+                    predicted, final_score, raw_score, mult, _ = calculate_risk(
+                        int(row['age']), int(row['systolic']), int(row['diastolic']),
+                        int(row['bs']), chronic_list, fh_list, sym_list
+                    )
+                    results.append({
+                        'ชื่อ': row['name'],
+                        'คำตอบที่ถูกต้อง': str(row['expected_risk']).strip(),
+                        'ระบบทำนาย': predicted,
+                        'คะแนนรวม': final_score,
+                        'ถูกต้อง': str(row['expected_risk']).strip() == predicted
+                    })
+                except Exception as e:
+                    st.warning(f"⚠️ ข้ามเคส {row.get('name', 'Unknown')}: {str(e)}")
+                    continue
+
+            if not results:
+                st.error(" ไม่มีเคสที่ทดสอบได้")
+                st.stop()
 
             df_res = pd.DataFrame(results)
             y_true = df_res['คำตอบที่ถูกต้อง']
@@ -548,14 +596,81 @@ elif menu == "🧪 ทดสอบความแม่นยำ":
             else:
                 st.success("🎉 ระบบตอบถูกทุกเคส! (100% Accuracy)")
 
-# ==================== หน้า 6: เกี่ยวกับ ====================
-elif menu == "ℹ️ เกี่ยวกับ":
+# ==================== หน้า 6: เพิ่มเคสทดสอบ (ใหม่!) ====================
+elif menu == "📝 เพิ่มเคสทดสอบ":
+    st.markdown('<div class="page-header"><h1>📝 เพิ่มเคสทดสอบใหม่</h1></div>', unsafe_allow_html=True)
+    st.info("💡 ใช้หน้านี้เพื่อเพิ่มเคสทดสอบสำหรับประเมินความแม่นยำของระบบ")
+    
+    with st.form("add_test_case_form"):
+        st.markdown('<h3 class="section-title"> ข้อมูลเคส</h3>', unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            test_name = st.text_input("ชื่อเคส", value=f"เคสที่_{get_test_case_count()+1}")
+        with col2:
+            test_age = st.number_input("อายุ", min_value=40, max_value=120, value=50)
+        with col3:
+            test_gender = st.selectbox("เพศ", ["ชาย", "หญิง", "ไม่ระบุ"])
+        
+        st.markdown('<h3 class="section-title">🏥 ข้อมูลสุขภาพ</h3>', unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            test_systolic = st.number_input("ความดันตัวบน (mmHg)", min_value=70, max_value=300, value=120)
+        with col2:
+            test_diastolic = st.number_input("ความดันตัวล่าง (mmHg)", min_value=40, max_value=200, value=80)
+        with col3:
+            test_bs = st.number_input("น้ำตาลในเลือด (mg/dL)", min_value=0, max_value=600, value=100)
+        
+        test_chronic = st.multiselect("โรคประจำตัว", CHRONIC_DISEASES)
+        test_fh = st.multiselect("ประวัติครอบครัว", FAMILY_HISTORY_OPTIONS)
+        
+        st.markdown('<h3 class="section-title">🤒 อาการ</h3>', unsafe_allow_html=True)
+        test_symptoms = []
+        for category, symptoms in SYMPTOMS_DATA.items():
+            with st.expander(category, expanded=False):
+                for symptom in symptoms.keys():
+                    if st.checkbox(symptom, key=f"test_{symptom}"):
+                        test_symptoms.append(symptom)
+        
+        expected = st.selectbox("คำตอบที่ถูกต้อง (Expected Risk)", ["ต่ำ", "กลาง", "สูง"])
+        
+        submitted = st.form_submit_button("💾 บันทึกเป็นเคสทดสอบ", type="primary", use_container_width=True)
+        
+        if submitted:
+            new_case = {
+                "name": test_name,
+                "age": test_age,
+                "gender": test_gender,
+                "systolic": test_systolic,
+                "diastolic": test_diastolic,
+                "bs": test_bs,
+                "chronic": " | ".join(test_chronic) if test_chronic else "ไม่มี",
+                "family_history": " | ".join(test_fh) if test_fh else "ไม่มี",
+                "symptoms": " | ".join(test_symptoms) if test_symptoms else "ไม่มี",
+                "expected_risk": expected
+            }
+            
+            if os.path.exists(TEST_FILE):
+                try:
+                    df_test = pd.read_csv(TEST_FILE, encoding='utf-8-sig')
+                    df_test = pd.concat([df_test, pd.DataFrame([new_case])], ignore_index=True)
+                except:
+                    df_test = pd.DataFrame([new_case])
+            else:
+                df_test = pd.DataFrame([new_case])
+            
+            df_test.to_csv(TEST_FILE, index=False, encoding='utf-8-sig')
+            st.success(f"✅ บันทึกเคสทดสอบเรียบร้อย! (รวม {len(df_test)} เคส)")
+            st.balloons()
+            st.info("🙏 ขอบคุณที่ช่วยพัฒนาระบบให้แม่นยำขึ้น!")
+
+# ==================== หน้า 7: เกี่ยวกับ ====================
+elif menu == "️ เกี่ยวกับ":
     st.markdown('<div class="page-header"><h1>ℹ️ เกี่ยวกับระบบ</h1></div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="info-box">
-        <b>🎓 ระบบประเมินการตัดสินใจไปพบแพทย์ (40+ ปี)</b><br><br>
+        <b> ระบบประเมินการตัดสินใจไปพบแพทย์ (40+ ปี)</b><br><br>
         ระบบประเมินอาการสุขภาพด้วยตัวเอง เน้นคัดกรอง NCDs<br>
-        <b>✅ อัปเดต:</b> เพิ่มตรรกะ BP/BS แบบเรียลไทม์ + ประวัติครอบครัว + หน้าทดสอบความแม่นยำ (Expert Validation)
+        <b>✅ ฟีเจอร์:</b> BP/BS แบบเรียลไทม์ + ประวัติครอบครัว + ทดสอบความแม่นยำ + เพิ่มเคสทดสอบ
     </div>""", unsafe_allow_html=True)
     st.markdown("""
     <div class="info-box" style="border-left-color: #ff6b6b;">
