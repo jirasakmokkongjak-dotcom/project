@@ -46,9 +46,7 @@ def make_diabetes_data(data):
 
     return {
         "Age": data["age"],
-
-        "Gender":
-            "Male" if data["sex"] == "ชาย" else "Female",
+        "Gender": "Male" if data["sex"] == "ชาย" else "Female",
 
         "Polyuria":
             "Yes" if data["frequent_urination"] else "No",
@@ -64,6 +62,9 @@ def make_diabetes_data(data):
 
         "Polyphagia":
             "Yes" if data["frequent_hunger"] else "No",
+
+        "Genital thrush":
+            "Yes" if data["genital_thrush"] else "No",
 
         "visual blurring":
             "Yes" if data["visual_blurring"] else "No",
@@ -86,9 +87,6 @@ def make_diabetes_data(data):
         "Alopecia":
             "Yes" if data["hair_loss"] else "No",
 
-        "Genital thrush":
-            "Yes" if data["genital_thrush"] else "No",
-
         "Obesity":
             "Yes" if data["bmi"] >= 25 else "No"
     }
@@ -101,27 +99,37 @@ def make_diabetes_data(data):
 def make_hypertension_data(data):
 
     return {
-        "SBP": data["systolic"],
-        "DBP": data["diastolic"],
-        "BMI": data["bmi"],
+        "age": data["age"],
+
+        "sex":
+            1 if data["sex"] == "ชาย" else 0,
+
+        "BMI":
+            data["bmi"],
+
+        "Resi":
+            data["resi"],
+
+        "SBP":
+            data["systolic"],
+
+        "DBP":
+            data["diastolic"],
 
         "Smoking":
             1 if data["smoking"] == "สูบ" else 0,
 
-        "creantine":
-            data["creantine"],
-
         "odisease":
             data["odisease"],
 
-        "Noofmed":
-            data["noofmed"],
+        "creantine":
+            data["creantine"],
 
         "BUN":
             data["bun"],
 
-        "Resi":
-            data["resi"]
+        "Noofmed":
+            data["noofmed"]
     }
 
 
@@ -132,8 +140,7 @@ def make_hypertension_data(data):
 def make_heart_data(data):
 
     return {
-        "age":
-            data["age"],
+        "age": data["age"],
 
         "sex":
             1 if data["sex"] == "ชาย" else 0,
@@ -195,18 +202,6 @@ def make_kidney_data(data):
         "su":
             data["su"],
 
-        "rbc":
-            data["rbc"],
-
-        "pc":
-            data["pc"],
-
-        "pcc":
-            data["pcc"],
-
-        "ba":
-            data["ba"],
-
         "bgr":
             data["bgr"],
 
@@ -233,6 +228,18 @@ def make_kidney_data(data):
 
         "rbcc":
             data["rbcc"],
+
+        "rbc":
+            data["rbc"],
+
+        "pc":
+            data["pc"],
+
+        "pcc":
+            data["pcc"],
+
+        "ba":
+            data["ba"],
 
         "htn":
             "yes" if data["hypertension"] else "no",
@@ -261,9 +268,6 @@ def make_kidney_data(data):
 def make_obesity_data(data):
 
     return {
-        "Gender":
-            "Male" if data["sex"] == "ชาย" else "Female",
-
         "Age":
             data["age"],
 
@@ -272,6 +276,24 @@ def make_obesity_data(data):
 
         "Weight":
             data["weight"],
+
+        "FCVC":
+            data["vegetable_frequency"],
+
+        "NCP":
+            data["main_meals"],
+
+        "CH2O":
+            data["water_intake"],
+
+        "FAF":
+            data["exercise_frequency"],
+
+        "TUE":
+            data["technology_time"],
+
+        "Gender":
+            "Male" if data["sex"] == "ชาย" else "Female",
 
         "family_history_with_overweight":
             "yes"
@@ -283,12 +305,6 @@ def make_obesity_data(data):
             if data["high_calorie_food"]
             else "no",
 
-        "FCVC":
-            data["vegetable_frequency"],
-
-        "NCP":
-            data["main_meals"],
-
         "CAEC":
             data["food_between_meals"],
 
@@ -297,19 +313,10 @@ def make_obesity_data(data):
             if data["smoking"] == "สูบ"
             else "no",
 
-        "CH2O":
-            data["water_intake"],
-
         "SCC":
             "yes"
             if data["calorie_monitoring"]
             else "no",
-
-        "FAF":
-            data["exercise_frequency"],
-
-        "TUE":
-            data["technology_time"],
 
         "CALC":
             "Sometimes"
@@ -327,10 +334,8 @@ def make_obesity_data(data):
 
 def prepare_data_for_model(model, data):
 
-    # สร้าง DataFrame จากข้อมูลที่ส่งมา
     df = pd.DataFrame([data])
 
-    # ดึงชื่อคอลัมน์ที่โมเดลเคยใช้ตอน train
     try:
 
         preprocessor = model.named_steps["preprocessor"]
@@ -343,12 +348,15 @@ def prepare_data_for_model(model, data):
                 continue
 
             if isinstance(columns, str):
+
                 required_columns.append(columns)
 
             elif hasattr(columns, "tolist"):
+
                 required_columns.extend(columns.tolist())
 
             else:
+
                 required_columns.extend(list(columns))
 
     except Exception as e:
@@ -357,9 +365,9 @@ def prepare_data_for_model(model, data):
             f"ไม่สามารถอ่านคอลัมน์ของโมเดลได้: {e}"
         )
 
-    # ตรวจสอบคอลัมน์
     missing_columns = [
-        col for col in required_columns
+        col
+        for col in required_columns
         if col not in df.columns
     ]
 
@@ -370,7 +378,6 @@ def prepare_data_for_model(model, data):
             + str(missing_columns)
         )
 
-    # เรียงคอลัมน์ให้เหมือนตอน train
     df = df[required_columns]
 
     return df
@@ -393,10 +400,6 @@ def predict_disease(disease, data):
     model = MODELS[disease]
 
     try:
-
-        # ------------------------------------------
-        # สร้างข้อมูลตาม Dataset ของแต่ละโรค
-        # ------------------------------------------
 
         if disease == "diabetes":
 
@@ -423,26 +426,14 @@ def predict_disease(disease, data):
             model_data = data
 
 
-        # ------------------------------------------
-        # เตรียมข้อมูล
-        # ------------------------------------------
-
         df = prepare_data_for_model(
             model,
             model_data
         )
 
 
-        # ------------------------------------------
-        # ทำนาย
-        # ------------------------------------------
-
         prediction = model.predict(df)[0]
 
-
-        # ------------------------------------------
-        # คำนวณคะแนนจากโมเดล
-        # ------------------------------------------
 
         probability = None
 
