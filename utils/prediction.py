@@ -3,17 +3,17 @@ import joblib
 import pandas as pd
 
 
-# =========================
-# ตำแหน่งโฟลเดอร์ models
-# =========================
+# ==================================================
+# ตำแหน่งโมเดล
+# ==================================================
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 MODEL_DIR = os.path.join(BASE_DIR, "models")
 
 
-# =========================
+# ==================================================
 # โหลดโมเดล
-# =========================
+# ==================================================
 
 MODELS = {
     "diabetes": joblib.load(
@@ -38,37 +38,411 @@ MODELS = {
 }
 
 
-# =========================
-# ฟังก์ชันแปลงข้อมูล
-# =========================
+# ==================================================
+# ข้อมูลเบาหวาน
+# ==================================================
 
-def prepare_data(data):
-    """
-    รับข้อมูลจากหน้าเว็บ
-    แล้วเตรียมเป็น DataFrame
-    """
+def make_diabetes_data(data):
 
+    return {
+        "Age": data["age"],
+
+        "Gender":
+            "Male" if data["sex"] == "ชาย" else "Female",
+
+        "Polyuria":
+            "Yes" if data["frequent_urination"] else "No",
+
+        "Polydipsia":
+            "Yes" if data["frequent_thirst"] else "No",
+
+        "sudden weight loss":
+            "Yes" if data["sudden_weight_loss"] else "No",
+
+        "weakness":
+            "Yes" if data["fatigue"] else "No",
+
+        "Polyphagia":
+            "Yes" if data["frequent_hunger"] else "No",
+
+        "visual blurring":
+            "Yes" if data["visual_blurring"] else "No",
+
+        "Itching":
+            "Yes" if data["itching"] else "No",
+
+        "Irritability":
+            "Yes" if data["irritability"] else "No",
+
+        "delayed healing":
+            "Yes" if data["slow_wound"] else "No",
+
+        "partial paresis":
+            "Yes" if data["numbness"] else "No",
+
+        "muscle stiffness":
+            "Yes" if data["muscle_stiffness"] else "No",
+
+        "Alopecia":
+            "Yes" if data["hair_loss"] else "No",
+
+        "Genital thrush":
+            "Yes" if data["genital_thrush"] else "No",
+
+        "Obesity":
+            "Yes" if data["bmi"] >= 25 else "No"
+    }
+
+
+# ==================================================
+# ข้อมูลความดันโลหิต
+# ==================================================
+
+def make_hypertension_data(data):
+
+    return {
+        "SBP": data["systolic"],
+        "DBP": data["diastolic"],
+        "BMI": data["bmi"],
+
+        "Smoking":
+            1 if data["smoking"] == "สูบ" else 0,
+
+        "creantine":
+            data["creantine"],
+
+        "odisease":
+            data["odisease"],
+
+        "Noofmed":
+            data["noofmed"],
+
+        "BUN":
+            data["bun"],
+
+        "Resi":
+            data["resi"]
+    }
+
+
+# ==================================================
+# ข้อมูลโรคหัวใจ
+# ==================================================
+
+def make_heart_data(data):
+
+    return {
+        "age":
+            data["age"],
+
+        "sex":
+            1 if data["sex"] == "ชาย" else 0,
+
+        "cp":
+            1 if data["chest_pain"] else 0,
+
+        "trestbps":
+            data["systolic"],
+
+        "chol":
+            data["chol"],
+
+        "fbs":
+            1 if data["high_blood_sugar"] else 0,
+
+        "restecg":
+            data["restecg"],
+
+        "thalach":
+            data["max_heart_rate"],
+
+        "exang":
+            1 if data["exercise_chest_pain"] else 0,
+
+        "oldpeak":
+            data["oldpeak"],
+
+        "slope":
+            data["slope"],
+
+        "ca":
+            data["ca"],
+
+        "thal":
+            data["thal"]
+    }
+
+
+# ==================================================
+# ข้อมูลโรคไต
+# ==================================================
+
+def make_kidney_data(data):
+
+    return {
+        "age":
+            data["age"],
+
+        "bp":
+            data["systolic"],
+
+        "sg":
+            data["sg"],
+
+        "al":
+            data["al"],
+
+        "su":
+            data["su"],
+
+        "rbc":
+            data["rbc"],
+
+        "pc":
+            data["pc"],
+
+        "pcc":
+            data["pcc"],
+
+        "ba":
+            data["ba"],
+
+        "bgr":
+            data["bgr"],
+
+        "bu":
+            data["bu"],
+
+        "sc":
+            data["sc"],
+
+        "sod":
+            data["sod"],
+
+        "pot":
+            data["pot"],
+
+        "hemo":
+            data["hemo"],
+
+        "pcv":
+            data["pcv"],
+
+        "wbcc":
+            data["wbcc"],
+
+        "rbcc":
+            data["rbcc"],
+
+        "htn":
+            "yes" if data["hypertension"] else "no",
+
+        "dm":
+            "yes" if data["diabetes"] else "no",
+
+        "cad":
+            "yes" if data["heart_disease"] else "no",
+
+        "appet":
+            data["appet"],
+
+        "pe":
+            data["pe"],
+
+        "ane":
+            data["ane"]
+    }
+
+
+# ==================================================
+# ข้อมูลโรคอ้วน
+# ==================================================
+
+def make_obesity_data(data):
+
+    return {
+        "Gender":
+            "Male" if data["sex"] == "ชาย" else "Female",
+
+        "Age":
+            data["age"],
+
+        "Height":
+            data["height"] / 100,
+
+        "Weight":
+            data["weight"],
+
+        "family_history_with_overweight":
+            "yes"
+            if data["family_history_overweight"]
+            else "no",
+
+        "FAVC":
+            "yes"
+            if data["high_calorie_food"]
+            else "no",
+
+        "FCVC":
+            data["vegetable_frequency"],
+
+        "NCP":
+            data["main_meals"],
+
+        "CAEC":
+            data["food_between_meals"],
+
+        "SMOKE":
+            "yes"
+            if data["smoking"] == "สูบ"
+            else "no",
+
+        "CH2O":
+            data["water_intake"],
+
+        "SCC":
+            "yes"
+            if data["calorie_monitoring"]
+            else "no",
+
+        "FAF":
+            data["exercise_frequency"],
+
+        "TUE":
+            data["technology_time"],
+
+        "CALC":
+            "Sometimes"
+            if data["alcohol"] == "ดื่ม"
+            else "no",
+
+        "MTRANS":
+            data["transportation"]
+    }
+
+
+# ==================================================
+# เตรียมข้อมูลให้ตรงกับ Dataset
+# ==================================================
+
+def prepare_data_for_model(model, data):
+
+    # สร้าง DataFrame จากข้อมูลที่ส่งมา
     df = pd.DataFrame([data])
+
+    # ดึงชื่อคอลัมน์ที่โมเดลเคยใช้ตอน train
+    try:
+
+        preprocessor = model.named_steps["preprocessor"]
+
+        required_columns = []
+
+        for name, transformer, columns in preprocessor.transformers_:
+
+            if columns is None:
+                continue
+
+            if isinstance(columns, str):
+                required_columns.append(columns)
+
+            elif hasattr(columns, "tolist"):
+                required_columns.extend(columns.tolist())
+
+            else:
+                required_columns.extend(list(columns))
+
+    except Exception as e:
+
+        raise ValueError(
+            f"ไม่สามารถอ่านคอลัมน์ของโมเดลได้: {e}"
+        )
+
+    # ตรวจสอบคอลัมน์
+    missing_columns = [
+        col for col in required_columns
+        if col not in df.columns
+    ]
+
+    if missing_columns:
+
+        raise ValueError(
+            "คอลัมน์ที่โมเดลต้องการแต่ไม่มีข้อมูล: "
+            + str(missing_columns)
+        )
+
+    # เรียงคอลัมน์ให้เหมือนตอน train
+    df = df[required_columns]
 
     return df
 
 
-# =========================
-# ฟังก์ชันประเมินโรค
-# =========================
+# ==================================================
+# ทำนายโรค
+# ==================================================
 
 def predict_disease(disease, data):
 
     if disease not in MODELS:
-        return None
+
+        return {
+            "prediction": None,
+            "probability": None,
+            "error": "ไม่พบโมเดล"
+        }
 
     model = MODELS[disease]
 
-    df = prepare_data(data)
-
     try:
 
+        # ------------------------------------------
+        # สร้างข้อมูลตาม Dataset ของแต่ละโรค
+        # ------------------------------------------
+
+        if disease == "diabetes":
+
+            model_data = make_diabetes_data(data)
+
+        elif disease == "hypertension":
+
+            model_data = make_hypertension_data(data)
+
+        elif disease == "heart_disease":
+
+            model_data = make_heart_data(data)
+
+        elif disease == "kidney_disease":
+
+            model_data = make_kidney_data(data)
+
+        elif disease == "obesity":
+
+            model_data = make_obesity_data(data)
+
+        else:
+
+            model_data = data
+
+
+        # ------------------------------------------
+        # เตรียมข้อมูล
+        # ------------------------------------------
+
+        df = prepare_data_for_model(
+            model,
+            model_data
+        )
+
+
+        # ------------------------------------------
+        # ทำนาย
+        # ------------------------------------------
+
         prediction = model.predict(df)[0]
+
+
+        # ------------------------------------------
+        # คำนวณคะแนนจากโมเดล
+        # ------------------------------------------
 
         probability = None
 
@@ -76,13 +450,17 @@ def predict_disease(disease, data):
 
             probabilities = model.predict_proba(df)[0]
 
-            probability = float(max(probabilities)) * 100
+            probability = float(
+                max(probabilities)
+            ) * 100
+
 
         return {
             "prediction": prediction,
             "probability": probability,
             "error": None
         }
+
 
     except Exception as e:
 
@@ -93,9 +471,9 @@ def predict_disease(disease, data):
         }
 
 
-# =========================
+# ==================================================
 # ประเมินทั้ง 5 โรค
-# =========================
+# ==================================================
 
 def predict_all(data):
 
