@@ -1,155 +1,183 @@
 import streamlit as st
+
 from utils.prediction import predict_all
 
 
 # =========================================================
-# PAGE CONFIG
+# ตั้งค่าหน้า
 # =========================================================
 
 st.set_page_config(
-    page_title="ประเมินความเสี่ยงสุขภาพ",
-    page_icon="🩺",
+    page_title="ระบบประเมินความเสี่ยงสุขภาพ",
+    page_icon="🏥",
     layout="wide"
 )
 
-st.title("🩺 ระบบประเมินความเสี่ยงสุขภาพ")
-st.write("กรอกข้อมูลเบื้องต้นเพื่อประเมินความเสี่ยงของ 5 โรค")
 
-st.divider()
+# =========================================================
+# หัวข้อ
+# =========================================================
+
+st.title("🏥 ระบบประเมินความเสี่ยงสุขภาพ")
+
+st.write(
+    "ระบบประเมินความเสี่ยงเบื้องต้นจากข้อมูลสุขภาพ "
+    "โดยใช้ Machine Learning"
+)
+
+st.warning(
+    "⚠️ ระบบนี้ใช้สำหรับการประเมินเบื้องต้นเท่านั้น "
+    "ไม่ใช่การวินิจฉัยโรค และไม่สามารถใช้แทนแพทย์ได้"
+)
 
 
 # =========================================================
 # ข้อมูลทั่วไป
 # =========================================================
 
-st.subheader("👤 ข้อมูลทั่วไป")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    age = st.number_input(
-        "อายุ (ปี)",
-        min_value=18,
-        max_value=100,
-        value=40
-    )
-
-with col2:
-    sex = st.selectbox(
-        "เพศ",
-        ["ชาย", "หญิง"]
-    )
-
-
-# =========================================================
-# ข้อมูลร่างกาย
-# =========================================================
-
-st.subheader("📏 ข้อมูลร่างกาย")
+st.header("👤 ข้อมูลทั่วไป")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    height = st.number_input(
-        "ส่วนสูง (cm)",
-        min_value=100.0,
-        max_value=220.0,
-        value=170.0
+
+    age = st.number_input(
+        "อายุ (ปี)",
+        min_value=1,
+        max_value=120,
+        value=22
     )
 
 with col2:
-    weight = st.number_input(
-        "น้ำหนัก (kg)",
-        min_value=30.0,
-        max_value=200.0,
-        value=70.0
+
+    sex = st.selectbox(
+        "เพศ",
+        ["Male", "Female"]
     )
 
 with col3:
-    bmi = weight / ((height / 100) ** 2)
 
-    st.metric(
-        "BMI",
-        f"{bmi:.2f}"
+    height = st.number_input(
+        "ส่วนสูง (เมตร)",
+        min_value=0.5,
+        max_value=2.5,
+        value=1.72,
+        step=0.01
     )
 
 
-# =========================================================
-# ความดันโลหิต
-# =========================================================
-
-st.subheader("❤️ ความดันโลหิต")
-
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
-    systolic = st.number_input(
-        "ความดันตัวบน (SBP)",
-        min_value=70,
-        max_value=250,
-        value=120
+
+    weight = st.number_input(
+        "น้ำหนัก (กิโลกรัม)",
+        min_value=1.0,
+        max_value=300.0,
+        value=75.0,
+        step=0.1
     )
 
 with col2:
-    diastolic = st.number_input(
-        "ความดันตัวล่าง (DBP)",
-        min_value=40,
-        max_value=150,
-        value=80
+
+    bmi = st.number_input(
+        "BMI",
+        min_value=5.0,
+        max_value=80.0,
+        value=25.4,
+        step=0.1
     )
+
+with col3:
+
+    sbp = st.number_input(
+        "ความดันตัวบน SBP (mmHg)",
+        min_value=50,
+        max_value=300,
+        value=120
+    )
+
+
+dbp = st.number_input(
+    "ความดันตัวล่าง DBP (mmHg)",
+    min_value=30,
+    max_value=200,
+    value=80
+)
 
 
 # =========================================================
 # พฤติกรรมสุขภาพ
 # =========================================================
 
-st.subheader("🚬 พฤติกรรมสุขภาพ")
+st.header("🚬 พฤติกรรมสุขภาพ")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
+
     smoking = st.selectbox(
-        "สูบบุหรี่หรือไม่",
-        ["ไม่สูบ", "สูบ"]
+        "สูบบุหรี่",
+        ["No", "Yes"]
     )
 
 with col2:
-    alcohol = st.selectbox(
-        "ดื่มแอลกอฮอล์หรือไม่",
-        ["ไม่ดื่ม", "ดื่ม"]
-    )
+
+    smoke = smoking
 
 with col3:
-    activity = st.selectbox(
-        "ออกกำลังกายเป็นประจำหรือไม่",
-        ["ไม่", "ใช่"]
+
+    alcohol = st.selectbox(
+        "ดื่มแอลกอฮอล์",
+        ["No", "Yes"]
     )
 
 
+activity = st.selectbox(
+    "กิจกรรมทางกาย",
+    [
+        "ไม่ค่อยออกกำลังกาย",
+        "ออกกำลังกายเล็กน้อย",
+        "ออกกำลังกายปานกลาง",
+        "ออกกำลังกายมาก"
+    ]
+)
+
+
 # =========================================================
-# อาการที่เกี่ยวข้องกับเบาหวาน
+# อาการที่เกี่ยวข้องกับ Diabetes
 # =========================================================
 
-st.subheader("🩸 อาการที่เกี่ยวข้องกับเบาหวาน")
+st.header("🩸 อาการที่เกี่ยวข้องกับเบาหวาน")
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
 
-    frequent_thirst = st.checkbox(
-        "กระหายน้ำบ่อย"
+    polyuria = st.checkbox(
+        "ปัสสาวะบ่อย (Polyuria)"
     )
 
-    frequent_urination = st.checkbox(
-        "ปัสสาวะบ่อย"
+    polydipsia = st.checkbox(
+        "กระหายน้ำบ่อย (Polydipsia)"
     )
 
     sudden_weight_loss = st.checkbox(
-        "น้ำหนักลดกะทันหัน"
+        "น้ำหนักลดลงอย่างรวดเร็ว"
     )
 
-    frequent_hunger = st.checkbox(
-        "หิวบ่อย"
+    weakness = st.checkbox(
+        "อ่อนเพลีย / อ่อนแรง"
+    )
+
+    polyphagia = st.checkbox(
+        "หิวบ่อย / กินจุ"
+    )
+
+with col2:
+
+    genital_thrush = st.checkbox(
+        "เชื้อราบริเวณอวัยวะเพศ"
     )
 
     visual_blurring = st.checkbox(
@@ -157,398 +185,720 @@ with col1:
     )
 
     itching = st.checkbox(
-        "คันตามผิวหนัง"
+        "คันตามร่างกาย"
     )
 
     irritability = st.checkbox(
         "หงุดหงิดง่าย"
     )
 
-
-with col2:
-
-    fatigue = st.checkbox(
-        "เหนื่อยง่าย / อ่อนเพลีย"
-    )
-
-    slow_wound = st.checkbox(
+    delayed_healing = st.checkbox(
         "แผลหายช้า"
     )
 
-    numbness = st.checkbox(
-        "ชา หรือเสียวมือเท้า"
+with col3:
+
+    partial_paresis = st.checkbox(
+        "กล้ามเนื้อบางส่วนอ่อนแรง"
     )
 
     muscle_stiffness = st.checkbox(
         "กล้ามเนื้อแข็ง / ตึง"
     )
 
-    hair_loss = st.checkbox(
+    alopecia = st.checkbox(
         "ผมร่วง"
     )
 
-    genital_thrush = st.checkbox(
-        "มีเชื้อราในบริเวณอวัยวะเพศ"
+    obesity_symptom = st.checkbox(
+        "มีภาวะอ้วน / น้ำหนักเกิน"
     )
 
-    chest_pain = st.checkbox(
-        "เจ็บหน้าอก"
-    )
-
-    shortness_breath = st.checkbox(
-        "หายใจลำบาก"
+    emergency_symptoms = st.checkbox(
+        "มีอาการผิดปกติรุนแรง เช่น "
+        "เจ็บหน้าอกหรือหายใจลำบาก"
     )
 
 
 # =========================================================
-# ข้อมูลโรคหัวใจ
+# ประวัติโรค
 # =========================================================
 
-st.subheader("🫀 ข้อมูลเพิ่มเติมสำหรับโรคหัวใจ")
-
-col1, col2 = st.columns(2)
-
-with col1:
-
-    chol = st.number_input(
-        "คอเลสเตอรอล (Cholesterol)",
-        min_value=0.0,
-        max_value=700.0,
-        value=200.0
-    )
-
-    max_heart_rate = st.number_input(
-        "อัตราการเต้นหัวใจสูงสุด",
-        min_value=50.0,
-        max_value=250.0,
-        value=150.0
-    )
-
-    oldpeak = st.number_input(
-        "ST Depression (Oldpeak)",
-        min_value=0.0,
-        max_value=10.0,
-        value=0.0
-    )
-
-    exercise_chest_pain = st.checkbox(
-        "เจ็บหน้าอกขณะออกกำลังกาย"
-    )
-
-
-with col2:
-
-    high_blood_sugar = st.checkbox(
-        "น้ำตาลในเลือดสูง"
-    )
-
-    restecg = st.selectbox(
-        "ผลคลื่นไฟฟ้าหัวใจ (Rest ECG)",
-        [0, 1, 2]
-    )
-
-    slope = st.selectbox(
-        "Slope",
-        [0, 1, 2]
-    )
-
-    ca = st.selectbox(
-        "จำนวนหลอดเลือดหลัก (CA)",
-        [0, 1, 2, 3, 4]
-    )
-
-    thal = st.selectbox(
-        "Thal",
-        [0, 1, 2, 3]
-    )
-
-
-# =========================================================
-# ข้อมูลโรคไต
-# =========================================================
-
-st.subheader("🫘 ข้อมูลเพิ่มเติมสำหรับโรคไต")
+st.header("📋 ประวัติสุขภาพ")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
 
-    sg = st.number_input(
-        "Specific Gravity (SG)",
-        min_value=1.000,
-        max_value=1.040,
-        value=1.020,
-        step=0.001
+    hypertension_history = st.selectbox(
+        "เคยมีประวัติความดันโลหิตสูง",
+        ["no", "yes"]
     )
-
-    al = st.number_input(
-        "Albumin (AL)",
-        min_value=0,
-        max_value=5,
-        value=0
-    )
-
-    su = st.number_input(
-        "Sugar (SU)",
-        min_value=0,
-        max_value=5,
-        value=0
-    )
-
-    bgr = st.number_input(
-        "Blood Glucose (BGR)",
-        min_value=0.0,
-        max_value=600.0,
-        value=100.0
-    )
-
-    bu = st.number_input(
-        "Blood Urea (BU)",
-        min_value=0.0,
-        max_value=300.0,
-        value=40.0
-    )
-
-    sc = st.number_input(
-        "Serum Creatinine (SC)",
-        min_value=0.0,
-        max_value=20.0,
-        value=1.0
-    )
-
 
 with col2:
 
-    sod = st.number_input(
-        "Sodium (SOD)",
-        min_value=50.0,
-        max_value=200.0,
-        value=140.0
+    diabetes_history = st.selectbox(
+        "เคยมีประวัติเบาหวาน",
+        ["no", "yes"]
     )
-
-    pot = st.number_input(
-        "Potassium (POT)",
-        min_value=1.0,
-        max_value=15.0,
-        value=4.0
-    )
-
-    hemo = st.number_input(
-        "Hemoglobin (HEMO)",
-        min_value=1.0,
-        max_value=25.0,
-        value=14.0
-    )
-
-    pcv = st.number_input(
-        "Packed Cell Volume (PCV)",
-        min_value=10.0,
-        max_value=70.0,
-        value=42.0
-    )
-
-    wbcc = st.number_input(
-        "White Blood Cell Count",
-        min_value=1000.0,
-        max_value=30000.0,
-        value=8000.0
-    )
-
-    rbcc = st.number_input(
-        "Red Blood Cell Count",
-        min_value=1.0,
-        max_value=10.0,
-        value=5.0
-    )
-
 
 with col3:
 
-    rbc = st.selectbox(
-        "Red Blood Cells",
-        ["normal", "abnormal"]
-    )
-
-    pc = st.selectbox(
-        "Pus Cell",
-        ["normal", "abnormal"]
-    )
-
-    pcc = st.selectbox(
-        "Pus Cell Clumps",
-        ["notpresent", "present"]
-    )
-
-    ba = st.selectbox(
-        "Bacteria",
-        ["notpresent", "present"]
-    )
-
-    appet = st.selectbox(
-        "Appetite",
-        ["good", "poor"]
-    )
-
-    pe = st.selectbox(
-        "Pedal Edema",
+    heart_history = st.selectbox(
+        "เคยมีประวัติโรคหัวใจ",
         ["no", "yes"]
     )
+
+
+# =========================================================
+# ข้อมูลผลตรวจสุขภาพเพิ่มเติม
+# =========================================================
+
+st.header("🧪 ผลตรวจสุขภาพเพิ่มเติม")
+
+medical_data_available = st.radio(
+    "คุณมีผลตรวจสุขภาพหรือข้อมูลจากโรงพยาบาลเพิ่มเติมหรือไม่?",
+    [
+        "ไม่มีผลตรวจเพิ่มเติม",
+        "มีผลตรวจเพิ่มเติม"
+    ],
+    horizontal=True
+)
+
+medical_data_available = (
+    medical_data_available == "มีผลตรวจเพิ่มเติม"
+)
+
+
+# =========================================================
+# ตัวแปรค่าเริ่มต้น
+# =========================================================
+
+# ค่าที่ใช้ใน Obesity
+family_history = "no"
+favc = "no"
+fcvc = 2.0
+ncp = 3.0
+caec = "Sometimes"
+scc = "no"
+faf = 1.0
+tue = 1.0
+calc = "no"
+mtrans = "Public_Transportation"
+
+# ค่าที่ใช้ใน Hypertension
+resi = "No"
+odisease = "No"
+creantine = 0.0
+bun = 0.0
+noofmed = 0
+
+# ค่าที่ใช้ใน Heart
+cp = 0
+chol = 0
+fbs = 0
+restecg = 0
+thalach = 0
+exang = 0
+oldpeak = 0.0
+slope = 0
+ca = 0
+thal = 0
+
+# ค่าที่ใช้ใน Kidney
+sg = 1.020
+al = 0
+su = 0
+bgr = 0
+bu = 0
+sc = 0.0
+sod = 0.0
+pot = 0.0
+hemo = 0.0
+pcv = 0.0
+wbcc = 0.0
+rbcc = 0.0
+rbc = "normal"
+pc = "normal"
+pcc = "notpresent"
+ba = "notpresent"
+appet = "good"
+pe = "no"
+ane = "no"
+
+
+# =========================================================
+# ถ้ามีผลตรวจ → แสดงข้อมูลเพิ่มเติม
+# =========================================================
+
+if medical_data_available:
+
+    st.success(
+        "✅ ระบบจะใช้ข้อมูลผลตรวจเพิ่มเติม "
+        "เพื่อประเมิน Hypertension, Heart Disease และ CKD"
+    )
+
+    # -----------------------------------------------------
+    # Hypertension
+    # -----------------------------------------------------
+
+    st.subheader("🩺 ข้อมูลสำหรับ Hypertension")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        resi = st.selectbox(
+            "มีภาวะดื้อต่ออินซูลิน (Resi)",
+            ["No", "Yes"]
+        )
+
+    with col2:
+
+        odisease = st.selectbox(
+            "มีโรคอื่นร่วม (odisease)",
+            ["No", "Yes"]
+        )
+
+    with col3:
+
+        noofmed = st.number_input(
+            "จำนวนยาที่ใช้",
+            min_value=0,
+            max_value=20,
+            value=0
+        )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        creantine = st.number_input(
+            "Creatinine",
+            min_value=0.0,
+            max_value=20.0,
+            value=1.0,
+            step=0.1
+        )
+
+    with col2:
+
+        bun = st.number_input(
+            "BUN",
+            min_value=0.0,
+            max_value=200.0,
+            value=15.0,
+            step=0.1
+        )
+
+
+    # -----------------------------------------------------
+    # Heart Disease
+    # -----------------------------------------------------
+
+    st.subheader("❤️ ข้อมูลสำหรับ Heart Disease")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        cp = st.number_input(
+            "Chest Pain Type (cp)",
+            min_value=0,
+            max_value=3,
+            value=0
+        )
+
+    with col2:
+
+        chol = st.number_input(
+            "Cholesterol (chol)",
+            min_value=0,
+            max_value=700,
+            value=200
+        )
+
+    with col3:
+
+        thalach = st.number_input(
+            "Maximum Heart Rate (thalach)",
+            min_value=50,
+            max_value=250,
+            value=150
+        )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        fbs = st.selectbox(
+            "Fasting Blood Sugar > 120",
+            [0, 1]
+        )
+
+    with col2:
+
+        restecg = st.number_input(
+            "Resting ECG (restecg)",
+            min_value=0,
+            max_value=2,
+            value=0
+        )
+
+    with col3:
+
+        exang = st.selectbox(
+            "Exercise Induced Angina",
+            [0, 1]
+        )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        oldpeak = st.number_input(
+            "ST Depression (oldpeak)",
+            min_value=0.0,
+            max_value=10.0,
+            value=0.0,
+            step=0.1
+        )
+
+    with col2:
+
+        slope = st.number_input(
+            "Slope",
+            min_value=0,
+            max_value=2,
+            value=0
+        )
+
+    with col3:
+
+        ca = st.number_input(
+            "Number of Major Vessels (ca)",
+            min_value=0,
+            max_value=4,
+            value=0
+        )
+
+    thal = st.number_input(
+        "Thal",
+        min_value=0,
+        max_value=3,
+        value=0
+    )
+
+
+    # -----------------------------------------------------
+    # Kidney Disease
+    # -----------------------------------------------------
+
+    st.subheader("🧪 ข้อมูลสำหรับ Kidney Disease")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        sg = st.number_input(
+            "Specific Gravity (sg)",
+            min_value=1.000,
+            max_value=1.050,
+            value=1.020,
+            step=0.001,
+            format="%.3f"
+        )
+
+    with col2:
+
+        al = st.number_input(
+            "Albumin (al)",
+            min_value=0,
+            max_value=5,
+            value=0
+        )
+
+    with col3:
+
+        su = st.number_input(
+            "Sugar (su)",
+            min_value=0,
+            max_value=5,
+            value=0
+        )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        bgr = st.number_input(
+            "Blood Glucose Random (bgr)",
+            min_value=0.0,
+            max_value=1000.0,
+            value=100.0
+        )
+
+    with col2:
+
+        bu = st.number_input(
+            "Blood Urea (bu)",
+            min_value=0.0,
+            max_value=300.0,
+            value=20.0
+        )
+
+    with col3:
+
+        sc = st.number_input(
+            "Serum Creatinine (sc)",
+            min_value=0.0,
+            max_value=30.0,
+            value=1.0,
+            step=0.1
+        )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        sod = st.number_input(
+            "Sodium (sod)",
+            min_value=0.0,
+            max_value=200.0,
+            value=140.0
+        )
+
+    with col2:
+
+        pot = st.number_input(
+            "Potassium (pot)",
+            min_value=0.0,
+            max_value=20.0,
+            value=4.5,
+            step=0.1
+        )
+
+    with col3:
+
+        hemo = st.number_input(
+            "Hemoglobin (hemo)",
+            min_value=0.0,
+            max_value=30.0,
+            value=14.0,
+            step=0.1
+        )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        pcv = st.number_input(
+            "Packed Cell Volume (pcv)",
+            min_value=0.0,
+            max_value=100.0,
+            value=45.0
+        )
+
+    with col2:
+
+        wbcc = st.number_input(
+            "White Blood Cell Count (wbcc)",
+            min_value=0.0,
+            max_value=30000.0,
+            value=8000.0
+        )
+
+    with col3:
+
+        rbcc = st.number_input(
+            "Red Blood Cell Count (rbcc)",
+            min_value=0.0,
+            max_value=10.0,
+            value=5.0,
+            step=0.1
+        )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        rbc = st.selectbox(
+            "Red Blood Cells (rbc)",
+            ["normal", "abnormal"]
+        )
+
+    with col2:
+
+        pc = st.selectbox(
+            "Pus Cell (pc)",
+            ["normal", "abnormal"]
+        )
+
+    with col3:
+
+        pcc = st.selectbox(
+            "Pus Cell Clumps (pcc)",
+            ["notpresent", "present"]
+        )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        ba = st.selectbox(
+            "Bacteria (ba)",
+            ["notpresent", "present"]
+        )
+
+    with col2:
+
+        appet = st.selectbox(
+            "Appetite",
+            ["good", "poor"]
+        )
+
+    with col3:
+
+        pe = st.selectbox(
+            "Pedal Edema (pe)",
+            ["no", "yes"]
+        )
 
     ane = st.selectbox(
-        "Anemia",
+        "Anemia (ane)",
         ["no", "yes"]
     )
 
 
+else:
+
+    st.info(
+        "ℹ️ หากไม่มีผลตรวจสุขภาพเพิ่มเติม "
+        "ระบบจะไม่บังคับให้กรอกค่าผลเลือด "
+        "และจะประเมินเฉพาะโรคที่สามารถใช้ข้อมูลทั่วไปได้"
+    )
+
+
 # =========================================================
-# ประวัติโรคร่วม
+# ข้อมูลสำหรับ Obesity
 # =========================================================
 
-st.subheader("📋 ประวัติโรคร่วม")
+st.header("⚖️ ข้อมูลพฤติกรรมสำหรับ Obesity")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    hypertension_history = st.checkbox(
-        "เคยมีความดันโลหิตสูง"
+
+    family_history = st.selectbox(
+        "คนในครอบครัวมีประวัติน้ำหนักเกิน",
+        ["no", "yes"]
     )
 
 with col2:
-    diabetes_history = st.checkbox(
-        "เคยเป็นเบาหวาน"
+
+    favc = st.selectbox(
+        "รับประทานอาหารแคลอรีสูงบ่อย",
+        ["no", "yes"]
     )
 
 with col3:
-    heart_history = st.checkbox(
-        "เคยเป็นโรคหัวใจ"
+
+    fcvc = st.number_input(
+        "ความถี่รับประทานผัก",
+        min_value=1.0,
+        max_value=3.0,
+        value=2.0,
+        step=0.1
     )
 
-
-# =========================================================
-# ข้อมูลโรคอ้วน
-# =========================================================
-
-st.subheader("⚖️ ข้อมูลเพิ่มเติมสำหรับโรคอ้วน")
-
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
 
-    family_history_overweight = st.checkbox(
-        "มีคนในครอบครัวมีภาวะน้ำหนักเกิน"
-    )
-
-    high_calorie_food = st.checkbox(
-        "รับประทานอาหารพลังงานสูงเป็นประจำ"
-    )
-
-    calorie_monitoring = st.checkbox(
-        "ควบคุมหรือคำนวณแคลอรี"
-    )
-
-    vegetable_frequency = st.number_input(
-        "ความถี่การรับประทานผัก",
+    ncp = st.number_input(
+        "จำนวนมื้ออาหารต่อวัน",
         min_value=1.0,
-        max_value=3.0,
-        value=2.0
+        max_value=6.0,
+        value=3.0,
+        step=0.1
     )
-
-    main_meals = st.number_input(
-        "จำนวนมื้ออาหารหลักต่อวัน",
-        min_value=1.0,
-        max_value=5.0,
-        value=3.0
-    )
-
-    water_intake = st.number_input(
-        "ปริมาณน้ำที่ดื่มโดยประมาณ",
-        min_value=1.0,
-        max_value=5.0,
-        value=2.0
-    )
-
 
 with col2:
 
-    food_between_meals = st.selectbox(
+    caec = st.selectbox(
         "รับประทานอาหารระหว่างมื้อ",
-        ["no", "Sometimes", "Frequently", "Always"]
-    )
-
-    exercise_frequency = st.number_input(
-        "ความถี่ในการออกกำลังกาย",
-        min_value=0.0,
-        max_value=3.0,
-        value=1.0
-    )
-
-    technology_time = st.number_input(
-        "เวลาที่ใช้โทรศัพท์/คอมพิวเตอร์ต่อวัน",
-        min_value=0.0,
-        max_value=5.0,
-        value=1.0
-    )
-
-    transportation = st.selectbox(
-        "วิธีการเดินทางที่ใช้บ่อย",
         [
-            "Public_Transportation",
-            "Automobile",
-            "Walking",
-            "Motorbike",
-            "Bike"
+            "no",
+            "Sometimes",
+            "Frequently",
+            "Always"
         ]
     )
 
+with col3:
 
-# =========================================================
-# ข้อมูลเพิ่มเติมความดัน
-# =========================================================
-
-st.subheader("❤️ ข้อมูลเพิ่มเติมสำหรับความดันโลหิต")
+    scc = st.selectbox(
+        "ติดตาม/ควบคุมปริมาณแคลอรี",
+        ["no", "yes"]
+    )
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
 
-    creantine = st.number_input(
-        "Creatinine",
+    faf = st.number_input(
+        "ความถี่ออกกำลังกาย",
         min_value=0.0,
-        max_value=20.0,
-        value=1.0
+        max_value=3.0,
+        value=1.0,
+        step=0.1
     )
 
 with col2:
 
-    bun = st.number_input(
-        "BUN",
+    tue = st.number_input(
+        "เวลาที่ใช้กับอุปกรณ์เทคโนโลยี",
         min_value=0.0,
-        max_value=300.0,
-        value=40.0
+        max_value=3.0,
+        value=1.0,
+        step=0.1
     )
 
 with col3:
 
-    noofmed = st.number_input(
-        "จำนวนยาที่ใช้ประจำ",
-        min_value=0,
-        max_value=20,
-        value=0
+    calc = st.selectbox(
+        "ดื่มแอลกอฮอล์",
+        [
+            "no",
+            "Sometimes",
+            "Frequently",
+            "Always"
+        ]
     )
 
-resi = st.number_input(
-    "Resi",
-    min_value=0.0,
-    max_value=100.0,
-    value=0.0
+mtrans = st.selectbox(
+    "การเดินทางหลัก",
+    [
+        "Public_Transportation",
+        "Automobile",
+        "Walking",
+        "Motorbike",
+        "Bike"
+    ]
 )
 
-odisease = st.number_input(
-    "จำนวนโรคประจำตัว",
-    min_value=0,
-    max_value=20,
-    value=0
-)
+
+# =========================================================
+# สร้างข้อมูลสำหรับโมเดล
+# =========================================================
+
+user_data = {
+
+    # ข้อมูลทั่วไป
+    "age": age,
+    "sex": sex,
+    "height": height,
+    "weight": weight,
+    "bmi": bmi,
+
+    # ความดัน
+    "sbp": sbp,
+    "dbp": dbp,
+
+    # พฤติกรรม
+    "smoking": smoking,
+    "smoke": smoke,
+    "alcohol": alcohol,
+    "activity": activity,
+
+    # Diabetes
+    "polyuria": "Yes" if polyuria else "No",
+    "polydipsia": "Yes" if polydipsia else "No",
+    "sudden_weight_loss": "Yes" if sudden_weight_loss else "No",
+    "weakness": "Yes" if weakness else "No",
+    "polyphagia": "Yes" if polyphagia else "No",
+    "genital_thrush": "Yes" if genital_thrush else "No",
+    "visual_blurring": "Yes" if visual_blurring else "No",
+    "itching": "Yes" if itching else "No",
+    "irritability": "Yes" if irritability else "No",
+    "delayed_healing": "Yes" if delayed_healing else "No",
+    "partial_paresis": "Yes" if partial_paresis else "No",
+    "muscle_stiffness": "Yes" if muscle_stiffness else "No",
+    "alopecia": "Yes" if alopecia else "No",
+    "obesity_symptom": "Yes" if obesity_symptom else "No",
+
+    # ประวัติโรค
+    "hypertension_history": hypertension_history,
+    "diabetes_history": diabetes_history,
+    "heart_history": heart_history,
+
+    # Obesity
+    "family_history": family_history,
+    "favc": favc,
+    "fcvc": fcvc,
+    "ncp": ncp,
+    "caec": caec,
+    "smoke": smoke,
+    "ch2o": 2.0,
+    "scc": scc,
+    "faf": faf,
+    "tue": tue,
+    "calc": calc,
+    "mtrans": mtrans,
+
+    # ใช้ตรวจว่ามีผลตรวจหรือไม่
+    "medical_data_available": medical_data_available
+}
+
+
+# =========================================================
+# เพิ่มข้อมูลผลตรวจเฉพาะกรณีที่มี
+# =========================================================
+
+if medical_data_available:
+
+    user_data.update({
+
+        # Hypertension
+        "resi": resi,
+        "odisease": odisease,
+        "creantine": creantine,
+        "bun": bun,
+        "noofmed": noofmed,
+
+        # Heart
+        "cp": cp,
+        "chol": chol,
+        "fbs": fbs,
+        "restecg": restecg,
+        "thalach": thalach,
+        "exang": exang,
+        "oldpeak": oldpeak,
+        "slope": slope,
+        "ca": ca,
+        "thal": thal,
+
+        # Kidney
+        "sg": sg,
+        "al": al,
+        "su": su,
+        "bgr": bgr,
+        "bu": bu,
+        "sc": sc,
+        "sod": sod,
+        "pot": pot,
+        "hemo": hemo,
+        "pcv": pcv,
+        "wbcc": wbcc,
+        "rbcc": rbcc,
+        "rbc": rbc,
+        "pc": pc,
+        "pcc": pcc,
+        "ba": ba,
+        "appet": appet,
+        "pe": pe,
+        "ane": ane
+    })
 
 
 # =========================================================
@@ -563,179 +913,25 @@ if st.button(
     use_container_width=True
 ):
 
-    # =====================================================
-    # แจ้งเตือนฉุกเฉิน
-    # =====================================================
+    # -----------------------------------------------------
+    # แจ้งเตือนอาการฉุกเฉิน
+    # -----------------------------------------------------
 
-    if chest_pain or shortness_breath:
+    if emergency_symptoms:
 
         st.error(
-            "⚠️ หากมีอาการเจ็บหน้าอกหรือหายใจลำบากอย่างรุนแรง "
-            "หรือเกิดขึ้นเฉียบพลัน ควรไปโรงพยาบาล "
-            "หรือขอความช่วยเหลือฉุกเฉิน"
+            "🚨 หากกำลังมีอาการเจ็บหน้าอก หายใจลำบาก "
+            "หมดสติ หรืออาการรุนแรงเฉียบพลัน "
+            "ควรไปโรงพยาบาลหรือขอความช่วยเหลือฉุกเฉินทันที "
+            "ไม่ควรรอผลจากระบบนี้"
         )
 
 
-    # =====================================================
-    # รวมข้อมูล
-    # =====================================================
+    # -----------------------------------------------------
+    # เริ่มประเมิน
+    # -----------------------------------------------------
 
-    user_data = {
-
-        # -------------------------
-        # ข้อมูลทั่วไป
-        # -------------------------
-
-        "age": age,
-        "sex": sex,
-
-        # -------------------------
-        # ร่างกาย
-        # -------------------------
-
-        "height": height,
-        "weight": weight,
-        "bmi": bmi,
-
-        # -------------------------
-        # ความดัน
-        # -------------------------
-
-        "systolic": systolic,
-        "diastolic": diastolic,
-
-        # -------------------------
-        # พฤติกรรม
-        # -------------------------
-
-        "smoking": smoking,
-        "alcohol": alcohol,
-        "activity": activity,
-
-        # -------------------------
-        # เบาหวาน
-        # -------------------------
-
-        "frequent_thirst": frequent_thirst,
-        "frequent_urination": frequent_urination,
-        "sudden_weight_loss": sudden_weight_loss,
-        "frequent_hunger": frequent_hunger,
-        "visual_blurring": visual_blurring,
-        "itching": itching,
-        "irritability": irritability,
-        "fatigue": fatigue,
-        "slow_wound": slow_wound,
-        "numbness": numbness,
-        "muscle_stiffness": muscle_stiffness,
-        "hair_loss": hair_loss,
-        "genital_thrush": genital_thrush,
-
-        # -------------------------
-        # อาการฉุกเฉิน / หัวใจ
-        # -------------------------
-
-        "chest_pain": chest_pain,
-        "shortness_breath": shortness_breath,
-
-        # -------------------------
-        # หัวใจ
-        # -------------------------
-
-        "chol": chol,
-        "max_heart_rate": max_heart_rate,
-        "oldpeak": oldpeak,
-        "exercise_chest_pain": exercise_chest_pain,
-        "high_blood_sugar": high_blood_sugar,
-        "restecg": restecg,
-        "slope": slope,
-        "ca": ca,
-        "thal": thal,
-
-        # -------------------------
-        # ไต
-        # -------------------------
-
-        "sg": sg,
-        "al": al,
-        "su": su,
-        "rbc": rbc,
-        "pc": pc,
-        "pcc": pcc,
-        "ba": ba,
-        "bgr": bgr,
-        "bu": bu,
-        "sc": sc,
-        "sod": sod,
-        "pot": pot,
-        "hemo": hemo,
-        "pcv": pcv,
-        "wbcc": wbcc,
-        "rbcc": rbcc,
-        "appet": appet,
-        "pe": pe,
-        "ane": ane,
-
-        # -------------------------
-        # ประวัติโรคร่วม
-        # -------------------------
-
-        "hypertension": hypertension_history,
-        "diabetes": diabetes_history,
-        "heart_disease": heart_history,
-
-        # -------------------------
-        # ความดันเพิ่มเติม
-        # -------------------------
-
-        "creantine": creantine,
-        "bun": bun,
-        "noofmed": noofmed,
-        "resi": resi,
-        "odisease": odisease,
-
-        # -------------------------
-        # โรคอ้วน
-        # -------------------------
-
-        "family_history_overweight":
-            family_history_overweight,
-
-        "high_calorie_food":
-            high_calorie_food,
-
-        "calorie_monitoring":
-            calorie_monitoring,
-
-        "vegetable_frequency":
-            vegetable_frequency,
-
-        "main_meals":
-            main_meals,
-
-        "food_between_meals":
-            food_between_meals,
-
-        "water_intake":
-            water_intake,
-
-        "exercise_frequency":
-            exercise_frequency,
-
-        "technology_time":
-            technology_time,
-
-        "transportation":
-            transportation
-    }
-
-
-    # =====================================================
-    # ประเมิน
-    # =====================================================
-
-    with st.spinner(
-        "กำลังประเมินข้อมูลด้วย AI..."
-    ):
+    with st.spinner("กำลังประเมินข้อมูล..."):
 
         results = predict_all(user_data)
 
@@ -746,145 +942,255 @@ if st.button(
 
     st.divider()
 
-    st.subheader("📊 ผลการประเมิน")
-
-    disease_names = {
-
-        "diabetes":
-            "🩸 เบาหวาน",
-
-        "hypertension":
-            "❤️ ความดันโลหิตสูง",
-
-        "heart_disease":
-            "🫀 โรคหัวใจ",
-
-        "kidney_disease":
-            "🫘 โรคไต",
-
-        "obesity":
-            "⚖️ โรคอ้วน"
-    }
+    st.header("📊 ผลการประเมิน")
 
 
     # =====================================================
-    # แสดงผลแต่ละโรค
+    # Diabetes
     # =====================================================
 
-    for disease, result in results.items():
+    diabetes_result = results["diabetes"]
 
-        st.markdown(
-            f"### {disease_names[disease]}"
-        )
+    st.subheader("🩸 Diabetes")
 
+    if diabetes_result["prediction"] is not None:
 
-        # -------------------------------------------------
-        # กรณีโมเดลมี Error
-        # -------------------------------------------------
+        prediction = str(
+            diabetes_result["prediction"]
+        ).strip().lower()
 
-        if result["error"] is not None:
+        if prediction == "negative":
 
-            st.warning(
-                "โมเดลไม่สามารถประเมินข้อมูลชุดนี้ได้"
+            st.success(
+                "ผลการจำแนกของโมเดล: Negative"
             )
-
-            st.code(
-                result["error"],
-                language="text"
-            )
-
-
-        # -------------------------------------------------
-        # กรณีโมเดลทำงานสำเร็จ
-        # -------------------------------------------------
 
         else:
 
-            probability = result["probability"]
-            prediction = result["prediction"]
+            st.warning(
+                "ผลการจำแนกของโมเดล: Positive"
+            )
+
+        if diabetes_result["probability"] is not None:
+
+            st.caption(
+                f"คะแนนจากโมเดล: "
+                f"{diabetes_result['probability']:.2f}%"
+            )
+
+    else:
+
+        st.warning(
+            "โมเดลไม่สามารถประเมินได้"
+        )
 
 
-            # =================================================
-            # คะแนนจากโมเดล
-            # =================================================
+    # =====================================================
+    # Hypertension
+    # =====================================================
 
-            if probability is not None:
+    st.subheader("🩺 Hypertension")
 
-                st.progress(
-                    min(int(probability), 100)
-                )
+    hypertension_result = results["hypertension"]
 
-                st.write(
-                    f"คะแนนจากโมเดล: "
-                    f"**{probability:.2f}%**"
-                )
+    if hypertension_result["prediction"] is None:
 
+        st.info(
+            "ℹ️ ยังไม่ประเมินโรคนี้ "
+            "เนื่องจากไม่ได้ระบุว่ามีผลตรวจสุขภาพเพิ่มเติม"
+        )
 
-            # =================================================
-            # แปลงผลการทำนายให้อ่านง่าย
-            # =================================================
+    else:
 
-            if disease == "heart_disease":
+        hypertension_prediction = str(
+            hypertension_result["prediction"]
+        ).strip()
 
-                if prediction == 0:
-                    display_result = "ไม่พบความเสี่ยงจากโมเดล"
-                else:
-                    display_result = "พบความเสี่ยงจากโมเดล"
+        hypertension_text = {
 
+            "Stage 1":
+                "Stage 1",
 
-            elif disease == "diabetes":
+            "Stage 2":
+                "Stage 2",
 
-                if str(prediction).lower() == "negative":
-                    display_result = "ไม่พบความเสี่ยงจากโมเดล"
-                else:
-                    display_result = "พบความเสี่ยงจากโมเดล"
+            "hypertensive crisis":
+                "Hypertensive Crisis"
+        }
 
+        display_prediction = hypertension_text.get(
+            hypertension_prediction,
+            hypertension_prediction
+        )
 
-            elif disease == "kidney_disease":
+        st.info(
+            f"ผลการจำแนกของโมเดล: "
+            f"{display_prediction}"
+        )
 
-                if str(prediction).lower() == "notckd":
-                    display_result = "ไม่พบความเสี่ยงจากโมเดล"
-                else:
-                    display_result = "พบความเสี่ยงจากโมเดล"
+        if hypertension_result["probability"] is not None:
 
-
-            elif disease == "obesity":
-
-                display_result = str(
-                    prediction
-                ).replace("_", " ")
-
-
-            elif disease == "hypertension":
-
-                display_result = str(
-                    prediction
-                )
-
-
-            else:
-
-                display_result = str(
-                    prediction
-                )
-
-
-            # =================================================
-            # แสดงข้อความผลลัพธ์
-            # =================================================
-
-            st.write(
-                "ผลการประเมินจากโมเดล: "
-                f"**{display_result}**"
+            st.caption(
+                f"คะแนนจากโมเดล: "
+                f"{hypertension_result['probability']:.2f}%"
             )
 
 
     # =====================================================
-    # คำเตือน
+    # Heart Disease
     # =====================================================
 
-    st.info(
-        "⚠️ ผลนี้เป็นการประเมินเบื้องต้นจากโมเดล "
-        "Machine Learning ไม่ใช่การวินิจฉัยโรค "
-        "และไม่ควรใช้แทนการตรวจจากแพทย์"
-    )
+    st.subheader("❤️ Heart Disease")
+
+    heart_result = results["heart_disease"]
+
+    if heart_result["prediction"] is None:
+
+        st.info(
+            "ℹ️ ยังไม่ประเมินโรคนี้ "
+            "เนื่องจากไม่ได้ระบุว่ามีผลตรวจสุขภาพเพิ่มเติม"
+        )
+
+    else:
+
+        heart_prediction = heart_result["prediction"]
+
+        if int(heart_prediction) == 0:
+
+            st.success(
+                "ผลการจำแนกของโมเดล: 0 "
+                "(กลุ่มไม่พบโรคตามข้อมูลของโมเดล)"
+            )
+
+        else:
+
+            st.warning(
+                "ผลการจำแนกของโมเดล: 1 "
+                "(กลุ่มพบโรคตามข้อมูลของโมเดล)"
+            )
+
+        if heart_result["probability"] is not None:
+
+            st.caption(
+                f"คะแนนจากโมเดล: "
+                f"{heart_result['probability']:.2f}%"
+            )
+
+
+    # =====================================================
+    # Kidney Disease
+    # =====================================================
+
+    st.subheader("🧪 Kidney Disease")
+
+    kidney_result = results["kidney_disease"]
+
+    if kidney_result["prediction"] is None:
+
+        st.info(
+            "ℹ️ ยังไม่ประเมินโรคนี้ "
+            "เนื่องจากไม่ได้ระบุว่ามีผลตรวจสุขภาพเพิ่มเติม"
+        )
+
+    else:
+
+        kidney_prediction = str(
+            kidney_result["prediction"]
+        ).strip().lower()
+
+        if kidney_prediction == "notckd":
+
+            st.success(
+                "ผลการจำแนกของโมเดล: ไม่พบ CKD "
+                "ตามข้อมูลของโมเดล"
+            )
+
+        else:
+
+            st.warning(
+                "ผลการจำแนกของโมเดล: CKD "
+                "ตามข้อมูลของโมเดล"
+            )
+
+        if kidney_result["probability"] is not None:
+
+            st.caption(
+                f"คะแนนจากโมเดล: "
+                f"{kidney_result['probability']:.2f}%"
+            )
+
+
+    # =====================================================
+    # Obesity
+    # =====================================================
+
+    st.subheader("⚖️ Obesity")
+
+    obesity_result = results["obesity"]
+
+    if obesity_result["prediction"] is not None:
+
+        obesity_prediction = str(
+            obesity_result["prediction"]
+        ).strip()
+
+        obesity_labels = {
+
+            "Insufficient_Weight":
+                "น้ำหนักต่ำกว่าเกณฑ์",
+
+            "Normal_Weight":
+                "น้ำหนักปกติ",
+
+            "Overweight_Level_I":
+                "น้ำหนักเกินระดับ I",
+
+            "Overweight_Level_II":
+                "น้ำหนักเกินระดับ II",
+
+            "Obesity_Type_I":
+                "โรคอ้วนประเภท I",
+
+            "Obesity_Type_II":
+                "โรคอ้วนประเภท II",
+
+            "Obesity_Type_III":
+                "โรคอ้วนประเภท III"
+        }
+
+        display_obesity = obesity_labels.get(
+            obesity_prediction,
+            obesity_prediction.replace("_", " ")
+        )
+
+        st.info(
+            f"ผลการจำแนกของโมเดล: "
+            f"{display_obesity}"
+        )
+
+        if obesity_result["probability"] is not None:
+
+            st.caption(
+                f"คะแนนจากโมเดล: "
+                f"{obesity_result['probability']:.2f}%"
+            )
+
+    else:
+
+        st.warning(
+            "โมเดลไม่สามารถประเมินได้"
+        )
+
+
+# =========================================================
+# หมายเหตุท้ายหน้า
+# =========================================================
+
+st.divider()
+
+st.info(
+    "⚠️ ผลการประเมินทั้งหมดเป็นผลจาก Machine Learning "
+    "โดยใช้ข้อมูลที่ผู้ใช้กรอกและข้อมูลผลตรวจเพิ่มเติม "
+    "ผลลัพธ์เป็นเพียงการประเมินเบื้องต้น "
+    "ไม่ใช่การวินิจฉัยโรค และไม่ควรใช้แทนการตรวจจากแพทย์"
+)
