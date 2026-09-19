@@ -671,7 +671,6 @@ if st.button(
         "pcv": pcv,
         "wbcc": wbcc,
         "rbcc": rbcc,
-
         "appet": appet,
         "pe": pe,
         "ane": ane,
@@ -768,12 +767,20 @@ if st.button(
     }
 
 
+    # =====================================================
+    # แสดงผลแต่ละโรค
+    # =====================================================
+
     for disease, result in results.items():
 
         st.markdown(
             f"### {disease_names[disease]}"
         )
 
+
+        # -------------------------------------------------
+        # กรณีโมเดลมี Error
+        # -------------------------------------------------
 
         if result["error"] is not None:
 
@@ -786,9 +793,20 @@ if st.button(
                 language="text"
             )
 
+
+        # -------------------------------------------------
+        # กรณีโมเดลทำงานสำเร็จ
+        # -------------------------------------------------
+
         else:
 
             probability = result["probability"]
+            prediction = result["prediction"]
+
+
+            # =================================================
+            # คะแนนจากโมเดล
+            # =================================================
 
             if probability is not None:
 
@@ -801,9 +819,63 @@ if st.button(
                     f"**{probability:.2f}%**"
                 )
 
+
+            # =================================================
+            # แปลงผลการทำนายให้อ่านง่าย
+            # =================================================
+
+            if disease == "heart_disease":
+
+                if prediction == 0:
+                    display_result = "ไม่พบความเสี่ยงจากโมเดล"
+                else:
+                    display_result = "พบความเสี่ยงจากโมเดล"
+
+
+            elif disease == "diabetes":
+
+                if str(prediction).lower() == "negative":
+                    display_result = "ไม่พบความเสี่ยงจากโมเดล"
+                else:
+                    display_result = "พบความเสี่ยงจากโมเดล"
+
+
+            elif disease == "kidney_disease":
+
+                if str(prediction).lower() == "notckd":
+                    display_result = "ไม่พบความเสี่ยงจากโมเดล"
+                else:
+                    display_result = "พบความเสี่ยงจากโมเดล"
+
+
+            elif disease == "obesity":
+
+                display_result = str(
+                    prediction
+                ).replace("_", " ")
+
+
+            elif disease == "hypertension":
+
+                display_result = str(
+                    prediction
+                )
+
+
+            else:
+
+                display_result = str(
+                    prediction
+                )
+
+
+            # =================================================
+            # แสดงข้อความผลลัพธ์
+            # =================================================
+
             st.write(
-                "ผลการทำนายของโมเดล: "
-                f"**{result['prediction']}**"
+                "ผลการประเมินจากโมเดล: "
+                f"**{display_result}**"
             )
 
 
