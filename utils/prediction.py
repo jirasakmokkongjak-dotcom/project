@@ -70,48 +70,23 @@ def make_diabetes_data(data):
     return pd.DataFrame([{
 
         "Age": data["age"],
-
         "Gender": data["sex"],
 
         "Polyuria": data["polyuria"],
-
         "Polydipsia": data["polydipsia"],
+        "sudden weight loss": data["sudden_weight_loss"],
+        "weakness": data["weakness"],
+        "Polyphagia": data["polyphagia"],
+        "Genital thrush": data["genital_thrush"],
+        "visual blurring": data["visual_blurring"],
+        "Itching": data["itching"],
+        "Irritability": data["irritability"],
+        "delayed healing": data["delayed_healing"],
+        "partial paresis": data["partial_paresis"],
+        "muscle stiffness": data["muscle_stiffness"],
+        "Alopecia": data["alopecia"],
+        "Obesity": data["obesity_symptom"]
 
-        "sudden weight loss":
-            data["sudden_weight_loss"],
-
-        "weakness":
-            data["weakness"],
-
-        "Polyphagia":
-            data["polyphagia"],
-
-        "Genital thrush":
-            data["genital_thrush"],
-
-        "visual blurring":
-            data["visual_blurring"],
-
-        "Itching":
-            data["itching"],
-
-        "Irritability":
-            data["irritability"],
-
-        "delayed healing":
-            data["delayed_healing"],
-
-        "partial paresis":
-            data["partial_paresis"],
-
-        "muscle stiffness":
-            data["muscle_stiffness"],
-
-        "Alopecia":
-            data["alopecia"],
-
-        "Obesity":
-            data["obesity_symptom"]
     }])
 
 
@@ -123,38 +98,18 @@ def make_hypertension_data(data):
 
     return pd.DataFrame([{
 
-        "age":
-            data["age"],
+        "age": data["age"],
+        "sex": data["sex"],
+        "BMI": data["bmi"],
+        "Resi": data["resi"],
+        "SBP": data["sbp"],
+        "DBP": data["dbp"],
+        "Smoking": data["smoking"],
+        "odisease": data["odisease"],
+        "creantine": data["creantine"],
+        "BUN": data["bun"],
+        "Noofmed": data["noofmed"]
 
-        "sex":
-            data["sex"],
-
-        "BMI":
-            data["bmi"],
-
-        "Resi":
-            data["resi"],
-
-        "SBP":
-            data["sbp"],
-
-        "DBP":
-            data["dbp"],
-
-        "Smoking":
-            data["smoking"],
-
-        "odisease":
-            data["odisease"],
-
-        "creantine":
-            data["creantine"],
-
-        "BUN":
-            data["bun"],
-
-        "Noofmed":
-            data["noofmed"]
     }])
 
 
@@ -166,44 +121,20 @@ def make_heart_data(data):
 
     return pd.DataFrame([{
 
-        "age":
-            data["age"],
+        "age": data["age"],
+        "sex": data["sex"],
+        "cp": data["cp"],
+        "trestbps": data["sbp"],
+        "chol": data["chol"],
+        "fbs": data["fbs"],
+        "restecg": data["restecg"],
+        "thalach": data["thalach"],
+        "exang": data["exang"],
+        "oldpeak": data["oldpeak"],
+        "slope": data["slope"],
+        "ca": data["ca"],
+        "thal": data["thal"]
 
-        "sex":
-            data["sex"],
-
-        "cp":
-            data["cp"],
-
-        "trestbps":
-            data["sbp"],
-
-        "chol":
-            data["chol"],
-
-        "fbs":
-            data["fbs"],
-
-        "restecg":
-            data["restecg"],
-
-        "thalach":
-            data["thalach"],
-
-        "exang":
-            data["exang"],
-
-        "oldpeak":
-            data["oldpeak"],
-
-        "slope":
-            data["slope"],
-
-        "ca":
-            data["ca"],
-
-        "thal":
-            data["thal"]
     }])
 
 
@@ -215,77 +146,31 @@ def make_kidney_data(data):
 
     return pd.DataFrame([{
 
-        "age":
-            data["age"],
+        "age": data["age"],
+        "bp": data["sbp"],
+        "sg": data["sg"],
+        "al": data["al"],
+        "su": data["su"],
+        "bgr": data["bgr"],
+        "bu": data["bu"],
+        "sc": data["sc"],
+        "sod": data["sod"],
+        "pot": data["pot"],
+        "hemo": data["hemo"],
+        "pcv": data["pcv"],
+        "wbcc": data["wbcc"],
+        "rbcc": data["rbcc"],
+        "rbc": data["rbc"],
+        "pc": data["pc"],
+        "pcc": data["pcc"],
+        "ba": data["ba"],
+        "appet": data["appet"],
+        "pe": data["pe"],
+        "ane": data["ane"],
+        "htn": data["hypertension_history"],
+        "dm": data["diabetes_history"],
+        "cad": data["heart_history"]
 
-        "bp":
-            data["sbp"],
-
-        "sg":
-            data["sg"],
-
-        "al":
-            data["al"],
-
-        "su":
-            data["su"],
-
-        "bgr":
-            data["bgr"],
-
-        "bu":
-            data["bu"],
-
-        "sc":
-            data["sc"],
-
-        "sod":
-            data["sod"],
-
-        "pot":
-            data["pot"],
-
-        "hemo":
-            data["hemo"],
-
-        "pcv":
-            data["pcv"],
-
-        "wbcc":
-            data["wbcc"],
-
-        "rbcc":
-            data["rbcc"],
-
-        "rbc":
-            data["rbc"],
-
-        "pc":
-            data["pc"],
-
-        "pcc":
-            data["pcc"],
-
-        "ba":
-            data["ba"],
-
-        "appet":
-            data["appet"],
-
-        "pe":
-            data["pe"],
-
-        "ane":
-            data["ane"],
-
-        "htn":
-            data["hypertension_history"],
-
-        "dm":
-            data["diabetes_history"],
-
-        "cad":
-            data["heart_history"]
     }])
 
 
@@ -297,81 +182,48 @@ def make_obesity_data(data):
 
     return pd.DataFrame([{
 
-        "Gender":
-            data["sex"],
-
-        "Age":
-            data["age"],
-
-        "Height":
-            data["height"],
-
-        "Weight":
-            data["weight"],
+        "Gender": data["sex"],
+        "Age": data["age"],
+        "Height": data["height"],
+        "Weight": data["weight"],
 
         "family_history_with_overweight":
             data["family_history"],
 
-        "FAVC":
-            data["favc"],
+        "FAVC": data["favc"],
+        "FCVC": data["fcvc"],
+        "NCP": data["ncp"],
+        "CAEC": data["caec"],
+        "SMOKE": data["smoke"],
+        "CH2O": data["ch2o"],
+        "SCC": data["scc"],
+        "FAF": data["faf"],
+        "TUE": data["tue"],
+        "CALC": data["calc"],
+        "MTRANS": data["mtrans"]
 
-        "FCVC":
-            data["fcvc"],
-
-        "NCP":
-            data["ncp"],
-
-        "CAEC":
-            data["caec"],
-
-        "SMOKE":
-            data["smoke"],
-
-        "CH2O":
-            data["ch2o"],
-
-        "SCC":
-            data["scc"],
-
-        "FAF":
-            data["faf"],
-
-        "TUE":
-            data["tue"],
-
-        "CALC":
-            data["calc"],
-
-        "MTRANS":
-            data["mtrans"]
     }])
 
 
 # =========================================================
-# เตรียมข้อมูลให้ตรงกับตอน Train
+# ตรวจสอบ Column ของ Model
 # =========================================================
 
-def prepare_data_for_model(
-    model,
-    data_df
-):
+def prepare_data_for_model(model, data_df):
 
-    preprocessor = model.named_steps[
-        "preprocessor"
-    ]
+    preprocessor = model.named_steps["preprocessor"]
 
     expected_columns = []
 
-    # ดึง columns จาก ColumnTransformer
     for transformer_name, transformer, columns in (
         preprocessor.transformers_
     ):
 
-        # กรณี drop
+        # ถ้าไม่ใช้ column นี้
         if transformer == "drop":
             continue
 
-        # กรณี passthrough
+        # ถ้าเป็น passthrough
         if transformer == "passthrough":
 
             if isinstance(columns, str):
@@ -383,7 +235,7 @@ def prepare_data_for_model(
 
             continue
 
-        # columns อาจเป็น list / tuple / numpy array
+        # column ปกติ
         try:
 
             expected_columns.extend(
@@ -394,35 +246,28 @@ def prepare_data_for_model(
 
             pass
 
-
-    # ลบชื่อซ้ำ
+    # ลบชื่อ column ซ้ำ
     expected_columns = list(
         dict.fromkeys(
             expected_columns
         )
     )
 
+    # =====================================================
+    # ตรวจสอบ
+    # =====================================================
 
-    # -----------------------------------------------------
-    # ตรวจสอบข้อมูล
-    # -----------------------------------------------------
-
-    if len(expected_columns) == 0:
+    if not expected_columns:
 
         raise ValueError(
             "ไม่สามารถอ่านชื่อคอลัมน์จากโมเดลได้"
         )
 
-
     missing_columns = [
-
         col
-
         for col in expected_columns
-
         if col not in data_df.columns
     ]
-
 
     if missing_columns:
 
@@ -433,15 +278,10 @@ def prepare_data_for_model(
             )
         )
 
-
-    # -----------------------------------------------------
-    # เรียงลำดับ columns
-    # -----------------------------------------------------
-
+    # จัดลำดับ column ให้เหมือนตอน Train
     data_df = data_df[
         expected_columns
     ]
-
 
     return data_df
 
@@ -455,41 +295,31 @@ def predict_disease(
     data
 ):
 
-    # -----------------------------------------------------
     # ตรวจชื่อโมเดล
-    # -----------------------------------------------------
-
     if disease_name not in MODELS:
 
         raise ValueError(
             f"ไม่พบโมเดล: {disease_name}"
         )
 
-
     model = MODELS[
         disease_name
     ]
-
 
     # =====================================================
     # โรคที่ต้องใช้ผลตรวจเพิ่มเติม
     # =====================================================
 
     medical_required = [
-
         "hypertension",
-
         "heart_disease",
-
         "kidney_disease"
     ]
-
 
     medical_data_available = data.get(
         "medical_data_available",
         False
     )
-
 
     if (
         disease_name in medical_required
@@ -497,54 +327,34 @@ def predict_disease(
     ):
 
         return {
-
             "prediction": None,
-
             "probability": None,
-
-            "error":
-                "ต้องมีผลตรวจสุขภาพเพิ่มเติม"
+            "error": "ต้องมีผลตรวจสุขภาพเพิ่มเติม"
         }
 
-
     # =====================================================
-    # สร้างข้อมูลตามโมเดล
+    # สร้างข้อมูล
     # =====================================================
 
     if disease_name == "diabetes":
 
-        input_data = (
-            make_diabetes_data(data)
-        )
-
+        input_data = make_diabetes_data(data)
 
     elif disease_name == "hypertension":
 
-        input_data = (
-            make_hypertension_data(data)
-        )
-
+        input_data = make_hypertension_data(data)
 
     elif disease_name == "heart_disease":
 
-        input_data = (
-            make_heart_data(data)
-        )
-
+        input_data = make_heart_data(data)
 
     elif disease_name == "kidney_disease":
 
-        input_data = (
-            make_kidney_data(data)
-        )
-
+        input_data = make_kidney_data(data)
 
     elif disease_name == "obesity":
 
-        input_data = (
-            make_obesity_data(data)
-        )
-
+        input_data = make_obesity_data(data)
 
     else:
 
@@ -552,16 +362,14 @@ def predict_disease(
             f"ไม่พบประเภทโรค: {disease_name}"
         )
 
-
     # =====================================================
-    # จัดข้อมูลให้ตรงกับโมเดล
+    # จัด Column
     # =====================================================
 
     input_data = prepare_data_for_model(
         model,
         input_data
     )
-
 
     # =====================================================
     # Prediction
@@ -571,13 +379,11 @@ def predict_disease(
         input_data
     )[0]
 
-
     # =====================================================
     # Probability
     # =====================================================
 
     probability = None
-
 
     if hasattr(
         model,
@@ -588,26 +394,22 @@ def predict_disease(
             input_data
         )[0]
 
-
         probability = float(
             max(probabilities) * 100
         )
 
-
     # =====================================================
-    # ส่งผลลัพธ์
+    # ผลลัพธ์
     # =====================================================
 
     return {
 
-        "prediction":
-            prediction,
+        "prediction": prediction,
 
-        "probability":
-            probability,
+        "probability": probability,
 
-        "error":
-            None
+        "error": None
+
     }
 
 
@@ -619,46 +421,38 @@ def predict_all(data):
 
     results = {}
 
-
     diseases = [
-
         "diabetes",
-
         "hypertension",
-
         "heart_disease",
-
         "kidney_disease",
-
         "obesity"
     ]
-
 
     for disease in diseases:
 
         try:
 
-            results[disease] = (
-                predict_disease(
-                    disease,
-                    data
-                )
+            results[disease] = predict_disease(
+                disease,
+                data
             )
-
 
         except Exception as e:
 
+            # แสดง Error ใน Terminal
+            print(
+                f"[ERROR] {disease}: {e}"
+            )
+
             results[disease] = {
 
-                "prediction":
-                    None,
+                "prediction": None,
 
-                "probability":
-                    None,
+                "probability": None,
 
-                "error":
-                    str(e)
+                "error": str(e)
+
             }
-
 
     return results
